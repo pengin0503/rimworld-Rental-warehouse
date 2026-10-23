@@ -85,6 +85,9 @@
           <categories>
             <li>RW_SealedCargo</li>
           </categories>
+          <disallowedSpecialFilters>
+            <li>RW_ReturningCargo</li>
+          </disallowedSpecialFilters>
         </filter>
       </defaultStorageSettings>
     </building>
@@ -139,14 +142,66 @@
         </filter>
       </fixedStorageSettings>
       <defaultStorageSettings>
-        <priority>Critical</priority>
+        <priority>Important</priority>
+        <filter>
+          <categories>
+            <li>RW_SealedCargo</li>
+          </categories>
+          <disallowedSpecialFilters>
+            <li>RW_ReturningCargo</li>
+          </disallowedSpecialFilters>
+        </filter>
+      </defaultStorageSettings>
+    </building>
+  </ThingDef>
+
+  <!-- Delivered for a returning contract. Not buildable. Loading is ordinary hauling; only "send" returns crates. -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>RW_ReturnPod</defName>
+    <label>cargo return pod</label>
+    <description>A pod sent by a depositor to take back its cargo. Haul the contract's crates into it, then send it. Crates count as returned only once the pod is sent. If it is destroyed, request another; the return deadline does not move.</description>
+    <thingClass>RentalWarehouse.Building_ReturnPod</thingClass>
+    <graphicData>
+      <texPath>Things/Building/ReturnPod</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1, 2)</drawSize>
+    </graphicData>
+    <size>(1,2)</size>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.5</fillPercent>
+    <pathCost>42</pathCost>
+    <rotatable>false</rotatable>
+    <surfaceType>Item</surfaceType>
+    <statBases>
+      <MaxHitPoints>250</MaxHitPoints>
+      <Flammability>0</Flammability>
+    </statBases>
+    <building>
+      <maxItemsInCell>2</maxItemsInCell>
+      <claimable>false</claimable>
+      <fixedStorageSettings>
         <filter>
           <categories>
             <li>RW_SealedCargo</li>
           </categories>
         </filter>
+      </fixedStorageSettings>
+      <defaultStorageSettings>
+        <priority>Critical</priority>
+        <filter>
+          <categories>
+            <li>RW_SealedCargo</li>
+          </categories>
+          <disallowedSpecialFilters>
+            <li>RW_NotReturningCargo</li>
+          </disallowedSpecialFilters>
+        </filter>
       </defaultStorageSettings>
     </building>
+    <inspectorTabs>
+      <li>ITab_Storage</li>
+    </inspectorTabs>
   </ThingDef>
 
 </Defs>

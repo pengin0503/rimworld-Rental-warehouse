@@ -22,6 +22,9 @@ namespace RentalWarehouse
             [EffectKind.ApplyGoodwill] = ApplyGoodwill,
             [EffectKind.Notify] = Notify,
             [EffectKind.DeliverCargo] = DeliveryAdapter.Deliver,
+            [EffectKind.SpawnSilver] = PaymentAdapter.SpawnSilver,
+            [EffectKind.ConsumeSilver] = PaymentAdapter.ConsumeSilver,
+            [EffectKind.CreateReturnPod] = ReturnAdapter.CreatePod,
         };
 
         /// <summary>Later tasks register their handlers here (delivery, silver, raids, sites).</summary>

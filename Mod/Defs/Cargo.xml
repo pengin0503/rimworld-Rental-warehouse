@@ -7,6 +7,26 @@
     <parent>Root</parent>
   </ThingCategoryDef>
 
+  <SpecialThingFilterDef>
+    <defName>RW_ReturningCargo</defName>
+    <label>cargo being returned</label>
+    <description>Crates whose storage contract has ended and must go back to the depositor.</description>
+    <parentCategory>RW_SealedCargo</parentCategory>
+    <allowedByDefault>true</allowedByDefault>
+    <saveKey>allowReturningCargo</saveKey>
+    <workerClass>RentalWarehouse.SpecialThingFilterWorker_ReturningCargo</workerClass>
+  </SpecialThingFilterDef>
+
+  <SpecialThingFilterDef>
+    <defName>RW_NotReturningCargo</defName>
+    <label>cargo still under contract</label>
+    <description>Crates that are not being returned.</description>
+    <parentCategory>RW_SealedCargo</parentCategory>
+    <allowedByDefault>true</allowedByDefault>
+    <saveKey>allowNotReturningCargo</saveKey>
+    <workerClass>RentalWarehouse.SpecialThingFilterWorker_NotReturningCargo</workerClass>
+  </SpecialThingFilterDef>
+
   <!-- One crate holds one manifest. Value and mass come from the ledger through CompSealedCargo, not from statBases. -->
   <ThingDef>
     <defName>RW_SealedCargo</defName>

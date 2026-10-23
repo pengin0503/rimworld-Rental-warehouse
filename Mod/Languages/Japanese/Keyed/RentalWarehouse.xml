@@ -94,4 +94,80 @@
   <RW_Diag_LedgerUnreadable>Rental Warehouse: このセーブの倉庫台帳を読めませんでした{0}。台帳は変更せずに保持し、倉庫を停止しています。</RW_Diag_LedgerUnreadable>
   <RW_Diag_LedgerFromNewerVersion>Rental Warehouse: このセーブは新しい版のMODで作られています{0}。</RW_Diag_LedgerFromNewerVersion>
 
+  <!-- Contracts -->
+  <RW_NoContracts>進行中の契約はありません。</RW_NoContracts>
+  <RW_Phase_AwaitingDelivery>配送待ち</RW_Phase_AwaitingDelivery>
+  <RW_Phase_AwaitingStorage>収納待ち</RW_Phase_AwaitingStorage>
+  <RW_Phase_Active>保管中</RW_Phase_Active>
+  <RW_Phase_Returning>返還中</RW_Phase_Returning>
+  <RW_Phase_Settled>精算済み</RW_Phase_Settled>
+  <RW_Phase_Cancelled>取消</RW_Phase_Cancelled>
+  <RW_Phase_SystemCancelled>取消（不可抗力）</RW_Phase_SystemCancelled>
+  <RW_Phase_Offered>提示中</RW_Phase_Offered>
+  <RW_ArrivesIn>貨物到着まで{0}。</RW_ArrivesIn>
+  <RW_StoreWithin>{0}以内に全箱を収納しないと、無収入で契約が終わります。</RW_StoreWithin>
+  <RW_TermEndsIn>満期まで{0}。</RW_TermEndsIn>
+  <RW_ReturnDeadline>返還期限まで{0}。</RW_ReturnDeadline>
+  <RW_ReturnReason_None></RW_ReturnReason_None>
+  <RW_ReturnReason_Matured>（満期）</RW_ReturnReason_Matured>
+  <RW_ReturnReason_EarlyByPlayer>（早期返還を申請）</RW_ReturnReason_EarlyByPlayer>
+  <RW_ReturnReason_StorageFailed>（収納失敗: 収入なし）</RW_ReturnReason_StorageFailed>
+  <RW_ReturnReason_DepositorHostile>（預け主が敵対: 無罰返還期間）</RW_ReturnReason_DepositorHostile>
+  <RW_ContractMoney>日額 {0}銀 | 発生済み {1} | 受領可能 {2} | 受領済み {3}</RW_ContractMoney>
+  <RW_RaidProgress>開始した襲撃: {0}/{1}</RW_RaidProgress>
+  <RW_CrateStatus>箱{0}（{1}銀）: {2}</RW_CrateStatus>
+  <RW_CrateReturned>返還済み</RW_CrateReturned>
+  <RW_CrateInTransit>輸送中</RW_CrateInTransit>
+  <RW_CrateMissing>マップ上にない</RW_CrateMissing>
+  <RW_CrateEarning>収納済み、{0}銀発生</RW_CrateEarning>
+  <RW_CrateStopped>料金停止: {0}（{1}銀発生済み）</RW_CrateStopped>
+  <RW_Loss_Lost>紛失</RW_Loss_Lost>
+  <RW_Loss_Embezzled>横領</RW_Loss_Embezzled>
+  <RW_Loss_SystemRemoved>回収</RW_Loss_SystemRemoved>
+  <RW_Loss_None></RW_Loss_None>
+  <RW_CancelContract>取消（到着前）</RW_CancelContract>
+  <RW_CancelConfirm>契約{0}を取り消しますか？到着前の取消に罰はありません。</RW_CancelConfirm>
+  <RW_EarlyReturn>早期返還</RW_EarlyReturn>
+  <RW_EarlyReturnConfirm>契約{0}を早期返還しますか？完了報酬はなくなり、取消料{1}銀を収入から差し引きます。既に失った箱の補償は残ります。</RW_EarlyReturnConfirm>
+  <RW_RequestReturnPod>回収ポッドを要請</RW_RequestReturnPod>
+  <RW_ShowReturnPod>回収ポッドを表示</RW_ShowReturnPod>
+
+  <!-- Return pod -->
+  <RW_SendReturnPod>返送</RW_SendReturnPod>
+  <RW_SendReturnPodDesc>積んだ箱を持ち主へ送り返します。返送した箱だけが返還扱いになります。</RW_SendReturnPodDesc>
+  <RW_SendReturnPodConfirm>{0}箱を今送りますか？この契約の未返還は{1}箱です。期限までに返還しない箱は紛失として精算されます。</RW_SendReturnPodConfirm>
+  <RW_ReturnPodEmpty>この契約の箱が積まれていません。</RW_ReturnPodEmpty>
+  <RW_ReturnPodInfo>{0}の回収ポッド: 積載{1}、未返還{2}</RW_ReturnPodInfo>
+  <RW_Msg_ReturnPodArrived>契約{0}の回収ポッドが着陸しました。箱を積んでから返送してください。</RW_Msg_ReturnPodArrived>
+  <RW_Msg_ReturnPodLost>契約{0}の回収ポッドが壊されました。再要請できますが、期限は延びません。</RW_Msg_ReturnPodLost>
+  <RW_Msg_Returned>契約{0}: {1}箱を返還しました。</RW_Msg_Returned>
+  <RW_Reject_NoReturnPod>先に回収ポッドを要請してください。</RW_Reject_NoReturnPod>
+  <RW_Reject_PodAlreadyActive>この契約の回収ポッドは既に向かっているか待機中です。</RW_Reject_PodAlreadyActive>
+
+  <!-- Accounts -->
+  <RW_Balance>受領可能残高</RW_Balance>
+  <RW_BalanceTotal>全マップ合計: {0}銀</RW_BalanceTotal>
+  <RW_BalanceHere>{1}: {0}銀</RW_BalanceHere>
+  <RW_Claim>銀として受領（ポッド配送）</RW_Claim>
+  <RW_Debts>債務</RW_Debts>
+  <RW_NoDebts>債務はありません。</RW_NoDebts>
+  <RW_DebtLine>契約{0}: {1}へ{2}銀の債務。</RW_DebtLine>
+  <RW_PayDebt>{0}銀を支払う（所持{1}）</RW_PayDebt>
+  <RW_RefuseDebt>支払いを拒否</RW_RefuseDebt>
+  <RW_RefuseDebtConfirm>{0}への債務を拒否しますか？友好度が{1}下がり、{2}日間その派閥からの依頼が止まります。進行中の契約は続きます。</RW_RefuseDebtConfirm>
+  <RW_History>最近の精算</RW_History>
+  <RW_SettlementLine>保管料{0} + 報酬{1} − 取消料{2} − 補償{3} → 入金{4}、債務{5}、友好度{6}</RW_SettlementLine>
+  <RW_Cause_None></RW_Cause_None>
+  <RW_Cause_Completed>完遂</RW_Cause_Completed>
+  <RW_Cause_PartialLoss>一部損失</RW_Cause_PartialLoss>
+  <RW_Cause_TotalLoss>全損</RW_Cause_TotalLoss>
+  <RW_Cause_EarlyReturn>早期返還</RW_Cause_EarlyReturn>
+  <RW_Cause_StorageFailed>収納失敗</RW_Cause_StorageFailed>
+  <RW_Cause_DepositorHostile>預け主敵対</RW_Cause_DepositorHostile>
+  <RW_Cause_MapAbandoned>保管マップ放棄</RW_Cause_MapAbandoned>
+  <RW_Cause_SystemCancelled>取消（不可抗力）</RW_Cause_SystemCancelled>
+  <RW_Reject_InvalidDestination>有効な配送地点がないため残高を保持しました。別のマップを選ぶか着陸地点を空けてください。</RW_Reject_InvalidDestination>
+  <RW_Reject_NothingToClaim>ここで受領できる残高はありません。</RW_Reject_NothingToClaim>
+  <RW_Reject_UnknownDebt>その債務はもうありません。</RW_Reject_UnknownDebt>
+
 </LanguageData>

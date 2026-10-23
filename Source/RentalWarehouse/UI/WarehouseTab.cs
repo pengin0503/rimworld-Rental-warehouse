@@ -26,6 +26,8 @@ namespace RentalWarehouse
         public static readonly Dictionary<Page, Func<Rect, Vector2, Vector2>> Views = new Dictionary<Page, Func<Rect, Vector2, Vector2>>
         {
             [Page.Offers] = OfferView.Draw,
+            [Page.Contracts] = ContractView.Draw,
+            [Page.Accounts] = AccountingView.Draw,
         };
 
         public static void Open()

@@ -121,7 +121,9 @@ namespace RentalWarehouse
             if (cargoId == null || !State.Cargo.TryGetValue(cargoId, out var record)) return;
             CargoService.ApplyHitPoints(record, 0);
             var contract = record.ContractId == null ? null : State.Contract(record.ContractId);
-            if (contract != null) Enqueue(ContractEngine.MarkLost(contract, cargoId, LossCause.Lost, Ids.Now).Effects);
+            if (contract == null) return;
+            Enqueue(ContractEngine.MarkLost(contract, cargoId, LossCause.Lost, Ids.Now).Effects);
+            PaymentService.SyncDebts(State, Ids.Now);
         }
 
         /// <summary>Deliberate opening of a crate held for another faction: spec 3 "横領".</summary>
@@ -137,6 +139,7 @@ namespace RentalWarehouse
             var effects = new List<EffectRequest>(CargoService.Open(record, "open:" + cargoId).Effects);
             effects.AddRange(lost.Effects);
             Enqueue(effects);
+            PaymentService.SyncDebts(State, Ids.Now);
         }
 
         /// <summary>Opening a crate stolen from an NPC vault: the contents are the reward.</summary>

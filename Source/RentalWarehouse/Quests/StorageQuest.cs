@@ -20,7 +20,16 @@ namespace RentalWarehouse
                     snapshots[contract.MapId] = snapshot;
                 }
                 world.Enqueue(ContractEngine.Advance(contract, snapshot, now).Effects, applyNow: false);
+                if (contract.IsTerminal) RemoveLeftoverPod(contract);
             }
+            PaymentService.SyncDebts(world.State, now);
+        }
+
+        /// <summary>A pod still standing when its contract settles is taken away; crates inside were already settled.</summary>
+        public static void RemoveLeftoverPod(ContractState contract)
+        {
+            var pod = ReturnAdapter.FindPod(Ids.Map(contract.MapId), contract.ActiveReturnPodId);
+            if (pod != null && !pod.Destroyed) pod.Destroy(DestroyMode.Vanish);
         }
 
         /// <summary>Accepts an offer for storage on <paramref name="map"/>. A reception desk on that map is required (spec 3).</summary>

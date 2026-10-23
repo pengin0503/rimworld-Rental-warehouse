@@ -94,4 +94,80 @@
   <RW_Diag_LedgerUnreadable>Rental Warehouse: the warehouse ledger in this save could not be read{0}. It is kept unchanged and the warehouse is paused.</RW_Diag_LedgerUnreadable>
   <RW_Diag_LedgerFromNewerVersion>Rental Warehouse: this save was made with a newer version of the mod{0}.</RW_Diag_LedgerFromNewerVersion>
 
+  <!-- Contracts -->
+  <RW_NoContracts>No contracts in progress.</RW_NoContracts>
+  <RW_Phase_AwaitingDelivery>Waiting for delivery</RW_Phase_AwaitingDelivery>
+  <RW_Phase_AwaitingStorage>Waiting for storage</RW_Phase_AwaitingStorage>
+  <RW_Phase_Active>In storage</RW_Phase_Active>
+  <RW_Phase_Returning>Returning</RW_Phase_Returning>
+  <RW_Phase_Settled>Settled</RW_Phase_Settled>
+  <RW_Phase_Cancelled>Cancelled</RW_Phase_Cancelled>
+  <RW_Phase_SystemCancelled>Cancelled (not your fault)</RW_Phase_SystemCancelled>
+  <RW_Phase_Offered>Offered</RW_Phase_Offered>
+  <RW_ArrivesIn>Cargo arrives in {0}.</RW_ArrivesIn>
+  <RW_StoreWithin>Store every crate within {0} or the contract ends without income.</RW_StoreWithin>
+  <RW_TermEndsIn>Term ends in {0}.</RW_TermEndsIn>
+  <RW_ReturnDeadline>Return deadline in {0}.</RW_ReturnDeadline>
+  <RW_ReturnReason_None></RW_ReturnReason_None>
+  <RW_ReturnReason_Matured>(term completed)</RW_ReturnReason_Matured>
+  <RW_ReturnReason_EarlyByPlayer>(early return requested)</RW_ReturnReason_EarlyByPlayer>
+  <RW_ReturnReason_StorageFailed>(storage failed: no income)</RW_ReturnReason_StorageFailed>
+  <RW_ReturnReason_DepositorHostile>(depositor turned hostile: penalty-free return window)</RW_ReturnReason_DepositorHostile>
+  <RW_ContractMoney>Daily fee {0} silver | earned so far {1} | claimable {2} | claimed {3}</RW_ContractMoney>
+  <RW_RaidProgress>Raids started: {0}/{1}</RW_RaidProgress>
+  <RW_CrateStatus>Crate {0} ({1} silver): {2}</RW_CrateStatus>
+  <RW_CrateReturned>returned</RW_CrateReturned>
+  <RW_CrateInTransit>in transit</RW_CrateInTransit>
+  <RW_CrateMissing>not on the map</RW_CrateMissing>
+  <RW_CrateEarning>stored, {0} silver earned</RW_CrateEarning>
+  <RW_CrateStopped>fee stopped: {0} ({1} silver earned)</RW_CrateStopped>
+  <RW_Loss_Lost>lost</RW_Loss_Lost>
+  <RW_Loss_Embezzled>embezzled</RW_Loss_Embezzled>
+  <RW_Loss_SystemRemoved>withdrawn</RW_Loss_SystemRemoved>
+  <RW_Loss_None></RW_Loss_None>
+  <RW_CancelContract>Cancel (before arrival)</RW_CancelContract>
+  <RW_CancelConfirm>Cancel contract {0}? Nothing is owed before the cargo arrives.</RW_CancelConfirm>
+  <RW_EarlyReturn>Return early</RW_EarlyReturn>
+  <RW_EarlyReturnConfirm>Return contract {0} early? You lose the completion bonus and pay a cancellation fee of {1} silver from your earnings. Compensation for crates already lost still applies.</RW_EarlyReturnConfirm>
+  <RW_RequestReturnPod>Request return pod</RW_RequestReturnPod>
+  <RW_ShowReturnPod>Show return pod</RW_ShowReturnPod>
+
+  <!-- Return pod -->
+  <RW_SendReturnPod>Send back</RW_SendReturnPod>
+  <RW_SendReturnPodDesc>Send the loaded crates back to their owner. Only sent crates count as returned.</RW_SendReturnPodDesc>
+  <RW_SendReturnPodConfirm>Send {0} crate(s) now? {1} crate(s) of this contract are still outstanding; anything not returned by the deadline is settled as lost.</RW_SendReturnPodConfirm>
+  <RW_ReturnPodEmpty>No crates of this contract are loaded.</RW_ReturnPodEmpty>
+  <RW_ReturnPodInfo>Return pod for {0}: {1} loaded, {2} outstanding</RW_ReturnPodInfo>
+  <RW_Msg_ReturnPodArrived>The return pod for contract {0} has landed. Haul the crates into it, then send it.</RW_Msg_ReturnPodArrived>
+  <RW_Msg_ReturnPodLost>The return pod for contract {0} was destroyed. You may request another; the deadline does not change.</RW_Msg_ReturnPodLost>
+  <RW_Msg_Returned>Contract {0}: {1} crate(s) returned.</RW_Msg_Returned>
+  <RW_Reject_NoReturnPod>Request a return pod first.</RW_Reject_NoReturnPod>
+  <RW_Reject_PodAlreadyActive>A return pod for this contract is already on its way or waiting.</RW_Reject_PodAlreadyActive>
+
+  <!-- Accounts -->
+  <RW_Balance>Claimable balance</RW_Balance>
+  <RW_BalanceTotal>All maps: {0} silver</RW_BalanceTotal>
+  <RW_BalanceHere>{1}: {0} silver</RW_BalanceHere>
+  <RW_Claim>Claim as silver (delivered by pod)</RW_Claim>
+  <RW_Debts>Debts</RW_Debts>
+  <RW_NoDebts>No debts.</RW_NoDebts>
+  <RW_DebtLine>Contract {0}: you owe {1} {2} silver.</RW_DebtLine>
+  <RW_PayDebt>Pay {0} silver (have {1})</RW_PayDebt>
+  <RW_RefuseDebt>Refuse to pay</RW_RefuseDebt>
+  <RW_RefuseDebtConfirm>Refuse the debt to {0}? Their goodwill drops by {1} and they will offer you no contracts for {2} days. Contracts already running continue.</RW_RefuseDebtConfirm>
+  <RW_History>Recent settlements</RW_History>
+  <RW_SettlementLine>fees {0} + bonus {1} − cancel fee {2} − compensation {3} → credit {4}, debt {5}, goodwill {6}</RW_SettlementLine>
+  <RW_Cause_None></RW_Cause_None>
+  <RW_Cause_Completed>completed</RW_Cause_Completed>
+  <RW_Cause_PartialLoss>partial loss</RW_Cause_PartialLoss>
+  <RW_Cause_TotalLoss>total loss</RW_Cause_TotalLoss>
+  <RW_Cause_EarlyReturn>early return</RW_Cause_EarlyReturn>
+  <RW_Cause_StorageFailed>storage failed</RW_Cause_StorageFailed>
+  <RW_Cause_DepositorHostile>depositor hostile</RW_Cause_DepositorHostile>
+  <RW_Cause_MapAbandoned>storage map abandoned</RW_Cause_MapAbandoned>
+  <RW_Cause_SystemCancelled>cancelled (not your fault)</RW_Cause_SystemCancelled>
+  <RW_Reject_InvalidDestination>No valid delivery point; the balance is kept. Choose another map or clear a landing spot.</RW_Reject_InvalidDestination>
+  <RW_Reject_NothingToClaim>Nothing to claim here.</RW_Reject_NothingToClaim>
+  <RW_Reject_UnknownDebt>That debt no longer exists.</RW_Reject_UnknownDebt>
+
 </LanguageData>

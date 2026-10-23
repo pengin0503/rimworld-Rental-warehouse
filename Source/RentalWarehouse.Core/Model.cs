@@ -224,6 +224,8 @@ namespace RentalWarehouse.Core
         public string? ActiveReturnPodId;
         public SettlementCause SettlementCause;
         public SettlementResult? Settlement;
+        /// <summary>True once a settlement debt has been entered in <see cref="WorldState.Debts"/>.</summary>
+        public bool DebtRecorded;
         public string? CancelReason;
 
         public ContractCargoState? Cargo(string cargoId) => CargoStates.Find(c => c.CargoId == cargoId);
