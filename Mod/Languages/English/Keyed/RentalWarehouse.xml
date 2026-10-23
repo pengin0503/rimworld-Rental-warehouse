@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- Management tab -->
+  <RW_TabTitle>Rental warehouse</RW_TabTitle>
+  <RW_Tab_Offers>Offers</RW_Tab_Offers>
+  <RW_Tab_Contracts>Contracts</RW_Tab_Contracts>
+  <RW_Tab_Accounts>Accounts</RW_Tab_Accounts>
+  <RW_Tab_Vaults>Vault sites</RW_Tab_Vaults>
+  <RW_BusinessOpen>Open for business</RW_BusinessOpen>
+  <RW_BusinessOpenDesc>Toggle whether new storage offers and vault intel arrive. Closing never cancels existing contracts.</RW_BusinessOpenDesc>
+  <RW_BusinessIsOpen>Business: open (click to close)</RW_BusinessIsOpen>
+  <RW_BusinessIsClosed>Business: closed (click to open)</RW_BusinessIsClosed>
+  <RW_OpenManagement>Warehouse ledger</RW_OpenManagement>
+  <RW_OpenManagementDesc>Open the rental warehouse management tab.</RW_OpenManagementDesc>
+  <RW_LoadSummary>Open contracts: {0}/{1}. Free slots here: {2}</RW_LoadSummary>
+  <RW_SlotsFree>racks {0}, vaults {1}</RW_SlotsFree>
+  <RW_InDebtWarning>Unpaid debt: new contracts are suspended.</RW_InDebtWarning>
+  <RW_UnknownFaction>(unknown faction)</RW_UnknownFaction>
+
+  <!-- Offers -->
+  <RW_NoOffers>No offers at the moment. Offers arrive every two days while the business is open.</RW_NoOffers>
+  <RW_Kind_Normal>Ordinary storage</RW_Kind_Normal>
+  <RW_Kind_HighRisk>High-risk storage</RW_Kind_HighRisk>
+  <RW_From>from {0}</RW_From>
+  <RW_CrateLine>Crate {0}: {1} silver, {2} kg — {3}</RW_CrateLine>
+  <RW_Storage_Rack>rack or vault</RW_Storage_Rack>
+  <RW_Storage_Vault>vault</RW_Storage_Vault>
+  <RW_Requires>Needs {1} {0} slot(s) for {2} days, counted from when every crate is stored.</RW_Requires>
+  <RW_FeeLine>Fee {0} silver/day while stored; completion bonus up to {1}; total at most {2} silver.</RW_FeeLine>
+  <RW_CompensationLine>Lost crates: you owe {0}% of their value, capped at {1} silver. Opened crates: 100% of their value.</RW_CompensationLine>
+  <RW_RaidLine>Up to {0} raid(s) aimed at the cargo, about {1}× normal threat points, by {2}.</RW_RaidLine>
+  <RW_RaidRules>Raids start at least 1 day apart and wait while enemies are present or within half a day of another raid; a raid that cannot start within 2 days is skipped and lowers the completion bonus.</RW_RaidRules>
+  <RW_RaidNoneScheduled>No raid is scheduled, but ordinary raids can still happen.</RW_RaidNoneScheduled>
+  <RW_ExpiresIn>Offer expires in {0}.</RW_ExpiresIn>
+  <RW_Accept>Accept</RW_Accept>
+  <RW_AcceptConfirm>Accept this contract for storage on {1}?\n\n{0}\n\nCrates arrive by drop pod tomorrow and must all be stored within one day of arrival. Returning early forfeits the completion bonus and costs a fee of up to two days' storage.</RW_AcceptConfirm>
+  <RW_Msg_Accepted>Contract {0} accepted. Cargo arrives in one day.</RW_Msg_Accepted>
+  <RW_Msg_NewOffers>{0} new warehouse offer(s).</RW_Msg_NewOffers>
+
+  <!-- Rejections -->
+  <RW_Reject_NotOffered>That offer is no longer available.</RW_Reject_NotOffered>
+  <RW_Reject_InvalidTerms>The offer's terms are invalid.</RW_Reject_InvalidTerms>
+  <RW_Reject_InvalidManifest>The crate's contents are invalid.</RW_Reject_InvalidManifest>
+  <RW_Reject_TooHeavy>A crate may weigh at most 35 kg.</RW_Reject_TooHeavy>
+  <RW_Reject_OfferExpired>The offer has expired.</RW_Reject_OfferExpired>
+  <RW_Reject_InDebt>Settle your warehouse debt before taking new contracts.</RW_Reject_InDebt>
+  <RW_Reject_FactionBlocked>This faction refuses to deal with you for now.</RW_Reject_FactionBlocked>
+  <RW_Reject_TooManyContracts>You already have the maximum number of contracts.</RW_Reject_TooManyContracts>
+  <RW_Reject_NoCapacity>Not enough free, valid storage slots here (slots promised to other accepted contracts are reserved).</RW_Reject_NoCapacity>
+  <RW_Reject_NoReception>Build a warehouse reception desk on this map first.</RW_Reject_NoReception>
+  <RW_Reject_NotHomeMap>Contracts can only be accepted for one of your home maps.</RW_Reject_NotHomeMap>
+  <RW_Reject_AlreadyArrived>The cargo has already arrived.</RW_Reject_AlreadyArrived>
+  <RW_Reject_AlreadyDelivered>That crate was already delivered.</RW_Reject_AlreadyDelivered>
+  <RW_Reject_NotCancellable>This contract cannot be cancelled.</RW_Reject_NotCancellable>
+  <RW_Reject_NotReturnable>This contract cannot be returned now.</RW_Reject_NotReturnable>
+  <RW_Reject_NotReturning>Crates can be returned only after the term ends or an early return is requested.</RW_Reject_NotReturning>
+  <RW_Reject_CargoNotHeld>That crate is no longer held.</RW_Reject_CargoNotHeld>
+  <RW_Reject_UnknownCargo>Unknown crate.</RW_Reject_UnknownCargo>
+  <RW_Reject_CannotOpen>This crate cannot be opened.</RW_Reject_CannotOpen>
+  <RW_Reject_FacilityNotEmpty>Move the crates out first.</RW_Reject_FacilityNotEmpty>
+  <RW_Cancel_ByPlayer>Cancelled before arrival.</RW_Cancel_ByPlayer>
+
+  <!-- Crates and facilities -->
+  <RW_CrateLabel>{0} ({1})</RW_CrateLabel>
+  <RW_CrateUnregistered>Not in the warehouse ledger.</RW_CrateUnregistered>
+  <RW_CrateValue>Declared value: {0} silver</RW_CrateValue>
+  <RW_CrateMass>Mass: {0} kg</RW_CrateMass>
+  <RW_CrateContract>Held under contract {0}</RW_CrateContract>
+  <RW_CrateStored>Stored: earning fees.</RW_CrateStored>
+  <RW_CrateNotStored>Not earning fees: {0}</RW_CrateNotStored>
+  <RW_CrateStolen>Stolen. Counts toward your wealth until opened.</RW_CrateStolen>
+  <RW_FeeStop_NotInStorage>not in a rack or vault</RW_FeeStop_NotInStorage>
+  <RW_FeeStop_WrongFacility>this cargo must be kept in a vault</RW_FeeStop_WrongFacility>
+  <RW_FeeStop_NoRoof>the storage is not fully roofed</RW_FeeStop_NoRoof>
+  <RW_FeeStop_Outdoors>the storage is not indoors</RW_FeeStop_Outdoors>
+  <RW_FeeStop_FacilityGone>the storage was destroyed</RW_FeeStop_FacilityGone>
+  <RW_FacilityCapacity>Crates: {0}/{1}</RW_FacilityCapacity>
+  <RW_Embezzle>Open (embezzle)</RW_Embezzle>
+  <RW_EmbezzleDesc>Break the seal and take the contents. The owner will demand the full value and relations drop sharply.</RW_EmbezzleDesc>
+  <RW_EmbezzleConfirm>Open this crate held for another faction?\n\nThis is embezzlement: you will owe 100% of its declared value ({0} silver) at settlement and the owner's goodwill falls by 30 instead of the usual loss penalty.</RW_EmbezzleConfirm>
+  <RW_OpenCrate>Open crate</RW_OpenCrate>
+  <RW_OpenCrateDesc>Break the seal and unpack the contents here.</RW_OpenCrateDesc>
+
+  <!-- Messages and letters -->
+  <RW_Letter_DeliveryTitle>Cargo delivered</RW_Letter_DeliveryTitle>
+  <RW_Letter_Delivery>The cargo for contract {0} ({1} crate(s)) has landed. Store every crate in a valid rack or vault within one day; the term starts when all are stored.</RW_Letter_Delivery>
+  <RW_Msg_PaymentPosted>Contract {0}: {1} silver added to your claimable balance.</RW_Msg_PaymentPosted>
+  <RW_Msg_Settled>Contract {0} settled: {1} silver.</RW_Msg_Settled>
+
+  <!-- Diagnostics -->
+  <RW_Diag_EffectAbandoned>Rental Warehouse: an action failed repeatedly and was abandoned ({0}). Nothing was granted in its place.</RW_Diag_EffectAbandoned>
+  <RW_Diag_MissingDefs>Rental Warehouse: crate contents refer to missing items ({0}). They were skipped.</RW_Diag_MissingDefs>
+  <RW_Diag_LedgerUnreadable>Rental Warehouse: the warehouse ledger in this save could not be read{0}. It is kept unchanged and the warehouse is paused.</RW_Diag_LedgerUnreadable>
+  <RW_Diag_LedgerFromNewerVersion>Rental Warehouse: this save was made with a newer version of the mod{0}.</RW_Diag_LedgerFromNewerVersion>
+
+  <!-- Contracts -->
+  <RW_NoContracts>No contracts in progress.</RW_NoContracts>
+  <RW_Phase_AwaitingDelivery>Waiting for delivery</RW_Phase_AwaitingDelivery>
+  <RW_Phase_AwaitingStorage>Waiting for storage</RW_Phase_AwaitingStorage>
+  <RW_Phase_Active>In storage</RW_Phase_Active>
+  <RW_Phase_Returning>Returning</RW_Phase_Returning>
+  <RW_Phase_Settled>Settled</RW_Phase_Settled>
+  <RW_Phase_Cancelled>Cancelled</RW_Phase_Cancelled>
+  <RW_Phase_SystemCancelled>Cancelled (not your fault)</RW_Phase_SystemCancelled>
+  <RW_Phase_Offered>Offered</RW_Phase_Offered>
+  <RW_ArrivesIn>Cargo arrives in {0}.</RW_ArrivesIn>
+  <RW_StoreWithin>Store every crate within {0} or the contract ends without income.</RW_StoreWithin>
+  <RW_TermEndsIn>Term ends in {0}.</RW_TermEndsIn>
+  <RW_ReturnDeadline>Return deadline in {0}.</RW_ReturnDeadline>
+  <RW_ReturnReason_None></RW_ReturnReason_None>
+  <RW_ReturnReason_Matured>(term completed)</RW_ReturnReason_Matured>
+  <RW_ReturnReason_EarlyByPlayer>(early return requested)</RW_ReturnReason_EarlyByPlayer>
+  <RW_ReturnReason_StorageFailed>(storage failed: no income)</RW_ReturnReason_StorageFailed>
+  <RW_ReturnReason_DepositorHostile>(depositor turned hostile: penalty-free return window)</RW_ReturnReason_DepositorHostile>
+  <RW_ContractMoney>Daily fee {0} silver | earned so far {1} | claimable {2} | claimed {3}</RW_ContractMoney>
+  <RW_RaidProgress>Raids started: {0}/{1}</RW_RaidProgress>
+  <RW_CrateStatus>Crate {0} ({1} silver): {2}</RW_CrateStatus>
+  <RW_CrateReturned>returned</RW_CrateReturned>
+  <RW_CrateInTransit>in transit</RW_CrateInTransit>
+  <RW_CrateMissing>not on the map</RW_CrateMissing>
+  <RW_CrateEarning>stored, {0} silver earned</RW_CrateEarning>
+  <RW_CrateStopped>fee stopped: {0} ({1} silver earned)</RW_CrateStopped>
+  <RW_Loss_Lost>lost</RW_Loss_Lost>
+  <RW_Loss_Embezzled>embezzled</RW_Loss_Embezzled>
+  <RW_Loss_SystemRemoved>withdrawn</RW_Loss_SystemRemoved>
+  <RW_Loss_None></RW_Loss_None>
+  <RW_CancelContract>Cancel (before arrival)</RW_CancelContract>
+  <RW_CancelConfirm>Cancel contract {0}? Nothing is owed before the cargo arrives.</RW_CancelConfirm>
+  <RW_EarlyReturn>Return early</RW_EarlyReturn>
+  <RW_EarlyReturnConfirm>Return contract {0} early? You lose the completion bonus and pay a cancellation fee of {1} silver from your earnings. Compensation for crates already lost still applies.</RW_EarlyReturnConfirm>
+  <RW_RequestReturnPod>Request return pod</RW_RequestReturnPod>
+  <RW_ShowReturnPod>Show return pod</RW_ShowReturnPod>
+
+  <!-- Return pod -->
+  <RW_SendReturnPod>Send back</RW_SendReturnPod>
+  <RW_SendReturnPodDesc>Send the loaded crates back to their owner. Only sent crates count as returned.</RW_SendReturnPodDesc>
+  <RW_SendReturnPodConfirm>Send {0} crate(s) now? {1} crate(s) of this contract are still outstanding; anything not returned by the deadline is settled as lost.</RW_SendReturnPodConfirm>
+  <RW_ReturnPodEmpty>No crates of this contract are loaded.</RW_ReturnPodEmpty>
+  <RW_ReturnPodInfo>Return pod for {0}: {1} loaded, {2} outstanding</RW_ReturnPodInfo>
+  <RW_Msg_ReturnPodArrived>The return pod for contract {0} has landed. Haul the crates into it, then send it.</RW_Msg_ReturnPodArrived>
+  <RW_Msg_ReturnPodLost>The return pod for contract {0} was destroyed. You may request another; the deadline does not change.</RW_Msg_ReturnPodLost>
+  <RW_Msg_Returned>Contract {0}: {1} crate(s) returned.</RW_Msg_Returned>
+  <RW_Reject_NoReturnPod>Request a return pod first.</RW_Reject_NoReturnPod>
+  <RW_Reject_PodAlreadyActive>A return pod for this contract is already on its way or waiting.</RW_Reject_PodAlreadyActive>
+
+  <!-- Accounts -->
+  <RW_Balance>Claimable balance</RW_Balance>
+  <RW_BalanceTotal>All maps: {0} silver</RW_BalanceTotal>
+  <RW_BalanceHere>{1}: {0} silver</RW_BalanceHere>
+  <RW_Claim>Claim as silver (delivered by pod)</RW_Claim>
+  <RW_Debts>Debts</RW_Debts>
+  <RW_NoDebts>No debts.</RW_NoDebts>
+  <RW_DebtLine>Contract {0}: you owe {1} {2} silver.</RW_DebtLine>
+  <RW_PayDebt>Pay {0} silver (have {1})</RW_PayDebt>
+  <RW_RefuseDebt>Refuse to pay</RW_RefuseDebt>
+  <RW_RefuseDebtConfirm>Refuse the debt to {0}? Their goodwill drops by {1} and they will offer you no contracts for {2} days. Contracts already running continue.</RW_RefuseDebtConfirm>
+  <RW_History>Recent settlements</RW_History>
+  <RW_SettlementLine>fees {0} + bonus {1} − cancel fee {2} − compensation {3} → credit {4}, debt {5}, goodwill {6}</RW_SettlementLine>
+  <RW_Cause_None></RW_Cause_None>
+  <RW_Cause_Completed>completed</RW_Cause_Completed>
+  <RW_Cause_PartialLoss>partial loss</RW_Cause_PartialLoss>
+  <RW_Cause_TotalLoss>total loss</RW_Cause_TotalLoss>
+  <RW_Cause_EarlyReturn>early return</RW_Cause_EarlyReturn>
+  <RW_Cause_StorageFailed>storage failed</RW_Cause_StorageFailed>
+  <RW_Cause_DepositorHostile>depositor hostile</RW_Cause_DepositorHostile>
+  <RW_Cause_MapAbandoned>storage map abandoned</RW_Cause_MapAbandoned>
+  <RW_Cause_SystemCancelled>cancelled (not your fault)</RW_Cause_SystemCancelled>
+  <RW_Reject_InvalidDestination>No valid delivery point; the balance is kept. Choose another map or clear a landing spot.</RW_Reject_InvalidDestination>
+  <RW_Reject_NothingToClaim>Nothing to claim here.</RW_Reject_NothingToClaim>
+  <RW_Reject_UnknownDebt>That debt no longer exists.</RW_Reject_UnknownDebt>
+
+  <!-- Cargo raids -->
+  <RW_Letter_CargoRaidTitle>Cargo raid</RW_Letter_CargoRaidTitle>
+  <RW_Letter_CargoRaid>{0} have come for the cargo of contract {1} ({2} raider(s)). They will grab crates that are not locked in an intact vault and run for the map edge. Crates carried off the map are lost; take them back before that and the contract continues.</RW_Letter_CargoRaid>
+  <RW_Msg_CrateCarried>Raiders are carrying a crate of contract {0} toward the map edge!</RW_Msg_CrateCarried>
+  <RW_CrateBeingStolen>being carried off by {0}!</RW_CrateBeingStolen>
+
+  <!-- Vault sites -->
+  <RW_NoSites>No vault intel yet. Intel arrives every five days while the business is open.</RW_NoSites>
+  <RW_ShowOnWorld>Show on world</RW_ShowOnWorld>
+  <RW_SiteLabel>{0} vault ({1})</RW_SiteLabel>
+  <RW_Tier_Small>small</RW_Tier_Small>
+  <RW_Tier_Medium>medium</RW_Tier_Medium>
+  <RW_Tier_Large>large</RW_Tier_Large>
+  <RW_SiteHeader>{0} — {1} vault compound</RW_SiteHeader>
+  <RW_SiteNotHostile>This faction is not hostile to you. Attacking makes it hostile.</RW_SiteNotHostile>
+  <RW_SiteLoot>{0} sealed crate(s), roughly {1} silver in total.</RW_SiteLoot>
+  <RW_SiteGuards>Guards: {0}.</RW_SiteGuards>
+  <RW_Guards_None>none left</RW_Guards_None>
+  <RW_Guards_Light>light</RW_Guards_Light>
+  <RW_Guards_Medium>moderate</RW_Guards_Medium>
+  <RW_Guards_Heavy>heavy</RW_Guards_Heavy>
+  <RW_SiteVaults>{0} vault(s); each takes about {1} of unlocking work by an unskilled crafter.</RW_SiteVaults>
+  <RW_SiteExpires>The intel expires in {0}.</RW_SiteExpires>
+  <RW_SiteWithdraw>The owner clears the site out in {0} (not while your people are there).</RW_SiteWithdraw>
+  <RW_EnterVaultSite>Raid {0}</RW_EnterVaultSite>
+  <RW_EnteringVaultSite>Raiding {0}</RW_EnteringVaultSite>
+  <RW_Letter_SiteFoundTitle>Vault intel</RW_Letter_SiteFoundTitle>
+  <RW_Letter_SiteFound>You learned of a vault compound:
+
+{0}</RW_Letter_SiteFound>
+  <RW_Letter_SiteEnteredTitle>Vault compound entered</RW_Letter_SiteEnteredTitle>
+  <RW_Letter_SiteEntered>Your people have entered {0}. Stock, guards and vault progress are kept if you leave and come back. The owner clears the site out in {1}.</RW_Letter_SiteEntered>
+  <RW_Site_NoTile>Vault intel arrived, but no reachable empty land was found for the site.</RW_Site_NoTile>
+  <RW_Site_NoFaction>Vault intel arrived, but no suitable faction runs a vault right now.</RW_Site_NoFaction>
+  <RW_Site_NoGuards>Vault intel arrived, but no vault of any size could be guarded.</RW_Site_NoGuards>
+  <RW_Reject_SiteClosed>That site has been cleared out.</RW_Reject_SiteClosed>
+
+  <!-- Vault raids -->
+  <RW_UnlockVault>Unlock vault</RW_UnlockVault>
+  <RW_CannotReach>cannot reach</RW_CannotReach>
+  <RW_VaultProgress>Unlocking: {0} ({1} crate(s) inside)</RW_VaultProgress>
+  <RW_Msg_VaultOpened>The vault is open. Carry the crates out or open them here.</RW_Msg_VaultOpened>
+  <RW_Msg_ForcedOpenLoss>Forcing the vault destroyed {0} crate(s) inside.</RW_Msg_ForcedOpenLoss>
+  <RW_Letter_ReinforcementTitle>Vault alarm</RW_Letter_ReinforcementTitle>
+  <RW_Letter_Reinforcement>The vault alarm brought reinforcements from {0} ({1} fighter(s)).</RW_Letter_Reinforcement>
+  <RW_AttackFriendlyConfirm>{0} is not hostile to you. Raiding their vault will change goodwill by {1} (to the hostile level {2}) and make them your enemy. Continue?</RW_AttackFriendlyConfirm>
+  <RW_Reject_VaultLocked>The vault is still locked.</RW_Reject_VaultLocked>
+  <RW_Reject_VaultOpen>The vault is already open.</RW_Reject_VaultOpen>
+  <RW_Reject_UnknownVault>Unknown vault.</RW_Reject_UnknownVault>
+
+  <!-- Lifecycle -->
+  <RW_Diag_MapVanished>Rental Warehouse: the storage map of contract {0} disappeared without being abandoned. The contract was cancelled without penalty; earned fees are kept.</RW_Diag_MapVanished>
+  <RW_Diag_DepositorGone>The depositor no longer exists. The contract was cancelled without penalty; earned fees are kept.</RW_Diag_DepositorGone>
+  <RW_Diag_DuplicateId>Rental Warehouse: two contracts share the ID {0}. The later one was set aside and is ignored.</RW_Diag_DuplicateId>
+  <RW_Diag_DuplicateCrate>Rental Warehouse: a second crate claimed the ID {0}. It was detached from the ledger and is worth nothing.</RW_Diag_DuplicateCrate>
+  <RW_Msg_DepositorHostile>The depositor of contract {0} turned hostile. Return the cargo within 3 days without penalty, or it is settled as lost.</RW_Msg_DepositorHostile>
+  <RW_AbandonWarning>This map holds cargo under storage contracts. If you abandon it, every crate not yet returned is settled as lost (compensation owed, goodwill penalty). Abandon anyway?</RW_AbandonWarning>
+
+  <!-- Settings -->
+  <RW_SettingsCategory>Rental Warehouse</RW_SettingsCategory>
+  <RW_Set_Normal>Offer ordinary storage contracts</RW_Set_Normal>
+  <RW_Set_HighRisk>Offer high-risk storage contracts</RW_Set_HighRisk>
+  <RW_Set_Sites>Receive intel on other factions' vault sites</RW_Set_Sites>
+  <RW_Set_NonHostileSites>Include vaults of non-hostile factions</RW_Set_NonHostileSites>
+  <RW_Set_NonHostileSitesDesc>Raiding them makes the faction hostile; you are asked before going.</RW_Set_NonHostileSitesDesc>
+  <RW_Set_FeeMultiplier>Storage fee multiplier: {0}</RW_Set_FeeMultiplier>
+  <RW_Set_RaidScale>Cargo raid size multiplier: {0}</RW_Set_RaidScale>
+  <RW_Set_AppliesToNew>Changes apply to new offers and vault intel only. Running contracts keep their terms.</RW_Set_AppliesToNew>
+  <RW_Set_Reset>Reset to defaults</RW_Set_Reset>
+
+  <!-- Contract notices -->
+  <RW_Msg_Matured>Contract {0} reached its term. Request a return pod and send the crates back within 3 days.</RW_Msg_Matured>
+  <RW_Msg_CrateLost>A crate of contract {0} was lost. Compensation will be charged at settlement.</RW_Msg_CrateLost>
+  <RW_Msg_FeeStopped>A crate of contract {0} is no longer in valid storage and earns nothing until it is put back.</RW_Msg_FeeStopped>
+
+</LanguageData>

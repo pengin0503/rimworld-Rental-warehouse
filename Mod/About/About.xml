@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Rental Warehouse</name>
+  <author>pengin0503</author>
+  <packageId>pengin0503.RentalWarehouse</packageId>
+  <supportedVersions>
+    <li>1.7</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+      <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+  </loadAfter>
+  <description>Run a rental warehouse: store other factions' sealed cargo for fees, defend it from raiders who come to steal it, and raid other factions' independent vault sites.
+
+Requires RimWorld 1.7 and Harmony. No DLC required. Can be added to existing saves; removing it from a save is not supported.</description>
+</ModMetaData>

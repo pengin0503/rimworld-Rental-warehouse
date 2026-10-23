@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Independent vault site (spec 7, approach A): its own world object, never an existing settlement. -->
+  <WorldObjectDef>
+    <defName>RW_VaultSite</defName>
+    <label>vault site</label>
+    <description>A fortified vault compound run by another faction. Its stock and guards are fixed; what you take or kill does not come back.</description>
+    <worldObjectClass>RentalWarehouse.VaultSite</worldObjectClass>
+    <texture>World/WorldObjects/Sites/GenericSite</texture>
+    <expandingIcon>true</expandingIcon>
+    <expandingIconTexture>World/WorldObjects/Expanding/Sites/Ambush</expandingIconTexture>
+    <canHaveFaction>true</canHaveFaction>
+    <canHaveMap>true</canHaveMap>
+    <useDynamicDrawer>true</useDynamicDrawer>
+    <selectable>true</selectable>
+    <allowCaravanIncidentsWhichGenerateMap>false</allowCaravanIncidentsWhichGenerateMap>
+    <overrideMapSize>(120, 1, 120)</overrideMapSize>
+    <mapGenerator>Encounter</mapGenerator>
+    <inspectorTabs>
+      <li>WITab_Planet</li>
+    </inspectorTabs>
+  </WorldObjectDef>
+
+  <GenStepDef>
+    <defName>RW_VaultCompound</defName>
+    <order>1100</order>
+    <genStep Class="RentalWarehouse.GenStep_VaultCompound" />
+  </GenStepDef>
+
+</Defs>

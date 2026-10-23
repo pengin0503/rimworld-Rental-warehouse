@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <ThingCategoryDef>
+    <defName>RW_SealedCargo</defName>
+    <label>sealed cargo</label>
+    <parent>Root</parent>
+  </ThingCategoryDef>
+
+  <SpecialThingFilterDef>
+    <defName>RW_ReturningCargo</defName>
+    <label>cargo being returned</label>
+    <description>Crates whose storage contract has ended and must go back to the depositor.</description>
+    <parentCategory>RW_SealedCargo</parentCategory>
+    <allowedByDefault>true</allowedByDefault>
+    <saveKey>allowReturningCargo</saveKey>
+    <workerClass>RentalWarehouse.SpecialThingFilterWorker_ReturningCargo</workerClass>
+  </SpecialThingFilterDef>
+
+  <SpecialThingFilterDef>
+    <defName>RW_NotReturningCargo</defName>
+    <label>cargo still under contract</label>
+    <description>Crates that are not being returned.</description>
+    <parentCategory>RW_SealedCargo</parentCategory>
+    <allowedByDefault>true</allowedByDefault>
+    <saveKey>allowNotReturningCargo</saveKey>
+    <workerClass>RentalWarehouse.SpecialThingFilterWorker_NotReturningCargo</workerClass>
+  </SpecialThingFilterDef>
+
+  <!-- One crate holds one manifest. Value and mass come from the ledger through CompSealedCargo, not from statBases. -->
+  <ThingDef>
+    <defName>RW_SealedCargo</defName>
+    <label>sealed cargo crate</label>
+    <description>A sealed crate. Its owner, contents and declared value are recorded in the warehouse ledger. Crates held for another faction cannot be used, sold, or loaded into caravans; opening one deliberately is embezzlement.</description>
+    <thingClass>ThingWithComps</thingClass>
+    <category>Item</category>
+    <drawerType>MapMeshOnly</drawerType>
+    <graphicData>
+      <texPath>Things/Building/Cargo</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(0.9, 0.9)</drawSize>
+    </graphicData>
+    <altitudeLayer>Item</altitudeLayer>
+    <selectable>true</selectable>
+    <useHitPoints>true</useHitPoints>
+    <healthAffectsPrice>false</healthAffectsPrice>
+    <statBases>
+      <MaxHitPoints>100</MaxHitPoints>
+      <MarketValue>0</MarketValue>
+      <Mass>2</Mass>
+      <Flammability>0.5</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+      <Beauty>0</Beauty>
+    </statBases>
+    <stackLimit>1</stackLimit>
+    <alwaysHaulable>true</alwaysHaulable>
+    <drawGUIOverlay>true</drawGUIOverlay>
+    <rotatable>false</rotatable>
+    <pathCost>14</pathCost>
+    <tickerType>Never</tickerType>
+    <tradeability>None</tradeability>
+    <stealable>false</stealable>
+    <thingCategories>
+      <li>RW_SealedCargo</li>
+    </thingCategories>
+    <comps>
+      <li Class="CompProperties_Forbiddable" />
+      <li Class="RentalWarehouse.CompProperties_SealedCargo" />
+    </comps>
+  </ThingDef>
+
+</Defs>

@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Game adapter. Compiles against the RimWorld 1.7 reference assemblies from NuGet (Krafs.Rimworld.Ref) unless
+    RimWorldManagedPath points at a local game install. Game assemblies are never copied to the output.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AssemblyName>RentalWarehouse</AssemblyName>
+    <RootNamespace>RentalWarehouse</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <OutputPath>../../Mod/1.7/Assemblies/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <DebugType>none</DebugType>
+    <Deterministic>true</Deterministic>
+    <RimWorldRefVersion>1.7.4985-unstable</RimWorldRefVersion>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(RimWorldManagedPath)' == ''">
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="$(RimWorldRefVersion)" ExcludeAssets="runtime" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RimWorldManagedPath)' != ''">
+    <Reference Include="$(RimWorldManagedPath)/*.dll" Exclude="$(RimWorldManagedPath)/System*.dll;$(RimWorldManagedPath)/Microsoft*.dll;$(RimWorldManagedPath)/netstandard.dll;$(RimWorldManagedPath)/mscorlib.dll;$(RimWorldManagedPath)/0Harmony.dll">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Harmony is supplied at runtime by the Harmony mod (brrainz.harmony); only its reference assembly is used here. -->
+    <PackageReference Include="Lib.Harmony.Ref" Version="2.3.1" ExcludeAssets="runtime" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../RentalWarehouse.Core/RentalWarehouse.Core.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- 管理タブ -->
+  <RW_TabTitle>貸倉庫</RW_TabTitle>
+  <RW_Tab_Offers>依頼</RW_Tab_Offers>
+  <RW_Tab_Contracts>契約</RW_Tab_Contracts>
+  <RW_Tab_Accounts>収支</RW_Tab_Accounts>
+  <RW_Tab_Vaults>金庫情報</RW_Tab_Vaults>
+  <RW_BusinessOpen>営業する</RW_BusinessOpen>
+  <RW_BusinessOpenDesc>新しい保管依頼と金庫情報を受け取るかを切り替えます。閉店しても既存の契約は消えません。</RW_BusinessOpenDesc>
+  <RW_BusinessIsOpen>営業中（クリックで閉店）</RW_BusinessIsOpen>
+  <RW_BusinessIsClosed>閉店中（クリックで開店）</RW_BusinessIsClosed>
+  <RW_OpenManagement>倉庫台帳</RW_OpenManagement>
+  <RW_OpenManagementDesc>貸倉庫の管理タブを開きます。</RW_OpenManagementDesc>
+  <RW_LoadSummary>進行中の契約: {0}/{1}。このマップの空き: {2}</RW_LoadSummary>
+  <RW_SlotsFree>棚 {0}、金庫 {1}</RW_SlotsFree>
+  <RW_InDebtWarning>未払いの債務があるため新規受注は停止中です。</RW_InDebtWarning>
+  <RW_UnknownFaction>（不明な派閥）</RW_UnknownFaction>
+
+  <!-- 依頼 -->
+  <RW_NoOffers>現在、依頼はありません。営業中は2日ごとに届きます。</RW_NoOffers>
+  <RW_Kind_Normal>通常保管</RW_Kind_Normal>
+  <RW_Kind_HighRisk>高危険度保管</RW_Kind_HighRisk>
+  <RW_From>預け主: {0}</RW_From>
+  <RW_CrateLine>箱{0}: {1}銀、{2}kg — {3}</RW_CrateLine>
+  <RW_Storage_Rack>棚または金庫</RW_Storage_Rack>
+  <RW_Storage_Vault>金庫</RW_Storage_Vault>
+  <RW_Requires>{0}の枠を{1}個、{2}日間使います。期間は全箱の収納完了から数えます。</RW_Requires>
+  <RW_FeeLine>保管中の料金は1日{0}銀。完了報酬は最大{1}銀、合計は最大{2}銀。</RW_FeeLine>
+  <RW_CompensationLine>紛失した箱は価値の{0}%を補償（上限{1}銀）。開封した箱は価値の100%を補償。</RW_CompensationLine>
+  <RW_RaidLine>貨物を狙う襲撃が最大{0}回、通常の脅威ポイントの約{1}倍、襲撃者: {2}。</RW_RaidLine>
+  <RW_RaidRules>襲撃同士は1日以上空き、敵がいる間や他の襲撃の終了から半日以内は延期されます。2日以内に開始できない襲撃は省略され、完了報酬が減ります。</RW_RaidRules>
+  <RW_RaidNoneScheduled>専用の襲撃予定はありませんが、通常の襲撃は起こり得ます。</RW_RaidNoneScheduled>
+  <RW_ExpiresIn>依頼の期限まで{0}。</RW_ExpiresIn>
+  <RW_Accept>受注</RW_Accept>
+  <RW_AcceptConfirm>{1}で保管するこの契約を受注しますか？\n\n{0}\n\n貨物は翌日ポッドで届き、到着から1日以内に全箱を収納する必要があります。早期返還では完了報酬がなくなり、最大2日分の保管料を取消料として差し引きます。</RW_AcceptConfirm>
+  <RW_Msg_Accepted>契約{0}を受注しました。貨物は1日後に届きます。</RW_Msg_Accepted>
+  <RW_Msg_NewOffers>貸倉庫の新しい依頼が{0}件あります。</RW_Msg_NewOffers>
+
+  <!-- 拒否理由 -->
+  <RW_Reject_NotOffered>この依頼はもう受けられません。</RW_Reject_NotOffered>
+  <RW_Reject_InvalidTerms>依頼の条件が不正です。</RW_Reject_InvalidTerms>
+  <RW_Reject_InvalidManifest>箱の内容が不正です。</RW_Reject_InvalidManifest>
+  <RW_Reject_TooHeavy>箱は35kg以下でなければなりません。</RW_Reject_TooHeavy>
+  <RW_Reject_OfferExpired>依頼の期限が切れています。</RW_Reject_OfferExpired>
+  <RW_Reject_InDebt>貸倉庫の債務を精算するまで新規受注できません。</RW_Reject_InDebt>
+  <RW_Reject_FactionBlocked>この派閥は現在取引に応じません。</RW_Reject_FactionBlocked>
+  <RW_Reject_TooManyContracts>同時に受けられる契約数の上限です。</RW_Reject_TooManyContracts>
+  <RW_Reject_NoCapacity>このマップに有効な空き枠が足りません（受注済み契約の分は予約されています）。</RW_Reject_NoCapacity>
+  <RW_Reject_NoReception>先にこのマップへ貸倉庫の受付を建ててください。</RW_Reject_NoReception>
+  <RW_Reject_NotHomeMap>受注できるのは自分の拠点マップだけです。</RW_Reject_NotHomeMap>
+  <RW_Reject_AlreadyArrived>貨物はすでに到着しています。</RW_Reject_AlreadyArrived>
+  <RW_Reject_AlreadyDelivered>この箱は配送済みです。</RW_Reject_AlreadyDelivered>
+  <RW_Reject_NotCancellable>この契約は取り消せません。</RW_Reject_NotCancellable>
+  <RW_Reject_NotReturnable>この契約は今は返還できません。</RW_Reject_NotReturnable>
+  <RW_Reject_NotReturning>返還できるのは期間満了後か早期返還を申し出た後です。</RW_Reject_NotReturning>
+  <RW_Reject_CargoNotHeld>この箱はもう保管していません。</RW_Reject_CargoNotHeld>
+  <RW_Reject_UnknownCargo>不明な箱です。</RW_Reject_UnknownCargo>
+  <RW_Reject_CannotOpen>この箱は開けられません。</RW_Reject_CannotOpen>
+  <RW_Reject_FacilityNotEmpty>先に箱を運び出してください。</RW_Reject_FacilityNotEmpty>
+  <RW_Cancel_ByPlayer>到着前に取り消しました。</RW_Cancel_ByPlayer>
+
+  <!-- 箱と施設 -->
+  <RW_CrateLabel>{0}（{1}）</RW_CrateLabel>
+  <RW_CrateUnregistered>倉庫台帳にありません。</RW_CrateUnregistered>
+  <RW_CrateValue>申告価値: {0}銀</RW_CrateValue>
+  <RW_CrateMass>重量: {0}kg</RW_CrateMass>
+  <RW_CrateContract>契約{0}で保管中</RW_CrateContract>
+  <RW_CrateStored>収納済み: 料金発生中。</RW_CrateStored>
+  <RW_CrateNotStored>料金停止中: {0}</RW_CrateNotStored>
+  <RW_CrateStolen>盗品。開封するまで資産に計上されます。</RW_CrateStolen>
+  <RW_FeeStop_NotInStorage>棚・金庫に入っていない</RW_FeeStop_NotInStorage>
+  <RW_FeeStop_WrongFacility>この貨物は金庫で保管する必要がある</RW_FeeStop_WrongFacility>
+  <RW_FeeStop_NoRoof>保管場所に屋根がない</RW_FeeStop_NoRoof>
+  <RW_FeeStop_Outdoors>保管場所が屋内ではない</RW_FeeStop_Outdoors>
+  <RW_FeeStop_FacilityGone>保管施設が壊れた</RW_FeeStop_FacilityGone>
+  <RW_FacilityCapacity>箱: {0}/{1}</RW_FacilityCapacity>
+  <RW_Embezzle>開封（横領）</RW_Embezzle>
+  <RW_EmbezzleDesc>封を破って中身を取り出します。持ち主は全額を請求し、関係は大きく悪化します。</RW_EmbezzleDesc>
+  <RW_EmbezzleConfirm>他派閥から預かっているこの箱を開けますか？\n\nこれは横領です。精算時に申告価値の100%（{0}銀）を補償し、預け主の友好度は通常の損失罰の代わりに30下がります。</RW_EmbezzleConfirm>
+  <RW_OpenCrate>箱を開ける</RW_OpenCrate>
+  <RW_OpenCrateDesc>封を破り、この場で中身を取り出します。</RW_OpenCrateDesc>
+
+  <!-- メッセージ・手紙 -->
+  <RW_Letter_DeliveryTitle>貨物が到着</RW_Letter_DeliveryTitle>
+  <RW_Letter_Delivery>契約{0}の貨物（{1}箱）が届きました。1日以内に全箱を有効な棚か金庫へ収納してください。全箱の収納で期間が始まります。</RW_Letter_Delivery>
+  <RW_Msg_PaymentPosted>契約{0}: {1}銀が受領可能残高に加わりました。</RW_Msg_PaymentPosted>
+  <RW_Msg_Settled>契約{0}を精算しました: {1}銀。</RW_Msg_Settled>
+
+  <!-- 診断 -->
+  <RW_Diag_EffectAbandoned>Rental Warehouse: 処理が繰り返し失敗したため中止しました（{0}）。代わりの物は付与していません。</RW_Diag_EffectAbandoned>
+  <RW_Diag_MissingDefs>Rental Warehouse: 箱の内容に存在しないアイテムがあります（{0}）。その分は生成しませんでした。</RW_Diag_MissingDefs>
+  <RW_Diag_LedgerUnreadable>Rental Warehouse: このセーブの倉庫台帳を読めませんでした{0}。台帳は変更せずに保持し、倉庫を停止しています。</RW_Diag_LedgerUnreadable>
+  <RW_Diag_LedgerFromNewerVersion>Rental Warehouse: このセーブは新しい版のMODで作られています{0}。</RW_Diag_LedgerFromNewerVersion>
+
+  <!-- Contracts -->
+  <RW_NoContracts>進行中の契約はありません。</RW_NoContracts>
+  <RW_Phase_AwaitingDelivery>配送待ち</RW_Phase_AwaitingDelivery>
+  <RW_Phase_AwaitingStorage>収納待ち</RW_Phase_AwaitingStorage>
+  <RW_Phase_Active>保管中</RW_Phase_Active>
+  <RW_Phase_Returning>返還中</RW_Phase_Returning>
+  <RW_Phase_Settled>精算済み</RW_Phase_Settled>
+  <RW_Phase_Cancelled>取消</RW_Phase_Cancelled>
+  <RW_Phase_SystemCancelled>取消（不可抗力）</RW_Phase_SystemCancelled>
+  <RW_Phase_Offered>提示中</RW_Phase_Offered>
+  <RW_ArrivesIn>貨物到着まで{0}。</RW_ArrivesIn>
+  <RW_StoreWithin>{0}以内に全箱を収納しないと、無収入で契約が終わります。</RW_StoreWithin>
+  <RW_TermEndsIn>満期まで{0}。</RW_TermEndsIn>
+  <RW_ReturnDeadline>返還期限まで{0}。</RW_ReturnDeadline>
+  <RW_ReturnReason_None></RW_ReturnReason_None>
+  <RW_ReturnReason_Matured>（満期）</RW_ReturnReason_Matured>
+  <RW_ReturnReason_EarlyByPlayer>（早期返還を申請）</RW_ReturnReason_EarlyByPlayer>
+  <RW_ReturnReason_StorageFailed>（収納失敗: 収入なし）</RW_ReturnReason_StorageFailed>
+  <RW_ReturnReason_DepositorHostile>（預け主が敵対: 無罰返還期間）</RW_ReturnReason_DepositorHostile>
+  <RW_ContractMoney>日額 {0}銀 | 発生済み {1} | 受領可能 {2} | 受領済み {3}</RW_ContractMoney>
+  <RW_RaidProgress>開始した襲撃: {0}/{1}</RW_RaidProgress>
+  <RW_CrateStatus>箱{0}（{1}銀）: {2}</RW_CrateStatus>
+  <RW_CrateReturned>返還済み</RW_CrateReturned>
+  <RW_CrateInTransit>輸送中</RW_CrateInTransit>
+  <RW_CrateMissing>マップ上にない</RW_CrateMissing>
+  <RW_CrateEarning>収納済み、{0}銀発生</RW_CrateEarning>
+  <RW_CrateStopped>料金停止: {0}（{1}銀発生済み）</RW_CrateStopped>
+  <RW_Loss_Lost>紛失</RW_Loss_Lost>
+  <RW_Loss_Embezzled>横領</RW_Loss_Embezzled>
+  <RW_Loss_SystemRemoved>回収</RW_Loss_SystemRemoved>
+  <RW_Loss_None></RW_Loss_None>
+  <RW_CancelContract>取消（到着前）</RW_CancelContract>
+  <RW_CancelConfirm>契約{0}を取り消しますか？到着前の取消に罰はありません。</RW_CancelConfirm>
+  <RW_EarlyReturn>早期返還</RW_EarlyReturn>
+  <RW_EarlyReturnConfirm>契約{0}を早期返還しますか？完了報酬はなくなり、取消料{1}銀を収入から差し引きます。既に失った箱の補償は残ります。</RW_EarlyReturnConfirm>
+  <RW_RequestReturnPod>回収ポッドを要請</RW_RequestReturnPod>
+  <RW_ShowReturnPod>回収ポッドを表示</RW_ShowReturnPod>
+
+  <!-- Return pod -->
+  <RW_SendReturnPod>返送</RW_SendReturnPod>
+  <RW_SendReturnPodDesc>積んだ箱を持ち主へ送り返します。返送した箱だけが返還扱いになります。</RW_SendReturnPodDesc>
+  <RW_SendReturnPodConfirm>{0}箱を今送りますか？この契約の未返還は{1}箱です。期限までに返還しない箱は紛失として精算されます。</RW_SendReturnPodConfirm>
+  <RW_ReturnPodEmpty>この契約の箱が積まれていません。</RW_ReturnPodEmpty>
+  <RW_ReturnPodInfo>{0}の回収ポッド: 積載{1}、未返還{2}</RW_ReturnPodInfo>
+  <RW_Msg_ReturnPodArrived>契約{0}の回収ポッドが着陸しました。箱を積んでから返送してください。</RW_Msg_ReturnPodArrived>
+  <RW_Msg_ReturnPodLost>契約{0}の回収ポッドが壊されました。再要請できますが、期限は延びません。</RW_Msg_ReturnPodLost>
+  <RW_Msg_Returned>契約{0}: {1}箱を返還しました。</RW_Msg_Returned>
+  <RW_Reject_NoReturnPod>先に回収ポッドを要請してください。</RW_Reject_NoReturnPod>
+  <RW_Reject_PodAlreadyActive>この契約の回収ポッドは既に向かっているか待機中です。</RW_Reject_PodAlreadyActive>
+
+  <!-- Accounts -->
+  <RW_Balance>受領可能残高</RW_Balance>
+  <RW_BalanceTotal>全マップ合計: {0}銀</RW_BalanceTotal>
+  <RW_BalanceHere>{1}: {0}銀</RW_BalanceHere>
+  <RW_Claim>銀として受領（ポッド配送）</RW_Claim>
+  <RW_Debts>債務</RW_Debts>
+  <RW_NoDebts>債務はありません。</RW_NoDebts>
+  <RW_DebtLine>契約{0}: {1}へ{2}銀の債務。</RW_DebtLine>
+  <RW_PayDebt>{0}銀を支払う（所持{1}）</RW_PayDebt>
+  <RW_RefuseDebt>支払いを拒否</RW_RefuseDebt>
+  <RW_RefuseDebtConfirm>{0}への債務を拒否しますか？友好度が{1}下がり、{2}日間その派閥からの依頼が止まります。進行中の契約は続きます。</RW_RefuseDebtConfirm>
+  <RW_History>最近の精算</RW_History>
+  <RW_SettlementLine>保管料{0} + 報酬{1} − 取消料{2} − 補償{3} → 入金{4}、債務{5}、友好度{6}</RW_SettlementLine>
+  <RW_Cause_None></RW_Cause_None>
+  <RW_Cause_Completed>完遂</RW_Cause_Completed>
+  <RW_Cause_PartialLoss>一部損失</RW_Cause_PartialLoss>
+  <RW_Cause_TotalLoss>全損</RW_Cause_TotalLoss>
+  <RW_Cause_EarlyReturn>早期返還</RW_Cause_EarlyReturn>
+  <RW_Cause_StorageFailed>収納失敗</RW_Cause_StorageFailed>
+  <RW_Cause_DepositorHostile>預け主敵対</RW_Cause_DepositorHostile>
+  <RW_Cause_MapAbandoned>保管マップ放棄</RW_Cause_MapAbandoned>
+  <RW_Cause_SystemCancelled>取消（不可抗力）</RW_Cause_SystemCancelled>
+  <RW_Reject_InvalidDestination>有効な配送地点がないため残高を保持しました。別のマップを選ぶか着陸地点を空けてください。</RW_Reject_InvalidDestination>
+  <RW_Reject_NothingToClaim>ここで受領できる残高はありません。</RW_Reject_NothingToClaim>
+  <RW_Reject_UnknownDebt>その債務はもうありません。</RW_Reject_UnknownDebt>
+
+  <!-- Cargo raids -->
+  <RW_Letter_CargoRaidTitle>貨物強奪の襲撃</RW_Letter_CargoRaidTitle>
+  <RW_Letter_CargoRaid>{0}が契約{1}の貨物を狙って来ました（{2}人）。無傷の金庫に入っていない箱を奪い、マップ端へ逃げます。マップ外へ持ち去られた箱は失われますが、その前に取り戻せば契約は続きます。</RW_Letter_CargoRaid>
+  <RW_Msg_CrateCarried>契約{0}の箱が敵に持ち去られようとしています！</RW_Msg_CrateCarried>
+  <RW_CrateBeingStolen>{0}が持ち去り中！</RW_CrateBeingStolen>
+
+  <!-- Vault sites -->
+  <RW_NoSites>金庫情報はまだありません。営業中は5日ごとに届きます。</RW_NoSites>
+  <RW_ShowOnWorld>ワールドで表示</RW_ShowOnWorld>
+  <RW_SiteLabel>{0}の金庫（{1}）</RW_SiteLabel>
+  <RW_Tier_Small>小型</RW_Tier_Small>
+  <RW_Tier_Medium>中型</RW_Tier_Medium>
+  <RW_Tier_Large>大型</RW_Tier_Large>
+  <RW_SiteHeader>{0} — {1}の金庫施設</RW_SiteHeader>
+  <RW_SiteNotHostile>この派閥は敵対していません。襲撃すると敵対します。</RW_SiteNotHostile>
+  <RW_SiteLoot>封印箱{0}個、総額およそ{1}銀。</RW_SiteLoot>
+  <RW_SiteGuards>守備: {0}。</RW_SiteGuards>
+  <RW_Guards_None>残っていない</RW_Guards_None>
+  <RW_Guards_Light>少数</RW_Guards_Light>
+  <RW_Guards_Medium>中程度</RW_Guards_Medium>
+  <RW_Guards_Heavy>多数</RW_Guards_Heavy>
+  <RW_SiteVaults>金庫{0}基。工芸技能0なら1基あたり約{1}の開錠作業。</RW_SiteVaults>
+  <RW_SiteExpires>情報の期限まで{0}。</RW_SiteExpires>
+  <RW_SiteWithdraw>{0}後に持ち主が撤収します（あなたの部隊がいる間は撤収しません）。</RW_SiteWithdraw>
+  <RW_EnterVaultSite>{0}を襲撃</RW_EnterVaultSite>
+  <RW_EnteringVaultSite>{0}を襲撃中</RW_EnteringVaultSite>
+  <RW_Letter_SiteFoundTitle>金庫情報</RW_Letter_SiteFoundTitle>
+  <RW_Letter_SiteFound>金庫施設の情報を得ました:
+
+{0}</RW_Letter_SiteFound>
+  <RW_Letter_SiteEnteredTitle>金庫施設へ侵入</RW_Letter_SiteEnteredTitle>
+  <RW_Letter_SiteEntered>{0}へ侵入しました。退出して再訪しても在庫・守備・金庫の進捗は保持されます。{1}後に持ち主が撤収します。</RW_Letter_SiteEntered>
+  <RW_Site_NoTile>金庫情報を得ましたが、到達可能な空き地が見つかりませんでした。</RW_Site_NoTile>
+  <RW_Site_NoFaction>金庫情報を得ましたが、該当する派閥がいません。</RW_Site_NoFaction>
+  <RW_Site_NoGuards>金庫情報を得ましたが、守備を編成できる規模がありませんでした。</RW_Site_NoGuards>
+  <RW_Reject_SiteClosed>その施設は撤収済みです。</RW_Reject_SiteClosed>
+
+  <!-- Vault raids -->
+  <RW_UnlockVault>金庫を開錠</RW_UnlockVault>
+  <RW_CannotReach>到達できない</RW_CannotReach>
+  <RW_VaultProgress>開錠進捗: {0}（中の箱{1}個）</RW_VaultProgress>
+  <RW_Msg_VaultOpened>金庫が開きました。箱を運び出すか、その場で開封してください。</RW_Msg_VaultOpened>
+  <RW_Msg_ForcedOpenLoss>金庫の破壊で中の箱{0}個が失われました。</RW_Msg_ForcedOpenLoss>
+  <RW_Letter_ReinforcementTitle>金庫の警報</RW_Letter_ReinforcementTitle>
+  <RW_Letter_Reinforcement>金庫の警報により{0}の増援が来ました（{1}人）。</RW_Letter_Reinforcement>
+  <RW_AttackFriendlyConfirm>{0}はあなたと敵対していません。金庫を襲撃すると友好度が{1}変化し（敵対水準{2}）、敵になります。続けますか？</RW_AttackFriendlyConfirm>
+  <RW_Reject_VaultLocked>金庫はまだ施錠されています。</RW_Reject_VaultLocked>
+  <RW_Reject_VaultOpen>金庫はすでに開いています。</RW_Reject_VaultOpen>
+  <RW_Reject_UnknownVault>不明な金庫です。</RW_Reject_UnknownVault>
+
+  <!-- Lifecycle -->
+  <RW_Diag_MapVanished>Rental Warehouse: 契約{0}の保管マップが放棄以外の理由で消えました。契約は罰なしで取り消し、発生済みの保管料は保持します。</RW_Diag_MapVanished>
+  <RW_Diag_DepositorGone>預け主が存在しなくなりました。契約は罰なしで取り消し、発生済みの保管料は保持します。</RW_Diag_DepositorGone>
+  <RW_Diag_DuplicateId>Rental Warehouse: 契約ID {0}が重複しています。後のものを隔離し、処理しません。</RW_Diag_DuplicateId>
+  <RW_Diag_DuplicateCrate>Rental Warehouse: ID {0}の箱が重複していました。重複分は台帳から外し、価値はありません。</RW_Diag_DuplicateCrate>
+  <RW_Msg_DepositorHostile>契約{0}の預け主が敵対しました。3日以内なら罰なしで返還できます。返還しなければ紛失として精算されます。</RW_Msg_DepositorHostile>
+  <RW_AbandonWarning>このマップには契約中の貨物があります。放棄すると未返還の箱はすべて紛失として精算されます（補償と友好度の罰があります）。それでも放棄しますか？</RW_AbandonWarning>
+
+  <!-- Settings -->
+  <RW_SettingsCategory>Rental Warehouse（貸倉庫）</RW_SettingsCategory>
+  <RW_Set_Normal>通常保管の依頼を受け取る</RW_Set_Normal>
+  <RW_Set_HighRisk>高危険度保管の依頼を受け取る</RW_Set_HighRisk>
+  <RW_Set_Sites>他派閥の金庫情報を受け取る</RW_Set_Sites>
+  <RW_Set_NonHostileSites>敵対していない派閥の金庫も含める</RW_Set_NonHostileSites>
+  <RW_Set_NonHostileSitesDesc>襲撃するとその派閥は敵対します。出発前に確認があります。</RW_Set_NonHostileSitesDesc>
+  <RW_Set_FeeMultiplier>保管料倍率: {0}</RW_Set_FeeMultiplier>
+  <RW_Set_RaidScale>貨物襲撃の規模倍率: {0}</RW_Set_RaidScale>
+  <RW_Set_AppliesToNew>変更は新しい依頼と金庫情報にだけ適用されます。進行中の契約の条件は変わりません。</RW_Set_AppliesToNew>
+  <RW_Set_Reset>初期値に戻す</RW_Set_Reset>
+
+  <!-- Contract notices -->
+  <RW_Msg_Matured>契約{0}が満期になりました。3日以内に回収ポッドを要請して箱を返送してください。</RW_Msg_Matured>
+  <RW_Msg_CrateLost>契約{0}の箱が失われました。精算時に補償を請求されます。</RW_Msg_CrateLost>
+  <RW_Msg_FeeStopped>契約{0}の箱が有効な保管場所から外れました。戻すまで料金は発生しません。</RW_Msg_FeeStopped>
+
+</LanguageData>

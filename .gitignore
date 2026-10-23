@@ -1,0 +1,11 @@
+bin/
+obj/
+dist/
+*.user
+.vs/
+.idea/
+.superpowers/
+TestResults/
+# Game assemblies must never be committed
+**/Assemblies/*.dll
+!Mod/1.7/Assemblies/.keep

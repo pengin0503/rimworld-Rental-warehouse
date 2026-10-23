@@ -1,12 +1,12 @@
 # Rental Warehouse Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. 今回は計画のみ。実装依頼が来るまで実行しない。逐次実行を基本とし、サブエージェントは使わない。
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. 逐次実行を基本とし、サブエージェントは使わない。2026-10-23のユーザー指示で実行済み。
 
 **Goal:** 貸倉庫経営、貨物防衛、他派閥の独立金庫襲撃をRimWorld 1.7で成立させる。
 
 **Architecture:** 契約・精算・襲撃予定・在庫はゲーム非依存のCore。Thing、Quest、Job、Site、UI、保存はゲームアダプター。所有権と一意の副作用IDを共有し二重生成を防ぐ。
 
-**Tech Stack:** C#、XML、ローカルゲームDLL。Coreはnetstandard2.0/C#7.3、テストはnet8.0/xUnitを初期案とする。ゲーム側TFM、SDK、依存の正確な版はT0で確認・固定する。
+**Tech Stack:** C#、XML、ローカルゲームDLL。Coreはnetstandard2.0/C#7.3、テストはnet8.0/xUnitを初期案とする。ゲーム側TFM、SDK、依存の正確な版はT0で確認・固定する。T0結果: 1.7.4985はnet10.0（Waylith/.NET 10）。Core/Game/Testsともnet10.0、参照はKrafs.Rimworld.Ref 1.7.4985-unstable、HarmonyはLib.Harmony.Ref 2.3.1（[API監査](../../technical/1.7-api-audit.md)）。
 
 **Spec:** [仕様書](../specs/2026-10-23-rental-warehouse-design.md)
 
@@ -19,7 +19,7 @@
 - 既存セーブへ追加できることを目標とする。MOD途中削除は非対応と明記する。
 - ゲームDLLをリポジトリ・CI成果物・配布ZIPへ含めない。
 - 全MOD互換性を保証しない。実際に検証した組合せを記載する。
-- 今回はMarkdown文書だけを作成し、ソース・XML・DLL・配布ZIPは作成しない。
+- （仕様・計画段階の制約）Markdown文書だけを作成し、ソース・XML・DLL・配布ZIPは作成しない。2026-10-23のユーザー指示で解除し、実装した。
 - 他派閥施設はA方式のみ。日英対応。数値の正本は仕様書、変更時は期待値も同時更新。
 - 各タスクは関連ローカルテストのみ。全体検証は最後に行い、CIは最終確認で一度を基本とする。
 
@@ -201,6 +201,22 @@ IDはstring、絶対tickはlong、金額・比率はdecimal、seedはint。ゲ�
 - [ ] CIはworkflow_dispatchのみ。最終時にCore・言語・梱包構成検査を一度実施し、実ゲーム試験の代用にしない。
 - [ ] READMEにゲーム内説明、導入方法、対応ビルド、既存セーブ、削除非対応、既知制限を記載してコミット。リリース公開はその時点のユーザー指示に従う。
 
-## 実装開始の前提と今回の終了点
+## 実行結果
 
-今回の依頼は文書完成までなので、上記チェックリストは未実施のまま残す。追加の実装指示が来てから、仕様と計画を再確認しT0へ進む。計画完成をゲーム動作確認と取り違えない。
+2026-10-23にT0～T10を実装した。各タスクの自動テストとビルドは完了、実ゲームを要する確認（各タスク最終ステップの「実ゲーム確認」とA00～A16の実機部分）はゲーム本体のない環境のため未実施で、[検証結果](../../testing/results-1.7.md)に「環境不足」として記録した。チェックリストは実施した範囲の記録として下表にまとめる。
+
+| タスク | 自動テスト | 実ゲーム確認 |
+|---|---|---|
+| T0 | API監査文書 | 環境不足 |
+| T1 | AccountingTests, ContractTests 合格 | — |
+| T2 | CargoTests 合格、Game/GameTestsビルド成功 | 環境不足 |
+| T3 | EffectTests, PersistenceTests 合格 | 環境不足 |
+| T4 | OfferTests 合格 | 環境不足 |
+| T5 | PaymentTests 合格 | 環境不足 |
+| T6 | ThreatTests 合格 | 環境不足 |
+| T7 | SiteTests 合格 | 環境不足 |
+| T8 | LootTests 合格 | 環境不足 |
+| T9 | LifecycleTests 合格 | 環境不足 |
+| T10 | Core全件・梱包検査・ZIP検査 合格 | 環境不足 |
+
+計画完成・実装完了をゲーム動作確認と取り違えない。

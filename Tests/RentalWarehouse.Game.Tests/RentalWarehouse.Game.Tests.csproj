@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    In-game integration cases (docs/testing/acceptance.md). They need a running RimWorld 1.7 and are not shipped in the
+    release ZIP. To run: copy bin/<config>/RentalWarehouse.Game.Tests.dll into Mod/1.7/Assemblies of a development
+    install, enable Dev mode, then use Debug actions > "Rental Warehouse tests". Results go to the log with the
+    prefix [RW GameTest].
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <IsPackable>false</IsPackable>
+    <RimWorldRefVersion>1.7.4985-unstable</RimWorldRefVersion>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(RimWorldManagedPath)' == ''">
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="$(RimWorldRefVersion)" ExcludeAssets="runtime" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RimWorldManagedPath)' != ''">
+    <Reference Include="$(RimWorldManagedPath)/*.dll" Exclude="$(RimWorldManagedPath)/System*.dll;$(RimWorldManagedPath)/Microsoft*.dll;$(RimWorldManagedPath)/netstandard.dll;$(RimWorldManagedPath)/mscorlib.dll;$(RimWorldManagedPath)/0Harmony.dll">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lib.Harmony.Ref" Version="2.3.1" ExcludeAssets="runtime" PrivateAssets="all" />
+    <ProjectReference Include="../../Source/RentalWarehouse/RentalWarehouse.csproj" Private="false" />
+    <ProjectReference Include="../../Source/RentalWarehouse.Core/RentalWarehouse.Core.csproj" Private="false" />
+  </ItemGroup>
+
+</Project>

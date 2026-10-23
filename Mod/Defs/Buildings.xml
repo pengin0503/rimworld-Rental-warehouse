@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>RW_Reception</defName>
+    <label>warehouse reception desk</label>
+    <description>The front desk of a rental warehouse. Opens and closes the business and is required on a map to accept new storage contracts there. Existing contracts continue if it is destroyed.</description>
+    <thingClass>RentalWarehouse.Building_Reception</thingClass>
+    <graphicData>
+      <texPath>Things/Building/Reception</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1, 1)</drawSize>
+    </graphicData>
+    <size>(1,1)</size>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.4</fillPercent>
+    <pathCost>42</pathCost>
+    <rotatable>false</rotatable>
+    <castEdgeShadows>true</castEdgeShadows>
+    <statBases>
+      <MaxHitPoints>150</MaxHitPoints>
+      <WorkToBuild>800</WorkToBuild>
+      <Flammability>1.0</Flammability>
+      <Beauty>0</Beauty>
+    </statBases>
+    <costList>
+      <WoodLog>60</WoodLog>
+    </costList>
+    <designationCategory>Misc</designationCategory>
+    <building>
+      <ai_chillDestination>false</ai_chillDestination>
+    </building>
+    <constructionSkillPrerequisite>0</constructionSkillPrerequisite>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>RW_StorageRack</defName>
+    <label>sealed cargo rack</label>
+    <description>A rack for sealed cargo crates. Holds 4 crates. Counts as valid storage only indoors under a roof. Cannot be deconstructed while it holds crates.</description>
+    <thingClass>RentalWarehouse.Building_StorageRack</thingClass>
+    <graphicData>
+      <texPath>Things/Building/Rack</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(1, 2)</drawSize>
+    </graphicData>
+    <size>(1,2)</size>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.5</fillPercent>
+    <pathCost>42</pathCost>
+    <rotatable>true</rotatable>
+    <castEdgeShadows>true</castEdgeShadows>
+    <surfaceType>Item</surfaceType>
+    <canOverlapZones>false</canOverlapZones>
+    <statBases>
+      <MaxHitPoints>200</MaxHitPoints>
+      <WorkToBuild>1200</WorkToBuild>
+      <Flammability>1.0</Flammability>
+      <Beauty>-2</Beauty>
+    </statBases>
+    <costList>
+      <Steel>80</Steel>
+      <WoodLog>40</WoodLog>
+    </costList>
+    <designationCategory>Misc</designationCategory>
+    <inspectorTabs>
+      <li>ITab_Storage</li>
+    </inspectorTabs>
+    <building>
+      <preventDeteriorationOnTop>true</preventDeteriorationOnTop>
+      <ignoreStoredThingsBeauty>true</ignoreStoredThingsBeauty>
+      <maxItemsInCell>2</maxItemsInCell>
+      <storageGroupTag>RW_StorageRack</storageGroupTag>
+      <fixedStorageSettings>
+        <filter>
+          <categories>
+            <li>RW_SealedCargo</li>
+          </categories>
+        </filter>
+      </fixedStorageSettings>
+      <defaultStorageSettings>
+        <priority>Important</priority>
+        <filter>
+          <categories>
+            <li>RW_SealedCargo</li>
+          </categories>
+          <disallowedSpecialFilters>
+            <li>RW_ReturningCargo</li>
+          </disallowedSpecialFilters>
+        </filter>
+      </defaultStorageSettings>
+    </building>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>RW_Vault</defName>
+    <label>cargo vault</label>
+    <description>A heavy, fireproof vault for sealed cargo. Holds 4 crates. Required for high-risk contracts; ordinary cargo may also be kept here. Raiders cannot take crates out of an intact vault.</description>
+    <thingClass>RentalWarehouse.Building_Vault</thingClass>
+    <graphicData>
+      <texPath>Things/Building/Vault</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(2, 2)</drawSize>
+    </graphicData>
+    <size>(2,2)</size>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.7</fillPercent>
+    <pathCost>60</pathCost>
+    <rotatable>false</rotatable>
+    <castEdgeShadows>true</castEdgeShadows>
+    <surfaceType>Item</surfaceType>
+    <canOverlapZones>false</canOverlapZones>
+    <statBases>
+      <MaxHitPoints>1000</MaxHitPoints>
+      <WorkToBuild>4000</WorkToBuild>
+      <Flammability>0</Flammability>
+      <Beauty>-4</Beauty>
+    </statBases>
+    <costList>
+      <Steel>200</Steel>
+      <ComponentIndustrial>4</ComponentIndustrial>
+    </costList>
+    <researchPrerequisites>
+      <li>Machining</li>
+    </researchPrerequisites>
+    <designationCategory>Misc</designationCategory>
+    <inspectorTabs>
+      <li>ITab_Storage</li>
+    </inspectorTabs>
+    <building>
+      <preventDeteriorationOnTop>true</preventDeteriorationOnTop>
+      <ignoreStoredThingsBeauty>true</ignoreStoredThingsBeauty>
+      <maxItemsInCell>1</maxItemsInCell>
+      <storageGroupTag>RW_Vault</storageGroupTag>
+      <fixedStorageSettings>
+        <filter>
+          <categories>
+            <li>RW_SealedCargo</li>
+          </categories>
+        </filter>
+      </fixedStorageSettings>
+      <defaultStorageSettings>
+        <priority>Important</priority>
+        <filter>
+          <categories>
+            <li>RW_SealedCargo</li>
+          </categories>
+          <disallowedSpecialFilters>
+            <li>RW_ReturningCargo</li>
+          </disallowedSpecialFilters>
+        </filter>
+      </defaultStorageSettings>
+    </building>
+  </ThingDef>
+
+  <!-- Delivered for a returning contract. Not buildable. Loading is ordinary hauling; only "send" returns crates. -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>RW_ReturnPod</defName>
+    <label>cargo return pod</label>
+    <description>A pod sent by a depositor to take back its cargo. Haul the contract's crates into it, then send it. Crates count as returned only once the pod is sent. If it is destroyed, request another; the return deadline does not move.</description>
+    <thingClass>RentalWarehouse.Building_ReturnPod</thingClass>
+    <graphicData>
+      <texPath>Things/Building/ReturnPod</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1, 2)</drawSize>
+    </graphicData>
+    <size>(1,2)</size>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.5</fillPercent>
+    <pathCost>42</pathCost>
+    <rotatable>false</rotatable>
+    <surfaceType>Item</surfaceType>
+    <statBases>
+      <MaxHitPoints>250</MaxHitPoints>
+      <Flammability>0</Flammability>
+    </statBases>
+    <building>
+      <maxItemsInCell>2</maxItemsInCell>
+      <claimable>false</claimable>
+      <fixedStorageSettings>
+        <filter>
+          <categories>
+            <li>RW_SealedCargo</li>
+          </categories>
+        </filter>
+      </fixedStorageSettings>
+      <defaultStorageSettings>
+        <priority>Critical</priority>
+        <filter>
+          <categories>
+            <li>RW_SealedCargo</li>
+          </categories>
+          <disallowedSpecialFilters>
+            <li>RW_NotReturningCargo</li>
+          </disallowedSpecialFilters>
+        </filter>
+      </defaultStorageSettings>
+    </building>
+    <inspectorTabs>
+      <li>ITab_Storage</li>
+    </inspectorTabs>
+  </ThingDef>
+
+</Defs>
