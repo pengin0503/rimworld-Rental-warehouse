@@ -79,6 +79,7 @@ namespace RentalWarehouse
             long now = Ids.Now;
             OfferGenerator.Tick(this, now);
             StorageQuest.Tick(this, now);
+            ThreatAdapter.Tick(this, now);
             EffectDispatcher.ProcessQueue(this);
         }
 

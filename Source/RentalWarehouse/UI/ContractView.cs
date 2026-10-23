@@ -66,6 +66,8 @@ namespace RentalWarehouse
             var crate = world.FindCrate(cs.CargoId);
             world.State.Cargo.TryGetValue(cs.CargoId, out var record);
             if (crate == null || record == null) return "RW_CrateMissing".Translate();
+            var carrier = ThreatAdapter.Carrier(crate);
+            if (carrier != null && carrier.HostileTo(Faction.OfPlayer)) return "RW_CrateBeingStolen".Translate(carrier.LabelShort);
             string reason = StorageAdapter.FeeStopReason(crate, record);
             string fee = cs.AccruedFee.ToString("0.#");
             return reason == null ? "RW_CrateEarning".Translate(fee) : "RW_CrateStopped".Translate(reason.Translate(), fee);

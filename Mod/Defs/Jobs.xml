@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <JobDef>
+    <defName>RW_StealCargo</defName>
+    <driverClass>RentalWarehouse.JobDriver_StealCargo</driverClass>
+    <reportString>stealing TargetA.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+  </JobDef>
+
+  <!--
+    Cargo thieves (spec 6): leave at once when holding a crate; defend themselves at close range; take a crate that is
+    not inside an intact vault; break open vaults that still hold crates; otherwise fight like an ordinary raid.
+  -->
+  <DutyDef>
+    <defName>RW_StealCargo_Duty</defName>
+    <alwaysShowWeapon>true</alwaysShowWeapon>
+    <thinkNode Class="ThinkNode_Priority">
+      <subNodes>
+        <li Class="RentalWarehouse.JobGiver_ExitWithCargo" />
+        <li Class="JobGiver_AIFightEnemies">
+          <targetAcquireRadius>12</targetAcquireRadius>
+          <targetKeepRadius>18</targetKeepRadius>
+        </li>
+        <li Class="RentalWarehouse.JobGiver_StealCargo" />
+        <li Class="RentalWarehouse.JobGiver_BreachVault" />
+        <li Class="JobGiver_AIFightEnemies">
+          <targetAcquireRadius>65</targetAcquireRadius>
+          <targetKeepRadius>72</targetKeepRadius>
+        </li>
+        <li Class="JobGiver_AITrashColonyClose" />
+        <li Class="JobGiver_AIGotoNearestHostile" />
+        <li Class="JobGiver_ExitMapBest">
+          <defaultLocomotion>Jog</defaultLocomotion>
+        </li>
+      </subNodes>
+    </thinkNode>
+  </DutyDef>
+
+</Defs>

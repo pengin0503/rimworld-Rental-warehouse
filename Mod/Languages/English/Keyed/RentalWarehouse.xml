@@ -170,4 +170,11 @@
   <RW_Reject_NothingToClaim>Nothing to claim here.</RW_Reject_NothingToClaim>
   <RW_Reject_UnknownDebt>That debt no longer exists.</RW_Reject_UnknownDebt>
 
+  <!-- Cargo raids -->
+  <RW_Letter_CargoRaidTitle>Cargo raid</RW_Letter_CargoRaidTitle>
+  <RW_Letter_CargoRaid>{0} have come for the cargo of contract {1} ({2} raider(s)). They will grab crates that are not locked in an intact vault and run for the map edge. Crates carried off the map are lost; take them back before that and the contract continues.</RW_Letter_CargoRaid>
+  <RW_Msg_CrateCarried>Raiders are carrying a crate of contract {0} toward the map edge!</RW_Msg_CrateCarried>
+  <RW_Msg_CrateStolen>A crate of contract {0} was carried off the map and is lost.</RW_Msg_CrateStolen>
+  <RW_CrateBeingStolen>being carried off by {0}!</RW_CrateBeingStolen>
+
 </LanguageData>

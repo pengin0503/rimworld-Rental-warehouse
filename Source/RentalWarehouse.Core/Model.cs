@@ -363,6 +363,8 @@ namespace RentalWarehouse.Core
         public Dictionary<string, CargoRecord> Cargo = new Dictionary<string, CargoRecord>();
         public List<Debt> Debts = new List<Debt>();
         public Dictionary<string, long> FactionBlockedUntil = new Dictionary<string, long>();
+        /// <summary>Last tick hostiles were seen per map; a raid "ended" when they stopped being seen (spec 6).</summary>
+        public Dictionary<string, long> LastHostileTick = new Dictionary<string, long>();
         public WarehouseSettings Settings = new WarehouseSettings();
         public int SettingsVersion;
         public EffectLedger Effects = new EffectLedger();

@@ -20,6 +20,11 @@ namespace RentalWarehouse
                     snapshots[contract.MapId] = snapshot;
                 }
                 world.Enqueue(ContractEngine.Advance(contract, snapshot, now).Effects, applyNow: false);
+                if (contract.Phase == ContractPhase.Active && contract.BaselineThreatPoints <= 0m)
+                {
+                    // Spec 6: dedicated raid size is fixed from the ordinary threat points at activation.
+                    contract.BaselineThreatPoints = (decimal)RimWorld.StorytellerUtility.DefaultThreatPointsNow(Ids.Map(contract.MapId));
+                }
                 if (contract.IsTerminal) RemoveLeftoverPod(contract);
             }
             PaymentService.SyncDebts(world.State, now);
