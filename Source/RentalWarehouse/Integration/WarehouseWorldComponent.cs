@@ -80,6 +80,7 @@ namespace RentalWarehouse
             OfferGenerator.Tick(this, now);
             StorageQuest.Tick(this, now);
             ThreatAdapter.Tick(this, now);
+            VaultDiscovery.Tick(this, now);
             EffectDispatcher.ProcessQueue(this);
         }
 

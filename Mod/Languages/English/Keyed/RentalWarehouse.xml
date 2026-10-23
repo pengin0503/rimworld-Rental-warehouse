@@ -177,4 +177,35 @@
   <RW_Msg_CrateStolen>A crate of contract {0} was carried off the map and is lost.</RW_Msg_CrateStolen>
   <RW_CrateBeingStolen>being carried off by {0}!</RW_CrateBeingStolen>
 
+  <!-- Vault sites -->
+  <RW_NoSites>No vault intel yet. Intel arrives every five days while the business is open.</RW_NoSites>
+  <RW_ShowOnWorld>Show on world</RW_ShowOnWorld>
+  <RW_SiteLabel>{0} vault ({1})</RW_SiteLabel>
+  <RW_Tier_Small>small</RW_Tier_Small>
+  <RW_Tier_Medium>medium</RW_Tier_Medium>
+  <RW_Tier_Large>large</RW_Tier_Large>
+  <RW_SiteHeader>{0} — {1} vault compound</RW_SiteHeader>
+  <RW_SiteNotHostile>This faction is not hostile to you. Attacking makes it hostile.</RW_SiteNotHostile>
+  <RW_SiteLoot>{0} sealed crate(s), roughly {1} silver in total.</RW_SiteLoot>
+  <RW_SiteGuards>Guards: {0}.</RW_SiteGuards>
+  <RW_Guards_None>none left</RW_Guards_None>
+  <RW_Guards_Light>light</RW_Guards_Light>
+  <RW_Guards_Medium>moderate</RW_Guards_Medium>
+  <RW_Guards_Heavy>heavy</RW_Guards_Heavy>
+  <RW_SiteVaults>{0} vault(s); each takes about {1} of unlocking work by an unskilled crafter.</RW_SiteVaults>
+  <RW_SiteExpires>The intel expires in {0}.</RW_SiteExpires>
+  <RW_SiteWithdraw>The owner clears the site out in {0} (not while your people are there).</RW_SiteWithdraw>
+  <RW_EnterVaultSite>Raid {0}</RW_EnterVaultSite>
+  <RW_EnteringVaultSite>Raiding {0}</RW_EnteringVaultSite>
+  <RW_Letter_SiteFoundTitle>Vault intel</RW_Letter_SiteFoundTitle>
+  <RW_Letter_SiteFound>You learned of a vault compound:
+
+{0}</RW_Letter_SiteFound>
+  <RW_Letter_SiteEnteredTitle>Vault compound entered</RW_Letter_SiteEnteredTitle>
+  <RW_Letter_SiteEntered>Your people have entered {0}. Stock, guards and vault progress are kept if you leave and come back. The owner clears the site out in {1}.</RW_Letter_SiteEntered>
+  <RW_Site_NoTile>Vault intel arrived, but no reachable empty land was found for the site.</RW_Site_NoTile>
+  <RW_Site_NoFaction>Vault intel arrived, but no suitable faction runs a vault right now.</RW_Site_NoFaction>
+  <RW_Site_NoGuards>Vault intel arrived, but no vault of any size could be guarded.</RW_Site_NoGuards>
+  <RW_Reject_SiteClosed>That site has been cleared out.</RW_Reject_SiteClosed>
+
 </LanguageData>

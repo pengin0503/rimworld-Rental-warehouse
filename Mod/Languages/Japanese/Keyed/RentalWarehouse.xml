@@ -177,4 +177,35 @@
   <RW_Msg_CrateStolen>契約{0}の箱がマップ外へ持ち去られ、失われました。</RW_Msg_CrateStolen>
   <RW_CrateBeingStolen>{0}が持ち去り中！</RW_CrateBeingStolen>
 
+  <!-- Vault sites -->
+  <RW_NoSites>金庫情報はまだありません。営業中は5日ごとに届きます。</RW_NoSites>
+  <RW_ShowOnWorld>ワールドで表示</RW_ShowOnWorld>
+  <RW_SiteLabel>{0}の金庫（{1}）</RW_SiteLabel>
+  <RW_Tier_Small>小型</RW_Tier_Small>
+  <RW_Tier_Medium>中型</RW_Tier_Medium>
+  <RW_Tier_Large>大型</RW_Tier_Large>
+  <RW_SiteHeader>{0} — {1}の金庫施設</RW_SiteHeader>
+  <RW_SiteNotHostile>この派閥は敵対していません。襲撃すると敵対します。</RW_SiteNotHostile>
+  <RW_SiteLoot>封印箱{0}個、総額およそ{1}銀。</RW_SiteLoot>
+  <RW_SiteGuards>守備: {0}。</RW_SiteGuards>
+  <RW_Guards_None>残っていない</RW_Guards_None>
+  <RW_Guards_Light>少数</RW_Guards_Light>
+  <RW_Guards_Medium>中程度</RW_Guards_Medium>
+  <RW_Guards_Heavy>多数</RW_Guards_Heavy>
+  <RW_SiteVaults>金庫{0}基。工芸技能0なら1基あたり約{1}の開錠作業。</RW_SiteVaults>
+  <RW_SiteExpires>情報の期限まで{0}。</RW_SiteExpires>
+  <RW_SiteWithdraw>{0}後に持ち主が撤収します（あなたの部隊がいる間は撤収しません）。</RW_SiteWithdraw>
+  <RW_EnterVaultSite>{0}を襲撃</RW_EnterVaultSite>
+  <RW_EnteringVaultSite>{0}を襲撃中</RW_EnteringVaultSite>
+  <RW_Letter_SiteFoundTitle>金庫情報</RW_Letter_SiteFoundTitle>
+  <RW_Letter_SiteFound>金庫施設の情報を得ました:
+
+{0}</RW_Letter_SiteFound>
+  <RW_Letter_SiteEnteredTitle>金庫施設へ侵入</RW_Letter_SiteEnteredTitle>
+  <RW_Letter_SiteEntered>{0}へ侵入しました。退出して再訪しても在庫・守備・金庫の進捗は保持されます。{1}後に持ち主が撤収します。</RW_Letter_SiteEntered>
+  <RW_Site_NoTile>金庫情報を得ましたが、到達可能な空き地が見つかりませんでした。</RW_Site_NoTile>
+  <RW_Site_NoFaction>金庫情報を得ましたが、該当する派閥がいません。</RW_Site_NoFaction>
+  <RW_Site_NoGuards>金庫情報を得ましたが、守備を編成できる規模がありませんでした。</RW_Site_NoGuards>
+  <RW_Reject_SiteClosed>その施設は撤収済みです。</RW_Reject_SiteClosed>
+
 </LanguageData>

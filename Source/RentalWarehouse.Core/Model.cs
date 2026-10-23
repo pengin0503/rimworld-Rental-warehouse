@@ -360,6 +360,7 @@ namespace RentalWarehouse.Core
         public int SequenceCounter;
         public List<ContractState> Offers = new List<ContractState>();
         public List<ContractState> Contracts = new List<ContractState>();
+        public List<SiteRecord> Sites = new List<SiteRecord>();
         public Dictionary<string, CargoRecord> Cargo = new Dictionary<string, CargoRecord>();
         public List<Debt> Debts = new List<Debt>();
         public Dictionary<string, long> FactionBlockedUntil = new Dictionary<string, long>();

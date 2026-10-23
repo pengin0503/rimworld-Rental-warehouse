@@ -104,5 +104,22 @@ namespace RentalWarehouse.Core
     public static class VaultSiteParameters
     {
         public const long FirstDiscoveryDelay = 2 * CoreTime.TicksPerDay;
+        public const long DiscoveryInterval = 5 * CoreTime.TicksPerDay;
+        public const int MaxUnvisited = 3;
+        public const long UnvisitedLifetime = 15 * CoreTime.TicksPerDay;
+        public const long WithdrawalAfterFirstEntry = 5 * CoreTime.TicksPerDay;
+        public const int CratesPerVault = 4;
+        public const long AlarmDelay = CoreTime.TicksPerDay / 4;
+        public const decimal ReinforcementFraction = 0.5m;
+        public const decimal ForcedOpenLossChance = 0.30m;
+        public const decimal CraftingSpeedPerLevel = 0.05m;
+        /// <summary>Spec 7: goodwill a non-hostile owner is set to when attacked (design value; the game's own threshold wins).</summary>
+        public const int HostileGoodwillTarget = -75;
+
+        public static int Crates(SiteTier tier) => tier == SiteTier.Small ? 2 : tier == SiteTier.Medium ? 4 : 6;
+        public static decimal MinValue(SiteTier tier) => tier == SiteTier.Small ? 1000m : tier == SiteTier.Medium ? 3000m : 6000m;
+        public static decimal MaxValue(SiteTier tier) => tier == SiteTier.Small ? 2000m : tier == SiteTier.Medium ? 5000m : 9000m;
+        public static decimal GuardFactor(SiteTier tier) => tier == SiteTier.Small ? 0.8m : tier == SiteTier.Medium ? 1.2m : 1.6m;
+        public static long UnlockWork(SiteTier tier) => tier == SiteTier.Small ? 6000 : tier == SiteTier.Medium ? 12000 : 18000;
     }
 }

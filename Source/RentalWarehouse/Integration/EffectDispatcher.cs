@@ -25,6 +25,8 @@ namespace RentalWarehouse
             [EffectKind.SpawnSilver] = PaymentAdapter.SpawnSilver,
             [EffectKind.ConsumeSilver] = PaymentAdapter.ConsumeSilver,
             [EffectKind.CreateReturnPod] = ReturnAdapter.CreatePod,
+            [EffectKind.CreateSite] = VaultDiscovery.CreateSite,
+            [EffectKind.CloseSite] = VaultDiscovery.CloseSite,
         };
 
         /// <summary>Later tasks register their handlers here (delivery, silver, raids, sites).</summary>

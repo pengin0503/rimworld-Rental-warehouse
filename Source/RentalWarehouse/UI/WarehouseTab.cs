@@ -28,6 +28,7 @@ namespace RentalWarehouse
             [Page.Offers] = OfferView.Draw,
             [Page.Contracts] = ContractView.Draw,
             [Page.Accounts] = AccountingView.Draw,
+            [Page.Vaults] = VaultInfoView.Draw,
         };
 
         public static void Open()
