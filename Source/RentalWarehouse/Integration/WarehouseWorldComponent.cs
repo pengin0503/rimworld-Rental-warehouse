@@ -16,6 +16,9 @@ namespace RentalWarehouse
 
         private readonly Dictionary<string, Thing> crates = new Dictionary<string, Thing>();
 
+        /// <summary>Map each spawned crate is on, kept from spawn/despawn events so a removed map can be purged without touching Thing.Map.</summary>
+        private readonly Dictionary<string, Map> spawnedOn = new Dictionary<string, Map>();
+
         /// <summary>A ledger that could not be read is kept verbatim and written back, so a bad load never erases it.</summary>
         private string unreadablePayload;
         private int unreadableSchema;
@@ -81,7 +84,7 @@ namespace RentalWarehouse
             Tick();
         }
 
-        /// <summary>One 250-tick business step. Later tasks add contract, raid and site processing here.</summary>
+        /// <summary>One 250-tick business step: settings, offers, contracts, raids, sites, loot, lifecycle, then queued effects.</summary>
         public void Tick()
         {
             long now = Ids.Now;
@@ -123,7 +126,39 @@ namespace RentalWarehouse
 
         public void UnregisterCrate(string cargoId, Thing crate)
         {
-            if (cargoId != null && crates.TryGetValue(cargoId, out var current) && current == crate) crates.Remove(cargoId);
+            if (cargoId != null && crates.TryGetValue(cargoId, out var current) && current == crate)
+            {
+                crates.Remove(cargoId);
+                spawnedOn.Remove(cargoId);
+            }
+        }
+
+        public void Notify_CrateSpawned(string cargoId, Thing crate, Map map)
+        {
+            if (cargoId != null && crates.TryGetValue(cargoId, out var current) && current == crate) spawnedOn[cargoId] = map;
+        }
+
+        public void Notify_CrateDespawned(string cargoId, Thing crate)
+        {
+            if (cargoId != null && crates.TryGetValue(cargoId, out var current) && current == crate) spawnedOn.Remove(cargoId);
+        }
+
+        /// <summary>
+        /// A map is going away (abandoned, closed site, another mod). Its crates stop being tracked here; the ledger keeps
+        /// their records and the lifecycle reconciler settles the contracts. Stale Things are never touched again.
+        /// </summary>
+        public void ForgetCratesOn(Map map)
+        {
+            var gone = new List<string>();
+            foreach (var kv in spawnedOn)
+            {
+                if (kv.Value == map) gone.Add(kv.Key);
+            }
+            foreach (var id in gone)
+            {
+                crates.Remove(id);
+                spawnedOn.Remove(id);
+            }
         }
 
         public Thing FindCrate(string cargoId)

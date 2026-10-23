@@ -336,5 +336,49 @@ namespace RentalWarehouse.Core.Tests
             Assert.Equal(3m, goodwill.Amount);
             Assert.Equal(Depositor, goodwill.EntityId);
         }
+
+        [Fact]
+        public void Maturity_IsNotifiedOnce()
+        {
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 1000m });
+            var world = World(terms);
+            var c = Activate(world, terms);
+
+            var effects = RunUntil(c, c.EndTick!.Value + D);
+
+            var notice = Assert.Single(effects, e => e.Kind == EffectKind.Notify && e.Payload["key"] == "RW_Msg_Matured");
+            Assert.Equal("K1:matured", notice.EffectId);
+        }
+
+        [Fact]
+        public void LostCrate_IsNotified_EmbezzlementIsNot()
+        {
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 500m, 500m, 500m });
+            var world = World(terms);
+            var c = Activate(world, terms);
+
+            var lost = ContractEngine.MarkLost(c, terms.CargoIds[0], LossCause.Lost, c.ActiveTick!.Value + 10);
+            var embezzled = ContractEngine.MarkLost(c, terms.CargoIds[1], LossCause.Embezzled, c.ActiveTick!.Value + 20);
+
+            Assert.Contains(lost.Effects, e => e.Kind == EffectKind.Notify && e.Payload["key"] == "RW_Msg_CrateLost");
+            Assert.DoesNotContain(embezzled.Effects, e => e.Kind == EffectKind.Notify && e.Payload["key"] == "RW_Msg_CrateLost");
+        }
+
+        [Fact]
+        public void FeeStop_IsNotifiedOncePerCrate_EvenWhenItRepeats()
+        {
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 500m, 500m });
+            var world = World(terms);
+            var c = Activate(world, terms);
+            long a = c.ActiveTick!.Value;
+            string moved = terms.CargoIds[0];
+
+            var effects = RunUntil(c, a + 3 * D, t => (t / 2000) % 2 == 0 ? StoredExcept(c, moved) : StoredAll(c));
+
+            var stops = effects.Where(e => e.Kind == EffectKind.Notify && e.Payload["key"] == "RW_Msg_FeeStopped").ToList();
+            Assert.NotEmpty(stops);
+            Assert.All(stops, e => Assert.Equal("K1:feestop:" + moved, e.EffectId));
+            Assert.DoesNotContain(effects, e => e.EffectId == "K1:feestop:" + terms.CargoIds[1]);
+        }
     }
 }

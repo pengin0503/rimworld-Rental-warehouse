@@ -54,7 +54,15 @@ namespace RentalWarehouse
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
-            WarehouseWorldComponent.Instance?.RegisterCrate(cargoId, parent);
+            var world = WarehouseWorldComponent.Instance;
+            if (world == null) return;
+            world.RegisterCrate(cargoId, parent);
+            world.Notify_CrateSpawned(cargoId, parent, parent.Map);
+        }
+
+        public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish)
+        {
+            WarehouseWorldComponent.Instance?.Notify_CrateDespawned(cargoId, parent);
         }
 
         public override void PostDestroy(DestroyMode mode, Map previousMap)

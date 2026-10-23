@@ -17,11 +17,11 @@
 
 | 検査 | コマンド | 結果 |
 |---|---|---|
-| Coreロジック | `dotnet test Tests/RentalWarehouse.Core.Tests -c Release` | 154/154 合格（Accounting 14、Cargo 12、Contract 23、Effect 7、Lifecycle 17、Loot 12、Offer 12、Payment 14、Persistence 4、Settings 7、Site 16、Threat 16） |
+| Coreロジック | `dotnet test Tests/RentalWarehouse.Core.Tests -c Release` | 158/158 合格（Accounting 14、Cargo 12、Contract 26、Effect 8、Lifecycle 17、Loot 12、Offer 12、Payment 14、Persistence 4、Settings 7、Site 16、Threat 16） |
 | ゲームDLL | `dotnet build Source/RentalWarehouse/RentalWarehouse.csproj -c Release` | 成功、警告0（参照アセンブリに対するシグネチャ一致のみを示す） |
 | 実ゲーム試験DLL | `dotnet build Tests/RentalWarehouse.Game.Tests -c Release` | 成功、警告0。31ケースを収録（実行は未実施） |
 | 梱包検査の自己テスト | `python -m unittest discover -s scripts -p "test_*.py"` | 12/12 合格（ゲームDLL混入、開発物混入、秘密情報、言語キー欠落、プレースホルダ不一致、テクスチャ欠落、不正XMLを検出することを確認） |
-| 梱包 | `pwsh -File scripts/package.ps1` | `dist/RentalWarehouse.zip` 生成（24エントリ、SHA-256 `9e5c0a95…632115f`） |
+| 梱包 | `pwsh -File scripts/package.ps1` | `dist/RentalWarehouse.zip` 生成（24エントリ、展開後233,580バイト。ZIPのハッシュはビルド時刻を含むため毎回変わる） |
 | 配布ZIP検査 | `python scripts/validate-package.py dist/RentalWarehouse.zip --source Source` | PASS |
 | 参照アセンブリ | DLLメタデータ読取 | RentalWarehouse.dll → System.*、Assembly-CSharp、UnityStubs、0Harmony 2.3.1、RentalWarehouse.Core。Core → System.*のみ |
 

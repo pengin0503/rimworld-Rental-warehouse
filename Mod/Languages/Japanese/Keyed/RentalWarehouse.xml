@@ -174,7 +174,6 @@
   <RW_Letter_CargoRaidTitle>貨物強奪の襲撃</RW_Letter_CargoRaidTitle>
   <RW_Letter_CargoRaid>{0}が契約{1}の貨物を狙って来ました（{2}人）。無傷の金庫に入っていない箱を奪い、マップ端へ逃げます。マップ外へ持ち去られた箱は失われますが、その前に取り戻せば契約は続きます。</RW_Letter_CargoRaid>
   <RW_Msg_CrateCarried>契約{0}の箱が敵に持ち去られようとしています！</RW_Msg_CrateCarried>
-  <RW_Msg_CrateStolen>契約{0}の箱がマップ外へ持ち去られ、失われました。</RW_Msg_CrateStolen>
   <RW_CrateBeingStolen>{0}が持ち去り中！</RW_CrateBeingStolen>
 
   <!-- Vault sites -->
@@ -240,5 +239,10 @@
   <RW_Set_RaidScale>貨物襲撃の規模倍率: {0}</RW_Set_RaidScale>
   <RW_Set_AppliesToNew>変更は新しい依頼と金庫情報にだけ適用されます。進行中の契約の条件は変わりません。</RW_Set_AppliesToNew>
   <RW_Set_Reset>初期値に戻す</RW_Set_Reset>
+
+  <!-- Contract notices -->
+  <RW_Msg_Matured>契約{0}が満期になりました。3日以内に回収ポッドを要請して箱を返送してください。</RW_Msg_Matured>
+  <RW_Msg_CrateLost>契約{0}の箱が失われました。精算時に補償を請求されます。</RW_Msg_CrateLost>
+  <RW_Msg_FeeStopped>契約{0}の箱が有効な保管場所から外れました。戻すまで料金は発生しません。</RW_Msg_FeeStopped>
 
 </LanguageData>

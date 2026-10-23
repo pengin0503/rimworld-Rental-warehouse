@@ -123,7 +123,6 @@ namespace RentalWarehouse
                     CargoAdapter.RemoveCrate(crate);
                     if (contract != null) world.Enqueue(ContractEngine.MarkLost(contract, kv.Key, LossCause.Lost, now).Effects);
                     PaymentService.SyncDebts(world.State, now);
-                    Messages.Message("RW_Msg_CrateStolen".Translate(record.ContractId), MessageTypeDefOf.NegativeEvent, historical: true);
                     carriedAlerted.Remove(kv.Key);
                 }
                 else if (carriedAlerted.Add(kv.Key))

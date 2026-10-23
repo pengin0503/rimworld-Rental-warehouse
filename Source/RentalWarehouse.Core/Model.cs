@@ -377,6 +377,8 @@ namespace RentalWarehouse.Core
         public int SettingsVersion;
         public EffectLedger Effects = new EffectLedger();
         public List<EffectRequest> PendingEffects = new List<EffectRequest>();
+        /// <summary>Runtime only (not public, so never serialised): set while the effect queue is being processed.</summary>
+        internal bool ProcessingEffects;
 
         public ContractState? Contract(string contractId) => Contracts.Find(c => c.Terms.ContractId == contractId);
 

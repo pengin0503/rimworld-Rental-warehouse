@@ -69,6 +69,7 @@ namespace RentalWarehouse
         {
             var world = WarehouseWorldComponent.Instance;
             if (world == null) return;
+            world.ForgetCratesOn(map);
             string id = Ids.Of(map);
             if (!world.State.Contracts.Exists(c => c.MapId == id)) return;
             world.State.RemovedMaps[id] = LifecycleAdapter.AbandonedByPlayer.Remove(id) ? MapRemovalCause.AbandonedByPlayer : MapRemovalCause.Unknown;

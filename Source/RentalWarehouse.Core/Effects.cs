@@ -117,6 +117,21 @@ namespace RentalWarehouse.Core
         /// </summary>
         public static int Process(WorldState world, Func<EffectRequest, bool> apply, Action<string>? onAbandoned = null, long now = 0)
         {
+            // A handler that triggers processing again only enqueues; the outer pass picks the new effects up.
+            if (world.ProcessingEffects) return 0;
+            world.ProcessingEffects = true;
+            try
+            {
+                return ProcessPending(world, apply, onAbandoned, now);
+            }
+            finally
+            {
+                world.ProcessingEffects = false;
+            }
+        }
+
+        private static int ProcessPending(WorldState world, Func<EffectRequest, bool> apply, Action<string>? onAbandoned, long now)
+        {
             int applied = 0;
             int i = 0;
             while (i < world.PendingEffects.Count)

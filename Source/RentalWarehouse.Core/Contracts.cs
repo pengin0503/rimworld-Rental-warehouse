@@ -169,7 +169,16 @@ namespace RentalWarehouse.Core
 
             if (state.Phase == ContractPhase.Active || state.Phase == ContractPhase.AwaitingStorage)
             {
-                foreach (var cs in state.CargoStates) cs.ValidlyStored = storage.ValidStoredCargoIds.Contains(cs.CargoId);
+                foreach (var cs in state.CargoStates)
+                {
+                    bool stored = storage.ValidStoredCargoIds.Contains(cs.CargoId);
+                    if (state.Phase == ContractPhase.Active && cs.ValidlyStored && !stored && cs.Loss == LossCause.None && !cs.Returned)
+                    {
+                        // Spec 8: tell the player once per crate; the effect ID makes repeats no-ops.
+                        effects.Add(Notice(state, "feestop:" + cs.CargoId, "RW_Msg_FeeStopped"));
+                    }
+                    cs.ValidlyStored = stored;
+                }
             }
             state.LastAccrualTick = Math.Max(state.LastAccrualTick, now);
             return Decision<ContractState>.Ok(state, effects);
@@ -195,6 +204,7 @@ namespace RentalWarehouse.Core
                 {
                     state.PaymentsPosted = Limits.PaymentDays.Length;
                     BeginReturn(state, ReturnReason.Matured, end);
+                    effects.Add(Notice(state, "matured", "RW_Msg_Matured"));
                 }
                 else
                 {
@@ -290,6 +300,7 @@ namespace RentalWarehouse.Core
             cs.Loss = cause;
             cs.LossTick = now;
             cs.ValidlyStored = false;
+            if (cause == LossCause.Lost) effects.Add(Notice(state, "lost:" + cargoId, "RW_Msg_CrateLost"));
 
             if (state.CargoStates.TrueForAll(c => c.Loss != LossCause.None))
             {
@@ -429,6 +440,14 @@ namespace RentalWarehouse.Core
             Kind = EffectKind.RemoveCargo,
             EntityId = cargoId,
             Payload = { ["contract"] = state.Terms.ContractId, ["reason"] = why },
+        };
+
+        private static EffectRequest Notice(ContractState state, string what, string key) => new EffectRequest
+        {
+            EffectId = state.Terms.ContractId + ":" + what,
+            Kind = EffectKind.Notify,
+            EntityId = state.Terms.ContractId,
+            Payload = { ["key"] = key },
         };
 
         internal static string Id(ContractState state, string what, string detail) => state.Terms.ContractId + ":" + what + ":" + detail;

@@ -136,5 +136,34 @@ namespace RentalWarehouse.Core.Tests
             Assert.False(world.Effects.IsCompleted("bad"));
             Assert.True(world.Effects.IsAbandoned("bad"));
         }
+
+        [Fact]
+        public void NestedProcess_DuringHandler_DoesNotCorruptTheQueue()
+        {
+            var world = new WorldState();
+            var order = new List<string>();
+            EffectQueue.Enqueue(world, Silver("a", 1m));
+            EffectQueue.Enqueue(world, Silver("b", 1m));
+            EffectQueue.Enqueue(world, Silver("c", 1m));
+            int nested = -1;
+
+            bool Apply(EffectRequest e)
+            {
+                order.Add(e.EffectId);
+                if (e.EffectId == "a")
+                {
+                    EffectQueue.Enqueue(world, Silver("d", 1m));
+                    nested = EffectQueue.Process(world, Apply);
+                }
+                return true;
+            }
+
+            EffectQueue.Process(world, Apply);
+
+            Assert.Equal(0, nested);
+            Assert.Equal(new[] { "a", "b", "c", "d" }, order);
+            Assert.Empty(world.PendingEffects);
+            Assert.All(new[] { "a", "b", "c", "d" }, id => Assert.True(world.Effects.IsCompleted(id)));
+        }
     }
 }

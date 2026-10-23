@@ -174,7 +174,6 @@
   <RW_Letter_CargoRaidTitle>Cargo raid</RW_Letter_CargoRaidTitle>
   <RW_Letter_CargoRaid>{0} have come for the cargo of contract {1} ({2} raider(s)). They will grab crates that are not locked in an intact vault and run for the map edge. Crates carried off the map are lost; take them back before that and the contract continues.</RW_Letter_CargoRaid>
   <RW_Msg_CrateCarried>Raiders are carrying a crate of contract {0} toward the map edge!</RW_Msg_CrateCarried>
-  <RW_Msg_CrateStolen>A crate of contract {0} was carried off the map and is lost.</RW_Msg_CrateStolen>
   <RW_CrateBeingStolen>being carried off by {0}!</RW_CrateBeingStolen>
 
   <!-- Vault sites -->
@@ -240,5 +239,10 @@
   <RW_Set_RaidScale>Cargo raid size multiplier: {0}</RW_Set_RaidScale>
   <RW_Set_AppliesToNew>Changes apply to new offers and vault intel only. Running contracts keep their terms.</RW_Set_AppliesToNew>
   <RW_Set_Reset>Reset to defaults</RW_Set_Reset>
+
+  <!-- Contract notices -->
+  <RW_Msg_Matured>Contract {0} reached its term. Request a return pod and send the crates back within 3 days.</RW_Msg_Matured>
+  <RW_Msg_CrateLost>A crate of contract {0} was lost. Compensation will be charged at settlement.</RW_Msg_CrateLost>
+  <RW_Msg_FeeStopped>A crate of contract {0} is no longer in valid storage and earns nothing until it is put back.</RW_Msg_FeeStopped>
 
 </LanguageData>
