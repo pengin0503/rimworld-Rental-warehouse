@@ -85,6 +85,7 @@ namespace RentalWarehouse
         public void Tick()
         {
             long now = Ids.Now;
+            RentalWarehouseSettings.SyncInto(State);
             OfferGenerator.Tick(this, now);
             StorageQuest.Tick(this, now);
             ThreatAdapter.Tick(this, now);

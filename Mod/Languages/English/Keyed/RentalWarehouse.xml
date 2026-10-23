@@ -229,4 +229,16 @@
   <RW_Msg_DepositorHostile>The depositor of contract {0} turned hostile. Return the cargo within 3 days without penalty, or it is settled as lost.</RW_Msg_DepositorHostile>
   <RW_AbandonWarning>This map holds cargo under storage contracts. If you abandon it, every crate not yet returned is settled as lost (compensation owed, goodwill penalty). Abandon anyway?</RW_AbandonWarning>
 
+  <!-- Settings -->
+  <RW_SettingsCategory>Rental Warehouse</RW_SettingsCategory>
+  <RW_Set_Normal>Offer ordinary storage contracts</RW_Set_Normal>
+  <RW_Set_HighRisk>Offer high-risk storage contracts</RW_Set_HighRisk>
+  <RW_Set_Sites>Receive intel on other factions' vault sites</RW_Set_Sites>
+  <RW_Set_NonHostileSites>Include vaults of non-hostile factions</RW_Set_NonHostileSites>
+  <RW_Set_NonHostileSitesDesc>Raiding them makes the faction hostile; you are asked before going.</RW_Set_NonHostileSitesDesc>
+  <RW_Set_FeeMultiplier>Storage fee multiplier: {0}</RW_Set_FeeMultiplier>
+  <RW_Set_RaidScale>Cargo raid size multiplier: {0}</RW_Set_RaidScale>
+  <RW_Set_AppliesToNew>Changes apply to new offers and vault intel only. Running contracts keep their terms.</RW_Set_AppliesToNew>
+  <RW_Set_Reset>Reset to defaults</RW_Set_Reset>
+
 </LanguageData>

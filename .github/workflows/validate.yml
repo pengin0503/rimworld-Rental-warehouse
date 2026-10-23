@@ -1,0 +1,40 @@
+# Final check of the Core logic, translations and package layout (plan T10).
+# Manual only: it does not replace the in-game acceptance cases in docs/testing/acceptance.md.
+name: validate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Core tests
+        run: dotnet test Tests/RentalWarehouse.Core.Tests -c Release
+
+      - name: Build in-game test assembly (not run here)
+        run: dotnet build Tests/RentalWarehouse.Game.Tests -c Release
+
+      - name: Package validator self-test
+        run: python -m unittest discover -s scripts -p "test_*.py"
+
+      - name: Package
+        shell: pwsh
+        run: ./scripts/package.ps1
+
+      - name: Validate package
+        run: python scripts/validate-package.py dist/RentalWarehouse.zip --source Source

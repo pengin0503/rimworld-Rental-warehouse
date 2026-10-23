@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lib.Harmony.Ref" Version="2.4.3" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="Lib.Harmony.Ref" Version="2.3.1" ExcludeAssets="runtime" PrivateAssets="all" />
     <ProjectReference Include="../../Source/RentalWarehouse/RentalWarehouse.csproj" Private="false" />
     <ProjectReference Include="../../Source/RentalWarehouse.Core/RentalWarehouse.Core.csproj" Private="false" />
   </ItemGroup>

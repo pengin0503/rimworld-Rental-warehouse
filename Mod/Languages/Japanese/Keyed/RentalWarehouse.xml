@@ -229,4 +229,16 @@
   <RW_Msg_DepositorHostile>契約{0}の預け主が敵対しました。3日以内なら罰なしで返還できます。返還しなければ紛失として精算されます。</RW_Msg_DepositorHostile>
   <RW_AbandonWarning>このマップには契約中の貨物があります。放棄すると未返還の箱はすべて紛失として精算されます（補償と友好度の罰があります）。それでも放棄しますか？</RW_AbandonWarning>
 
+  <!-- Settings -->
+  <RW_SettingsCategory>Rental Warehouse（貸倉庫）</RW_SettingsCategory>
+  <RW_Set_Normal>通常保管の依頼を受け取る</RW_Set_Normal>
+  <RW_Set_HighRisk>高危険度保管の依頼を受け取る</RW_Set_HighRisk>
+  <RW_Set_Sites>他派閥の金庫情報を受け取る</RW_Set_Sites>
+  <RW_Set_NonHostileSites>敵対していない派閥の金庫も含める</RW_Set_NonHostileSites>
+  <RW_Set_NonHostileSitesDesc>襲撃するとその派閥は敵対します。出発前に確認があります。</RW_Set_NonHostileSitesDesc>
+  <RW_Set_FeeMultiplier>保管料倍率: {0}</RW_Set_FeeMultiplier>
+  <RW_Set_RaidScale>貨物襲撃の規模倍率: {0}</RW_Set_RaidScale>
+  <RW_Set_AppliesToNew>変更は新しい依頼と金庫情報にだけ適用されます。進行中の契約の条件は変わりません。</RW_Set_AppliesToNew>
+  <RW_Set_Reset>初期値に戻す</RW_Set_Reset>
+
 </LanguageData>

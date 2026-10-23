@@ -31,7 +31,7 @@
 
   <ItemGroup>
     <!-- Harmony is supplied at runtime by the Harmony mod (brrainz.harmony); only its reference assembly is used here. -->
-    <PackageReference Include="Lib.Harmony.Ref" Version="2.4.3" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="Lib.Harmony.Ref" Version="2.3.1" ExcludeAssets="runtime" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

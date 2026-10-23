@@ -1,6 +1,6 @@
 # Rental Warehouse — 受入テスト計画
 
-2026-10-23。A00～A16は全て未実施。以下は期待結果であり、動作確認済みという意味ではない。
+2026-10-23。以下は期待結果であり、動作確認済みという意味ではない。実施状況は[検証結果](results-1.7.md)を参照（自動検証のみ実施、実ゲーム部分は環境不足）。
 
 [仕様書](../superpowers/specs/2026-10-23-rental-warehouse-design.md) / [実装計画](../superpowers/plans/2026-10-23-rental-warehouse.md)
 

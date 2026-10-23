@@ -1,15 +1,23 @@
 using System;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 using Verse;
 
 namespace RentalWarehouse
 {
     public class RentalWarehouseMod : Mod
     {
+        public static RentalWarehouseSettings Settings { get; private set; }
+
         public RentalWarehouseMod(ModContentPack content) : base(content)
         {
+            Settings = GetSettings<RentalWarehouseSettings>();
             HarmonyGate.TryPatch();
         }
+
+        public override string SettingsCategory() => "RW_SettingsCategory".Translate();
+
+        public override void DoSettingsWindowContents(Rect inRect) => SettingsView.Draw(inRect, Settings);
     }
 
     /// <summary>
