@@ -6,7 +6,7 @@
 
 | 項目 | 値 |
 |---|---|
-| 実施場所 | クラウドコンテナ（Ubuntu 24.04.5、x86_64）。**RimWorld本体なし、GPU・画面なし** |
+| 実施場所 | クラウドコンテナ（Ubuntu 24.04.5、x86_64）。**RimWorldの実行環境なし、GPU・画面なし**。ユーザー提供の実DLL（`Assembly-CSharp` 1.7.9787.38423、`0Harmony` 3.0.0.0-rc.3）と`Data/Core/Defs`で静的・プロセス内の検証のみ実施（提供物はリポジトリ・CIに含めない） |
 | SDK | .NET SDK 10.0.402、PowerShell 7.6.8、Python 3.13 |
 | ゲーム参照 | `Krafs.Rimworld.Ref` 1.7.4985-unstable（メタデータのみ）、`Lib.Harmony.Ref` 2.3.1 |
 | 対象ビルド | RimWorld 1.7.4985（Steam unstableブランチ）。DLCなし構成を想定 |
@@ -23,9 +23,12 @@
 | 梱包検査の自己テスト | `python -m unittest discover -s scripts -p "test_*.py"` | 12/12 合格（ゲームDLL混入、開発物混入、秘密情報、言語キー欠落、プレースホルダ不一致、テクスチャ欠落、不正XMLを検出することを確認） |
 | 梱包 | `pwsh -File scripts/package.ps1` | `dist/RentalWarehouse.zip` 生成（24エントリ、展開後233,580バイト。ZIPのハッシュはビルド時刻を含むため毎回変わる） |
 | 配布ZIP検査 | `python scripts/validate-package.py dist/RentalWarehouse.zip --source Source` | PASS |
+| 実DLLでのビルド | `-p:RimWorldManagedPath=<提供DLL>`でMOD本体・ゲーム内試験DLL | 成功、警告0 |
+| Harmonyパッチ | 提供DLLとHarmony 3.0を読み込んだプロセスで本MODのパッチを適用 | 5/5適用 |
+| XML定義 | `tools/DefValidator`（ゲームのXMLローダ規則を再現）で`Mod/Defs`を実クラス・`Data/Core/Defs`と照合 | 合格（`disallowedSpecialFilters`の記法誤りを検出・修正した後）。検査ツールのテスト19/19、バニラCore全定義で誤検知0 |
 | 参照アセンブリ | DLLメタデータ読取 | RentalWarehouse.dll → System.*、Assembly-CSharp、UnityStubs、0Harmony 2.3.1、RentalWarehouse.Core。Core → System.*のみ |
 
-GitHub Actionsの`validate`ワークフロー（`workflow_dispatch`のみ）は作成済みだが未起動。手動起動はワークフローが既定ブランチに入った後に可能になる。上表の同等手順をローカルで実行済み。
+GitHub Actionsの`validate`ワークフローはpush・PR・手動で実行する。CIは公開の参照アセンブリだけを使い、提供DLLは使わない（Def参照の照合はローカルのみ）。
 
 ## A00～A16
 
@@ -33,7 +36,7 @@ GitHub Actionsの`validate`ワークフロー（`workflow_dispatch`のみ）は�
 
 | ID | 自動で確認した範囲 | 実ゲーム | 判定 |
 |---|---|---|---|
-| A00 | 4条件の接続先をシグネチャで特定し、コンパイルで照合（[API監査](../technical/1.7-api-audit.md)） | 資産補正の反映、Harmony読込、保存タイミング、PNG/XML読込 | 環境不足 |
+| A00 | 4条件の接続先を特定し、実DLLの実装で挙動を確認、Harmonyパッチの適用とXML定義の読込規則を実DLLで検証（[API監査](../technical/1.7-api-audit.md) §5） | ゲーム起動時のMOD読込（PNG・訳の表示を含む） | 環境不足（静的・プロセス内の確認は合格） |
 | A01 | 二重予約拒否、金庫条件、全量収納で開始、1日期限で早期回収、収納前の一部/全損（ContractTests） | 受付必須、ポッド配送、代替地点（DeliveryCases/StorageCases） | 環境不足 |
 | A02 | 20/20/32で計72銀、高危険度252銀、210銀（AccountingTests/PaymentTests） | 受領した銀の実体化（SettlementCases） | 環境不足 |
 | A03 | 保管料100・完了10・補償144・債務34、受領済み80で債務114、1日棚外で10銀だけ停止・満期不変 | 同上の実ゲーム確認 | 環境不足 |

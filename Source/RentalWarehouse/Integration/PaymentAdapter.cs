@@ -103,9 +103,10 @@ namespace RentalWarehouse
         private static bool disabled;
 
         /// <summary>Never lets a renamed private field break the game's own wealth recount; the correction is dropped instead.</summary>
-        public static void Postfix(WealthWatcher __instance)
+        public static void Postfix(WealthWatcher __instance, bool allowDuringInit)
         {
-            if (disabled) return;
+            // ForceRecount returns early without recounting outside play unless allowDuringInit; adding then would stack.
+            if (disabled || !allowDuringInit && Current.ProgramState != ProgramState.Playing) return;
             try
             {
                 mapField ??= AccessTools.FieldRefAccess<WealthWatcher, Map>("map");
