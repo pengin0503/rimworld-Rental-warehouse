@@ -208,4 +208,17 @@
   <RW_Site_NoGuards>Vault intel arrived, but no vault of any size could be guarded.</RW_Site_NoGuards>
   <RW_Reject_SiteClosed>That site has been cleared out.</RW_Reject_SiteClosed>
 
+  <!-- Vault raids -->
+  <RW_UnlockVault>Unlock vault</RW_UnlockVault>
+  <RW_CannotReach>cannot reach</RW_CannotReach>
+  <RW_VaultProgress>Unlocking: {0} ({1} crate(s) inside)</RW_VaultProgress>
+  <RW_Msg_VaultOpened>The vault is open. Carry the crates out or open them here.</RW_Msg_VaultOpened>
+  <RW_Msg_ForcedOpenLoss>Forcing the vault destroyed {0} crate(s) inside.</RW_Msg_ForcedOpenLoss>
+  <RW_Letter_ReinforcementTitle>Vault alarm</RW_Letter_ReinforcementTitle>
+  <RW_Letter_Reinforcement>The vault alarm brought reinforcements from {0} ({1} fighter(s)).</RW_Letter_Reinforcement>
+  <RW_AttackFriendlyConfirm>{0} is not hostile to you. Raiding their vault will change goodwill by {1} (to the hostile level {2}) and make them your enemy. Continue?</RW_AttackFriendlyConfirm>
+  <RW_Reject_VaultLocked>The vault is still locked.</RW_Reject_VaultLocked>
+  <RW_Reject_VaultOpen>The vault is already open.</RW_Reject_VaultOpen>
+  <RW_Reject_UnknownVault>Unknown vault.</RW_Reject_UnknownVault>
+
 </LanguageData>

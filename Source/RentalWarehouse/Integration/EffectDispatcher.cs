@@ -27,6 +27,8 @@ namespace RentalWarehouse
             [EffectKind.CreateReturnPod] = ReturnAdapter.CreatePod,
             [EffectKind.CreateSite] = VaultDiscovery.CreateSite,
             [EffectKind.CloseSite] = VaultDiscovery.CloseSite,
+            [EffectKind.ReleaseVaultCargo] = VaultLootAdapter.ReleaseVaultCargo,
+            [EffectKind.SpawnReinforcement] = VaultSiteHooks.SpawnReinforcement,
         };
 
         /// <summary>Later tasks register their handlers here (delivery, silver, raids, sites).</summary>

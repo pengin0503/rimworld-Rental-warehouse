@@ -81,6 +81,8 @@ namespace RentalWarehouse
             StorageQuest.Tick(this, now);
             ThreatAdapter.Tick(this, now);
             VaultDiscovery.Tick(this, now);
+            VaultSiteHooks.Tick(this, now);
+            VaultLootAdapter.Tick(this, now);
             EffectDispatcher.ProcessQueue(this);
         }
 

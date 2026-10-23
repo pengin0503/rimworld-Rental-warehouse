@@ -208,4 +208,17 @@
   <RW_Site_NoGuards>金庫情報を得ましたが、守備を編成できる規模がありませんでした。</RW_Site_NoGuards>
   <RW_Reject_SiteClosed>その施設は撤収済みです。</RW_Reject_SiteClosed>
 
+  <!-- Vault raids -->
+  <RW_UnlockVault>金庫を開錠</RW_UnlockVault>
+  <RW_CannotReach>到達できない</RW_CannotReach>
+  <RW_VaultProgress>開錠進捗: {0}（中の箱{1}個）</RW_VaultProgress>
+  <RW_Msg_VaultOpened>金庫が開きました。箱を運び出すか、その場で開封してください。</RW_Msg_VaultOpened>
+  <RW_Msg_ForcedOpenLoss>金庫の破壊で中の箱{0}個が失われました。</RW_Msg_ForcedOpenLoss>
+  <RW_Letter_ReinforcementTitle>金庫の警報</RW_Letter_ReinforcementTitle>
+  <RW_Letter_Reinforcement>金庫の警報により{0}の増援が来ました（{1}人）。</RW_Letter_Reinforcement>
+  <RW_AttackFriendlyConfirm>{0}はあなたと敵対していません。金庫を襲撃すると友好度が{1}変化し（敵対水準{2}）、敵になります。続けますか？</RW_AttackFriendlyConfirm>
+  <RW_Reject_VaultLocked>金庫はまだ施錠されています。</RW_Reject_VaultLocked>
+  <RW_Reject_VaultOpen>金庫はすでに開いています。</RW_Reject_VaultOpen>
+  <RW_Reject_UnknownVault>不明な金庫です。</RW_Reject_UnknownVault>
+
 </LanguageData>

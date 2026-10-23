@@ -33,6 +33,7 @@ namespace RentalWarehouse.Core
         public List<VaultState> Vaults = new List<VaultState>();
         public bool Visited;
         public bool Closed;
+        public bool HostilityDeclared;
     }
 
     public sealed class SiteContext
@@ -195,5 +196,124 @@ namespace RentalWarehouse.Core
         }
 
         public static SiteRecord? Site(WorldState world, string siteId) => world.Sites.Find(s => s.SiteId == siteId);
+    }
+
+    /// <summary>
+    /// Breaking into NPC vaults (spec 7): per-vault unlock progress at speed 1 + 0.05 × crafting; alarm on first work or
+    /// damage, one reinforcement of half the initial guard points 0.25 days later (applied on the next load if the map
+    /// was not loaded); forced opening rolls a fixed-seed 30% loss once per crate.
+    /// </summary>
+    public static class VaultService
+    {
+        public static decimal WorkSpeed(int craftingLevel) => 1m + VaultSiteParameters.CraftingSpeedPerLevel * System.Math.Max(0, craftingLevel);
+
+        private static VaultState? Vault(SiteRecord site, string vaultId) => site.Vaults.Find(v => v.VaultId == vaultId);
+
+        public static Decision<SiteRecord> Work(SiteRecord site, string vaultId, int craftingLevel, long ticks, long now)
+        {
+            var vault = Vault(site, vaultId);
+            if (vault == null || site.Closed) return Decision<SiteRecord>.Fail("RW_Reject_UnknownVault", site);
+            if (vault.Unlocked || vault.Destroyed) return Decision<SiteRecord>.Fail("RW_Reject_VaultOpen", site);
+            if (ticks <= 0) return Decision<SiteRecord>.Ok(site);
+            if (site.AlarmTick == null) site.AlarmTick = now;
+            vault.Progress += ticks * WorkSpeed(craftingLevel);
+            var effects = new List<EffectRequest>();
+            if (vault.Progress >= vault.RequiredWork)
+            {
+                vault.Progress = vault.RequiredWork;
+                vault.Unlocked = true;
+                effects.Add(Release(site, vault));
+            }
+            return Decision<SiteRecord>.Ok(site, effects);
+        }
+
+        public static decimal Fraction(VaultState vault) => vault.RequiredWork <= 0 ? 1m : System.Math.Min(1m, vault.Progress / vault.RequiredWork);
+
+        private static EffectRequest Release(SiteRecord site, VaultState vault) => new EffectRequest
+        {
+            EffectId = vault.VaultId + ":release",
+            Kind = EffectKind.ReleaseVaultCargo,
+            EntityId = vault.VaultId,
+            Payload = { ["site"] = site.SiteId },
+        };
+
+        public static Decision<SiteRecord> ForceOpen(WorldState world, SiteRecord site, string vaultId, long now)
+        {
+            var vault = Vault(site, vaultId);
+            if (vault == null) return Decision<SiteRecord>.Fail("RW_Reject_UnknownVault", site);
+            if (vault.Destroyed) return Decision<SiteRecord>.Fail("RW_Reject_VaultOpen", site);
+            NotifyDamaged(site, now);
+            vault.Destroyed = true;
+            var effects = new List<EffectRequest>();
+            if (!vault.DestructionRolled && !vault.Unlocked)
+            {
+                foreach (var id in vault.CargoIds)
+                {
+                    if (!world.Cargo.TryGetValue(id, out var c) || c.Custody != CargoCustody.Depositor) continue;
+                    var rng = new DeterministicRandom(DeterministicRandom.Mix(site.Seed, "force:" + id));
+                    if (rng.Chance(VaultSiteParameters.ForcedOpenLossChance)) c.Custody = CargoCustody.Destroyed;
+                }
+            }
+            vault.DestructionRolled = true;
+            if (!vault.Unlocked) effects.Add(Release(site, vault));
+            return Decision<SiteRecord>.Ok(site, effects);
+        }
+
+        public static void NotifyDamaged(SiteRecord site, long now)
+        {
+            if (site.AlarmTick == null) site.AlarmTick = now;
+        }
+
+        public static Decision<SiteRecord> Alarm(SiteRecord site, long now, bool loaded)
+        {
+            var effects = new List<EffectRequest>();
+            if (site.AlarmTick == null || site.ReinforcementApplied || site.Closed) return Decision<SiteRecord>.Ok(site, effects);
+            if (now < site.AlarmTick.Value + VaultSiteParameters.AlarmDelay || !loaded) return Decision<SiteRecord>.Ok(site, effects);
+            site.ReinforcementApplied = true;
+            effects.Add(new EffectRequest
+            {
+                EffectId = site.SiteId + ":reinforcement",
+                Kind = EffectKind.SpawnReinforcement,
+                EntityId = site.SiteId,
+                Amount = site.GuardPoints * VaultSiteParameters.ReinforcementFraction,
+            });
+            return Decision<SiteRecord>.Ok(site, effects);
+        }
+
+        public static Decision<SiteRecord> Take(WorldState world, SiteRecord site, string cargoId)
+        {
+            if (!world.Cargo.TryGetValue(cargoId, out var c) || c.SiteId != site.SiteId) return Decision<SiteRecord>.Fail("RW_Reject_UnknownCargo", site);
+            var vault = c.ContainerId == null ? null : Vault(site, c.ContainerId);
+            if (vault != null && !vault.Unlocked && !vault.Destroyed) return Decision<SiteRecord>.Fail("RW_Reject_VaultLocked", site);
+            var taken = CargoService.TakeFromSite(c);
+            return taken.Success ? Decision<SiteRecord>.Ok(site) : Decision<SiteRecord>.Fail(taken.ReasonKey!, site);
+        }
+
+        /// <summary>Goodwill change that makes a non-hostile owner hostile; never deducts twice (spec 7).</summary>
+        public static int HostilityChange(int currentGoodwill, bool alreadyHostile, int threshold)
+        {
+            if (alreadyHostile || currentGoodwill <= threshold) return 0;
+            return threshold - currentGoodwill;
+        }
+
+        public static Decision<SiteRecord> DeclareAttack(SiteRecord site, int currentGoodwill, bool alreadyHostile, int threshold)
+        {
+            var effects = new List<EffectRequest>();
+            if (site.HostilityDeclared) return Decision<SiteRecord>.Ok(site, effects);
+            site.HostilityDeclared = true;
+            int change = HostilityChange(currentGoodwill, alreadyHostile, threshold);
+            if (change != 0)
+            {
+                effects.Add(new EffectRequest
+                {
+                    EffectId = site.SiteId + ":hostility",
+                    Kind = EffectKind.ApplyGoodwill,
+                    EntityId = site.FactionId,
+                    Amount = change,
+                    Payload = { ["site"] = site.SiteId },
+                });
+            }
+            return Decision<SiteRecord>.Ok(site, effects);
+        }
     }
 }

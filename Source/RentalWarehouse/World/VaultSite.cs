@@ -42,6 +42,14 @@ namespace RentalWarehouse
 
         protected override bool UseGenericEnterMapFloatMenuOption => false;
 
+        public override void PostMapGenerate()
+        {
+            base.PostMapGenerate();
+            var world = WarehouseWorldComponent.Instance;
+            var record = Record;
+            if (world != null && record != null) VaultSiteHooks.Notify_MapLoaded(world, this, record);
+        }
+
         public override bool ShouldRemoveMapNow(out bool alsoRemoveWorldObject)
         {
             var record = Record;
@@ -64,7 +72,8 @@ namespace RentalWarehouse
                 () => true,
                 () => new CaravanArrivalAction_EnterVaultSite(this),
                 "RW_EnterVaultSite".Translate(Label),
-                caravan, Tile, this))
+                caravan, Tile, this,
+                AttackVaultDialog.ConfirmProxy(this)))
             {
                 yield return o;
             }
@@ -112,6 +121,7 @@ namespace RentalWarehouse
         {
             var map = site.Map ?? GetOrGenerateMapUtility.GetOrGenerateMap(site.Tile, VaultSite.MapSize, site.def);
             CaravanEnterMapUtility.Enter(caravan, map, CaravanEnterMode.Edge, CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
+            AttackVaultDialog.OnArrived(site);
             var record = site.Record;
             if (record != null)
             {

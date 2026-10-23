@@ -8,6 +8,13 @@
     <casualInterruptible>false</casualInterruptible>
   </JobDef>
 
+  <JobDef>
+    <defName>RW_UnlockVault</defName>
+    <driverClass>RentalWarehouse.JobDriver_UnlockVault</driverClass>
+    <reportString>unlocking TargetA.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+
   <!--
     Cargo thieves (spec 6): leave at once when holding a crate; defend themselves at close range; take a crate that is
     not inside an intact vault; break open vaults that still hold crates; otherwise fight like an ordinary raid.

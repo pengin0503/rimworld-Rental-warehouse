@@ -309,6 +309,7 @@ namespace RentalWarehouse.Core
         SpawnReinforcement,
         CloseSite,
         RemoveCargo,
+        ReleaseVaultCargo,
         Notify,
     }
 
