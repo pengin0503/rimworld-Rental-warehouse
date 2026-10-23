@@ -6,7 +6,7 @@
 
 **Architecture:** 契約・精算・襲撃予定・在庫はゲーム非依存のCore。Thing、Quest、Job、Site、UI、保存はゲームアダプター。所有権と一意の副作用IDを共有し二重生成を防ぐ。
 
-**Tech Stack:** C#、XML、ローカルゲームDLL。Coreはnetstandard2.0/C#7.3、テストはnet8.0/xUnitを初期案とする。ゲーム側TFM、SDK、依存の正確な版はT0で確認・固定する。
+**Tech Stack:** C#、XML、ローカルゲームDLL。Coreはnetstandard2.0/C#7.3、テストはnet8.0/xUnitを初期案とする。ゲーム側TFM、SDK、依存の正確な版はT0で確認・固定する。T0結果: 1.7.4985はnet10.0（Waylith/.NET 10）。Core/Game/Testsともnet10.0、参照はKrafs.Rimworld.Ref 1.7.4985-unstable、HarmonyはLib.Harmony.Ref 2.4.3（[API監査](../../technical/1.7-api-audit.md)）。
 
 **Spec:** [仕様書](../specs/2026-10-23-rental-warehouse-design.md)
 
