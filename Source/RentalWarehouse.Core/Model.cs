@@ -362,6 +362,12 @@ namespace RentalWarehouse.Core
         public List<ContractState> Offers = new List<ContractState>();
         public List<ContractState> Contracts = new List<ContractState>();
         public List<SiteRecord> Sites = new List<SiteRecord>();
+        /// <summary>Contracts set aside because their ID collided with another (spec 8); never processed.</summary>
+        public List<ContractState> Quarantine = new List<ContractState>();
+        public bool Initialized;
+        public long? InstalledTick;
+        /// <summary>Contract maps that disappeared, with the cause seen at the time (spec 8).</summary>
+        public Dictionary<string, MapRemovalCause> RemovedMaps = new Dictionary<string, MapRemovalCause>();
         public Dictionary<string, CargoRecord> Cargo = new Dictionary<string, CargoRecord>();
         public List<Debt> Debts = new List<Debt>();
         public Dictionary<string, long> FactionBlockedUntil = new Dictionary<string, long>();

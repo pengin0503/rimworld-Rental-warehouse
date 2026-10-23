@@ -221,4 +221,12 @@
   <RW_Reject_VaultOpen>金庫はすでに開いています。</RW_Reject_VaultOpen>
   <RW_Reject_UnknownVault>不明な金庫です。</RW_Reject_UnknownVault>
 
+  <!-- Lifecycle -->
+  <RW_Diag_MapVanished>Rental Warehouse: 契約{0}の保管マップが放棄以外の理由で消えました。契約は罰なしで取り消し、発生済みの保管料は保持します。</RW_Diag_MapVanished>
+  <RW_Diag_DepositorGone>預け主が存在しなくなりました。契約は罰なしで取り消し、発生済みの保管料は保持します。</RW_Diag_DepositorGone>
+  <RW_Diag_DuplicateId>Rental Warehouse: 契約ID {0}が重複しています。後のものを隔離し、処理しません。</RW_Diag_DuplicateId>
+  <RW_Diag_DuplicateCrate>Rental Warehouse: ID {0}の箱が重複していました。重複分は台帳から外し、価値はありません。</RW_Diag_DuplicateCrate>
+  <RW_Msg_DepositorHostile>契約{0}の預け主が敵対しました。3日以内なら罰なしで返還できます。返還しなければ紛失として精算されます。</RW_Msg_DepositorHostile>
+  <RW_AbandonWarning>このマップには契約中の貨物があります。放棄すると未返還の箱はすべて紛失として精算されます（補償と友好度の罰があります）。それでも放棄しますか？</RW_AbandonWarning>
+
 </LanguageData>

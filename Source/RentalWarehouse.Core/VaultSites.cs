@@ -33,6 +33,7 @@ namespace RentalWarehouse.Core
         public List<VaultState> Vaults = new List<VaultState>();
         public bool Visited;
         public bool Closed;
+        public long? ClosedTick;
         public bool HostilityDeclared;
     }
 
@@ -176,6 +177,7 @@ namespace RentalWarehouse.Core
             if (site.Closed) return Decision<SiteRecord>.Fail("RW_Reject_SiteClosed", site);
             foreach (var id in new List<string>(CratesAtSite(world, site))) world.Cargo.Remove(id);
             site.Closed = true;
+            site.ClosedTick = now;
             var effect = new EffectRequest { EffectId = site.SiteId + ":close", Kind = EffectKind.CloseSite, EntityId = site.SiteId };
             return Decision<SiteRecord>.Ok(site, new List<EffectRequest> { effect });
         }

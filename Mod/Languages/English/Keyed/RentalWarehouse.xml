@@ -221,4 +221,12 @@
   <RW_Reject_VaultOpen>The vault is already open.</RW_Reject_VaultOpen>
   <RW_Reject_UnknownVault>Unknown vault.</RW_Reject_UnknownVault>
 
+  <!-- Lifecycle -->
+  <RW_Diag_MapVanished>Rental Warehouse: the storage map of contract {0} disappeared without being abandoned. The contract was cancelled without penalty; earned fees are kept.</RW_Diag_MapVanished>
+  <RW_Diag_DepositorGone>The depositor no longer exists. The contract was cancelled without penalty; earned fees are kept.</RW_Diag_DepositorGone>
+  <RW_Diag_DuplicateId>Rental Warehouse: two contracts share the ID {0}. The later one was set aside and is ignored.</RW_Diag_DuplicateId>
+  <RW_Diag_DuplicateCrate>Rental Warehouse: a second crate claimed the ID {0}. It was detached from the ledger and is worth nothing.</RW_Diag_DuplicateCrate>
+  <RW_Msg_DepositorHostile>The depositor of contract {0} turned hostile. Return the cargo within 3 days without penalty, or it is settled as lost.</RW_Msg_DepositorHostile>
+  <RW_AbandonWarning>This map holds cargo under storage contracts. If you abandon it, every crate not yet returned is settled as lost (compensation owed, goodwill penalty). Abandon anyway?</RW_AbandonWarning>
+
 </LanguageData>

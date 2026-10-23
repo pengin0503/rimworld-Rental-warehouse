@@ -54,7 +54,7 @@ namespace RentalWarehouse
         {
             try
             {
-                State = StateCodec.Import(saved);
+                State = StateCodec.Import(Migration.Upgrade(saved));
                 unreadablePayload = null;
             }
             catch (StateCodecException e)
@@ -64,6 +64,14 @@ namespace RentalWarehouse
                 State = new WorldState();
                 Log.Error("[RentalWarehouse] " + e.ReasonKey + ": " + e.Message + " The ledger is kept unchanged in the save; the warehouse is paused.");
             }
+        }
+
+        /// <summary>Mid-game install or any load: initialise once, then stay idle until the business opens (spec 9).</summary>
+        public override void FinalizeInit(bool fromLoad)
+        {
+            base.FinalizeInit(fromLoad);
+            if (LedgerUnreadable) return;
+            LifecycleService.Initialize(State, Gen.HashCombineInt(Find.World.info.Seed.GetHashCode(), 0x52574857), Ids.Now);
         }
 
         public override void WorldComponentTick()
@@ -83,6 +91,7 @@ namespace RentalWarehouse
             VaultDiscovery.Tick(this, now);
             VaultSiteHooks.Tick(this, now);
             VaultLootAdapter.Tick(this, now);
+            LifecycleAdapter.Tick(this, now);
             EffectDispatcher.ProcessQueue(this);
         }
 
@@ -94,9 +103,20 @@ namespace RentalWarehouse
 
         public static WarehouseWorldComponent Instance => Find.World?.GetComponent<WarehouseWorldComponent>();
 
+        /// <summary>
+        /// A second live Thing claiming an already registered cargo ID is isolated (spec 8 "重複ID"): it loses the ID,
+        /// so it has no value, no contract and cannot be returned or opened for loot.
+        /// </summary>
         public void RegisterCrate(string cargoId, Thing crate)
         {
             if (cargoId == null || crate == null) return;
+            if (crates.TryGetValue(cargoId, out var existing) && existing != crate && !existing.Destroyed)
+            {
+                var comp = CargoAdapter.Comp(crate);
+                if (comp != null) comp.cargoId = null;
+                Diagnostics.Report("RW_Diag_DuplicateCrate", cargoId);
+                return;
+            }
             crates[cargoId] = crate;
         }
 
@@ -115,7 +135,6 @@ namespace RentalWarehouse
 
         public void SetBusinessOpen(bool open)
         {
-            if (State.WorldSeed == 0) State.WorldSeed = Gen.HashCombineInt(Find.World.info.Seed, 0x52574857);
             OfferService.SetBusinessOpen(State, open, Ids.Now);
         }
 

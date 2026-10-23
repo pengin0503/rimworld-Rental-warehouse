@@ -348,7 +348,7 @@ namespace RentalWarehouse.Core
         {
             if (state.IsTerminal) return Decision<ContractState>.Fail("RW_Reject_NotCancellable", state);
             var effects = new List<EffectRequest>();
-            if (state.Phase == ContractPhase.Active) AccrueTo(state, Math.Min(now, state.EndTick!.Value));
+            if (state.Phase == ContractPhase.Active) AccrueTo(state, Math.Min(now, state.EndTick ?? now));
             if (state.Phase == ContractPhase.Offered || state.Phase == ContractPhase.AwaitingDelivery && !state.CargoStates.Exists(c => c.Delivered))
             {
                 state.Phase = ContractPhase.SystemCancelled;
