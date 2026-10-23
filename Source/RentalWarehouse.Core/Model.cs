@@ -363,6 +363,8 @@ namespace RentalWarehouse.Core
         public Dictionary<string, long> FactionBlockedUntil = new Dictionary<string, long>();
         public WarehouseSettings Settings = new WarehouseSettings();
         public int SettingsVersion;
+        public EffectLedger Effects = new EffectLedger();
+        public List<EffectRequest> PendingEffects = new List<EffectRequest>();
 
         public ContractState? Contract(string contractId) => Contracts.Find(c => c.Terms.ContractId == contractId);
 

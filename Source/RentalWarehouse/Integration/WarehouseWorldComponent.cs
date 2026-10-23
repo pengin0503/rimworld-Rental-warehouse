@@ -16,8 +16,73 @@ namespace RentalWarehouse
 
         private readonly Dictionary<string, Thing> crates = new Dictionary<string, Thing>();
 
+        /// <summary>A ledger that could not be read is kept verbatim and written back, so a bad load never erases it.</summary>
+        private string unreadablePayload;
+        private int unreadableSchema;
+
         public WarehouseWorldComponent(World world) : base(world)
         {
+        }
+
+        public bool LedgerUnreadable => unreadablePayload != null;
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            string payload = null;
+            int schema = 0;
+            if (Scribe.mode == LoadSaveMode.Saving)
+            {
+                if (unreadablePayload != null)
+                {
+                    payload = unreadablePayload;
+                    schema = unreadableSchema;
+                }
+                else
+                {
+                    var saved = StateCodec.Export(State);
+                    payload = saved.Payload;
+                    schema = saved.SchemaVersion;
+                }
+            }
+            Scribe_Values.Look(ref schema, "schemaVersion");
+            Scribe_Values.Look(ref payload, "ledger");
+            if (Scribe.mode == LoadSaveMode.LoadingVars) Load(new SavedState { SchemaVersion = schema, Payload = payload ?? "" });
+        }
+
+        private void Load(SavedState saved)
+        {
+            try
+            {
+                State = StateCodec.Import(saved);
+                unreadablePayload = null;
+            }
+            catch (StateCodecException e)
+            {
+                unreadablePayload = saved.Payload;
+                unreadableSchema = saved.SchemaVersion;
+                State = new WorldState();
+                Log.Error("[RentalWarehouse] " + e.ReasonKey + ": " + e.Message + " The ledger is kept unchanged in the save; the warehouse is paused.");
+            }
+        }
+
+        public override void WorldComponentTick()
+        {
+            if (LedgerUnreadable) return;
+            if (Find.TickManager.TicksGame % (int)Time.CheckIntervalTicks != 0) return;
+            Tick();
+        }
+
+        /// <summary>One 250-tick business step. Later tasks add contract, raid and site processing here.</summary>
+        public void Tick()
+        {
+            EffectDispatcher.ProcessQueue(this);
+        }
+
+        public void Enqueue(IEnumerable<EffectRequest> effects, bool applyNow = true)
+        {
+            EffectQueue.EnqueueAll(State, effects);
+            if (applyNow) EffectDispatcher.ProcessQueue(this);
         }
 
         public static WarehouseWorldComponent Instance => Find.World?.GetComponent<WarehouseWorldComponent>();
@@ -53,7 +118,7 @@ namespace RentalWarehouse
             if (cargoId == null || !State.Cargo.TryGetValue(cargoId, out var record)) return;
             CargoService.ApplyHitPoints(record, 0);
             var contract = record.ContractId == null ? null : State.Contract(record.ContractId);
-            if (contract != null) ContractEngine.MarkLost(contract, cargoId, LossCause.Lost, Ids.Now);
+            if (contract != null) Enqueue(ContractEngine.MarkLost(contract, cargoId, LossCause.Lost, Ids.Now).Effects);
         }
 
         /// <summary>Deliberate opening of a crate held for another faction: spec 3 "横領".</summary>
@@ -64,8 +129,11 @@ namespace RentalWarehouse
             if (contract == null) return;
             var crate = FindCrate(cargoId);
             if (crate == null || !crate.Spawned) return;
-            if (!ContractEngine.MarkLost(contract, cargoId, LossCause.Embezzled, Ids.Now).Success) return;
-            if (CargoService.Open(record, "open:" + cargoId).Success) OpenCrate(crate, record);
+            var lost = ContractEngine.MarkLost(contract, cargoId, LossCause.Embezzled, Ids.Now);
+            if (!lost.Success) return;
+            var effects = new List<EffectRequest>(CargoService.Open(record, "open:" + cargoId).Effects);
+            effects.AddRange(lost.Effects);
+            Enqueue(effects);
         }
 
         /// <summary>Opening a crate stolen from an NPC vault: the contents are the reward.</summary>
@@ -74,17 +142,7 @@ namespace RentalWarehouse
             if (!State.Cargo.TryGetValue(cargoId, out var record) || record.Custody != CargoCustody.Player) return;
             var crate = FindCrate(cargoId);
             if (crate == null || !crate.Spawned) return;
-            if (CargoService.Open(record, "open:" + cargoId).Success) OpenCrate(crate, record);
-        }
-
-        private static void OpenCrate(Thing crate, CargoRecord record)
-        {
-            var map = crate.Map;
-            var pos = crate.Position;
-            var contents = CargoAdapter.MakeContents(record, out var missing);
-            CargoAdapter.RemoveCrate(crate);
-            foreach (var thing in contents) GenPlace.TryPlaceThing(thing, pos, map, ThingPlaceMode.Near);
-            if (missing.Count > 0) Log.Warning("[RentalWarehouse] Crate " + record.CargoId + " had unknown defs: " + string.Join(", ", missing));
+            Enqueue(CargoService.Open(record, "open:" + cargoId).Effects);
         }
     }
 }
