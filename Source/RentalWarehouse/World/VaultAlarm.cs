@@ -84,7 +84,7 @@ namespace RentalWarehouse
                 faction = faction,
                 points = points,
                 generateFightersOnly = true,
-            }).ToList();
+            }, warnOnZeroResults: false).ToList();
             if (pawns.Count == 0) return true;
             foreach (var p in pawns) GenSpawn.Spawn(p, CellFinder.RandomClosewalkCellNear(entry, map, 8), map);
             LordMaker.MakeNewLord(faction, new LordJob_AssaultColony(faction, canKidnap: false, canTimeoutOrFlee: true, sappers: false, useAvoidGridSmart: false, canSteal: false), map, pawns);

@@ -42,8 +42,11 @@ namespace RentalWarehouse
         private static void Complete(RaidContext ctx, ContractState contract, Map map)
         {
             var faction = Ids.Faction(contract.Terms.PursuerFactionId);
-            ctx.ValidAttacker = faction != null && !faction.defeated && faction.def.humanlikeFaction && faction.HostileTo(Faction.OfPlayer);
             ctx.BaselinePoints = contract.BaselineThreatPoints > 0m ? contract.BaselineThreatPoints : (decimal)StorytellerUtility.DefaultThreatPointsNow(map);
+            // A faction without any combat group for these points can never raid: skip instead of retrying for two days.
+            float points = (float)(ctx.BaselinePoints * ContractParameters.For(contract.Terms.Kind).RaidPointFactor * contract.Terms.RaidScale);
+            ctx.ValidAttacker = faction != null && !faction.defeated && faction.def.humanlikeFaction && faction.HostileTo(Faction.OfPlayer)
+                && PawnGroupMakerUtility.CanGenerateAnyNormalGroup(faction, points);
             ctx.MinimumGroupPoints = faction == null ? decimal.MaxValue : (decimal)faction.def.MinPointsToGeneratePawnGroup(PawnGroupKindDefOf.Combat);
         }
 
@@ -64,7 +67,7 @@ namespace RentalWarehouse
             };
             if (parms.points < faction.def.MinPointsToGeneratePawnGroup(PawnGroupKindDefOf.Combat)) return false;
             if (!RCellFinder.TryFindRandomPawnEntryCell(out var entry, map, CellFinder.EdgeRoadChance_Hostile)) return false;
-            var pawns = PawnGroupMakerUtility.GeneratePawns(parms).ToList();
+            var pawns = PawnGroupMakerUtility.GeneratePawns(parms, warnOnZeroResults: false).ToList();
             if (pawns.Count == 0) return false;
             foreach (var p in pawns) GenSpawn.Spawn(p, CellFinder.RandomClosewalkCellNear(entry, map, 8), map);
             LordMaker.MakeNewLord(faction, new LordJob_StealCargo(contract.Terms.ContractId), map, pawns);

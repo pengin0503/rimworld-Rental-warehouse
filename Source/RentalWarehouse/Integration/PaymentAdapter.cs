@@ -98,12 +98,25 @@ namespace RentalWarehouse
     [HarmonyPatch(typeof(WealthWatcher), nameof(WealthWatcher.ForceRecount))]
     public static class Patch_WealthWatcher_ForceRecount
     {
-        private static readonly AccessTools.FieldRef<WealthWatcher, Map> MapField = AccessTools.FieldRefAccess<WealthWatcher, Map>("map");
-        private static readonly AccessTools.FieldRef<WealthWatcher, float> ItemsField = AccessTools.FieldRefAccess<WealthWatcher, float>("wealthItems");
+        private static AccessTools.FieldRef<WealthWatcher, Map> mapField;
+        private static AccessTools.FieldRef<WealthWatcher, float> itemsField;
+        private static bool disabled;
 
+        /// <summary>Never lets a renamed private field break the game's own wealth recount; the correction is dropped instead.</summary>
         public static void Postfix(WealthWatcher __instance)
         {
-            ItemsField(__instance) += WealthAdapter.ReceivableFor(MapField(__instance));
+            if (disabled) return;
+            try
+            {
+                mapField ??= AccessTools.FieldRefAccess<WealthWatcher, Map>("map");
+                itemsField ??= AccessTools.FieldRefAccess<WealthWatcher, float>("wealthItems");
+                itemsField(__instance) += WealthAdapter.ReceivableFor(mapField(__instance));
+            }
+            catch (System.Exception e)
+            {
+                disabled = true;
+                Log.Error("[RentalWarehouse] Claimable balance can no longer be added to colony wealth: " + e.Message);
+            }
         }
     }
 }
