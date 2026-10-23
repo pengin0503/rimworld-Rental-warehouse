@@ -17,11 +17,11 @@ namespace RentalWarehouse.Core
         }
 
         public static decimal FeeForTicks(ContractTerms terms, decimal cargoValue, long ticks) =>
-            DailyFee(terms, cargoValue) * ticks / Time.TicksPerDay;
+            DailyFee(terms, cargoValue) * ticks / CoreTime.TicksPerDay;
 
         /// <summary>Full-term, all-raids, full-return reward; the cap for ordinary loss compensation.</summary>
         public static decimal NominalTotalReward(ContractTerms terms) =>
-            FullDailyFee(terms) * terms.DurationTicks / Time.TicksPerDay * (1m + terms.CompletionRate);
+            FullDailyFee(terms) * terms.DurationTicks / CoreTime.TicksPerDay * (1m + terms.CompletionRate);
 
         public static decimal RaidFulfilment(int scheduled, int started)
         {

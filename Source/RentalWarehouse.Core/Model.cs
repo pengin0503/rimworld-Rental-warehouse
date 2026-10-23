@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace RentalWarehouse.Core
 {
     /// <summary>Game-independent constants. The game adapter checks <see cref="TicksPerDay"/> against GenDate.TicksPerDay.</summary>
-    public static class Time
+    public static class CoreTime
     {
         public const long TicksPerDay = 60000;
         public const long CheckIntervalTicks = 250;

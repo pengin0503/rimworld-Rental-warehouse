@@ -44,7 +44,7 @@ namespace RentalWarehouse.Core
         public static readonly ContractParameters Normal = new ContractParameters
         {
             Kind = ContractKind.Normal,
-            DurationTicks = 6 * Time.TicksPerDay,
+            DurationTicks = 6 * CoreTime.TicksPerDay,
             MinTotalValue = 500m,
             MaxTotalValue = 2000m,
             DailyBase = 8m,
@@ -57,7 +57,7 @@ namespace RentalWarehouse.Core
         public static readonly ContractParameters HighRisk = new ContractParameters
         {
             Kind = ContractKind.HighRisk,
-            DurationTicks = 6 * Time.TicksPerDay,
+            DurationTicks = 6 * CoreTime.TicksPerDay,
             MinTotalValue = 2000m,
             MaxTotalValue = 6000m,
             DailyBase = 12m,
@@ -76,25 +76,33 @@ namespace RentalWarehouse.Core
         public const int MaxActiveContracts = 3;
         public const int MaxOpenOffers = 4;
         public const int OffersPerBatch = 2;
-        public const long FirstOfferDelay = Time.TicksPerDay;
-        public const long OfferInterval = 2 * Time.TicksPerDay;
-        public const long OfferLifetime = 3 * Time.TicksPerDay;
-        public const long DeliveryDelay = Time.TicksPerDay;
-        public const long StorageDeadline = Time.TicksPerDay;
-        public const long ReturnGrace = 3 * Time.TicksPerDay;
-        public const long HostileReturnWindow = 3 * Time.TicksPerDay;
+        public const long FirstOfferDelay = CoreTime.TicksPerDay;
+        public const long OfferInterval = 2 * CoreTime.TicksPerDay;
+        public const long OfferLifetime = 3 * CoreTime.TicksPerDay;
+        public const long DeliveryDelay = CoreTime.TicksPerDay;
+        public const long StorageDeadline = CoreTime.TicksPerDay;
+        public const long ReturnGrace = 3 * CoreTime.TicksPerDay;
+        public const long HostileReturnWindow = 3 * CoreTime.TicksPerDay;
         public const int CrateMaxHitPoints = 100;
+        /// <summary>Mass of the empty crate (matches the ThingDef's base Mass); counts toward the 35 kg limit.</summary>
+        public const decimal CrateTareKg = 2m;
         public const int MinCrates = 1;
         public const int MaxCrates = 4;
         public const decimal MaxCrateMassKg = 35m;
         public const int RefuseGoodwill = -20;
-        public const long RefuseBlockTicks = 15 * Time.TicksPerDay;
+        public const long RefuseBlockTicks = 15 * CoreTime.TicksPerDay;
         public const int CompletionGoodwill = 3;
         public const int EmbezzleGoodwill = -30;
         public const int LossGoodwillScale = 10;
         public const decimal LossCompensationRate = 0.25m;
         public const decimal EmbezzleCompensationRate = 1.0m;
         public const int CancellationFeeDays = 2;
-        public static readonly long[] PaymentDays = { 2 * Time.TicksPerDay, 4 * Time.TicksPerDay };
+        public static readonly long[] PaymentDays = { 2 * CoreTime.TicksPerDay, 4 * CoreTime.TicksPerDay };
+    }
+
+    /// <summary>NPC vault site parameters (spec 7).</summary>
+    public static class VaultSiteParameters
+    {
+        public const long FirstDiscoveryDelay = 2 * CoreTime.TicksPerDay;
     }
 }

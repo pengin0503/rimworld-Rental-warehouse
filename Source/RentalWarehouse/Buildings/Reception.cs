@@ -22,6 +22,13 @@ namespace RentalWarehouse
                 isActive = () => world.State.BusinessOpen,
                 toggleAction = () => world.SetBusinessOpen(!world.State.BusinessOpen),
             };
+            yield return new Command_Action
+            {
+                defaultLabel = "RW_OpenManagement".Translate(),
+                defaultDesc = "RW_OpenManagementDesc".Translate(),
+                icon = TexCommand.Install,
+                action = WarehouseTab.Open,
+            };
         }
 
         public override string GetInspectString()

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <MainButtonDef>
+    <defName>RW_Warehouse</defName>
+    <label>warehouse</label>
+    <description>Rental warehouse management: offers, contracts, balances, debts and vault site intel.</description>
+    <tabWindowClass>RentalWarehouse.WarehouseTab</tabWindowClass>
+    <order>65</order>
+    <buttonVisible>true</buttonVisible>
+  </MainButtonDef>
+
+</Defs>

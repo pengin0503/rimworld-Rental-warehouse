@@ -69,13 +69,16 @@ namespace RentalWarehouse
         public override void WorldComponentTick()
         {
             if (LedgerUnreadable) return;
-            if (Find.TickManager.TicksGame % (int)Time.CheckIntervalTicks != 0) return;
+            if (Find.TickManager.TicksGame % (int)CoreTime.CheckIntervalTicks != 0) return;
             Tick();
         }
 
         /// <summary>One 250-tick business step. Later tasks add contract, raid and site processing here.</summary>
         public void Tick()
         {
+            long now = Ids.Now;
+            OfferGenerator.Tick(this, now);
+            StorageQuest.Tick(this, now);
             EffectDispatcher.ProcessQueue(this);
         }
 
@@ -108,8 +111,8 @@ namespace RentalWarehouse
 
         public void SetBusinessOpen(bool open)
         {
-            State.BusinessOpen = open;
-            if (open && State.BusinessStartTick == null) State.BusinessStartTick = Ids.Now;
+            if (State.WorldSeed == 0) State.WorldSeed = Gen.HashCombineInt(Find.World.info.Seed, 0x52574857);
+            OfferService.SetBusinessOpen(State, open, Ids.Now);
         }
 
         /// <summary>A crate was destroyed by something other than the warehouse itself.</summary>

@@ -21,6 +21,7 @@ namespace RentalWarehouse
             [EffectKind.RemoveCargo] = RemoveCargo,
             [EffectKind.ApplyGoodwill] = ApplyGoodwill,
             [EffectKind.Notify] = Notify,
+            [EffectKind.DeliverCargo] = DeliveryAdapter.Deliver,
         };
 
         /// <summary>Later tasks register their handlers here (delivery, silver, raids, sites).</summary>

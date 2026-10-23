@@ -6,7 +6,7 @@ namespace RentalWarehouse.Core.Tests
 {
     internal static class Fixtures
     {
-        public const long D = Time.TicksPerDay;
+        public const long D = CoreTime.TicksPerDay;
         public const string MapId = "Map_0";
         public const string Depositor = "Faction_1";
         public const string Pursuer = "Faction_2";
@@ -76,7 +76,7 @@ namespace RentalWarehouse.Core.Tests
         public static List<EffectRequest> RunUntil(ContractState c, long until, System.Func<long, StorageSnapshot>? storageAt = null)
         {
             var effects = new List<EffectRequest>();
-            for (long t = c.LastAccrualTick + Time.CheckIntervalTicks; t <= until; t += Time.CheckIntervalTicks)
+            for (long t = c.LastAccrualTick + CoreTime.CheckIntervalTicks; t <= until; t += CoreTime.CheckIntervalTicks)
             {
                 var d = ContractEngine.Advance(c, storageAt?.Invoke(t) ?? StoredAll(c), t);
                 effects.AddRange(d.Effects);
