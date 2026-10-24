@@ -44,6 +44,10 @@ dotnet test Tests/RentalWarehouse.Core.Tests                 # Coreロジック�
 dotnet build Source/RentalWarehouse/RentalWarehouse.csproj   # ゲームDLL（NuGetの参照アセンブリを使用）
 pwsh -File scripts/package.ps1                                # dist/RentalWarehouse.zip を作成
 python scripts/validate-package.py dist/RentalWarehouse.zip --source Source
+
+# XML定義をゲームのクラスと照合（参照アセンブリでも実DLLでも可。--reference で Def 名の実在も確認）
+dotnet run --project tools/DefValidator -- --assembly <Assembly-CSharp.dll> \
+  --assembly Mod/1.7/Assemblies/RentalWarehouse.dll --defs Mod/Defs [--reference <RimWorld>/Data/Core/Defs]
 ```
 
 ローカルのゲームDLLで確認する場合は`-p:RimWorldManagedPath=<RimWorldの管理DLLフォルダ>`を付けます。ゲームDLLはリポジトリにもZIPにも含めません。実ゲームの結合試験は`Tests/RentalWarehouse.Game.Tests`（開発モードのDebug actions）で、手順は[検証結果](docs/testing/results-1.7.md)にあります。

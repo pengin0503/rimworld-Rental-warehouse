@@ -1,8 +1,12 @@
-# Final check of the Core logic, translations and package layout (plan T10).
-# Manual only: it does not replace the in-game acceptance cases in docs/testing/acceptance.md.
+# Core logic, XML defs against the game's classes, translations and package layout.
+# Uses only public inputs (NuGet reference assemblies); the game's own DLLs and data are never uploaded.
+# It does not replace the in-game acceptance cases in docs/testing/acceptance.md.
 name: validate
 
 on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -26,8 +30,22 @@ jobs:
       - name: Core tests
         run: dotnet test Tests/RentalWarehouse.Core.Tests -c Release
 
+      - name: Def validator tests
+        run: dotnet test tools/DefValidator.Tests -c Release
+
+      - name: Build mod against reference assemblies
+        run: dotnet build Source/RentalWarehouse/RentalWarehouse.csproj -c Release
+
       - name: Build in-game test assembly (not run here)
         run: dotnet build Tests/RentalWarehouse.Game.Tests -c Release
+
+      - name: Check XML defs against the game's classes
+        run: |
+          refs="$HOME/.nuget/packages/krafs.rimworld.ref/1.7.4985-unstable/ref/net10.0"
+          dotnet run --project tools/DefValidator -c Release -- \
+            --assembly "$refs/Assembly-CSharp.dll" \
+            --assembly Mod/1.7/Assemblies/RentalWarehouse.dll \
+            --defs Mod/Defs
 
       - name: Package validator self-test
         run: python -m unittest discover -s scripts -p "test_*.py"
@@ -38,3 +56,9 @@ jobs:
 
       - name: Validate package
         run: python scripts/validate-package.py dist/RentalWarehouse.zip --source Source
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RentalWarehouse-zip
+          path: dist/RentalWarehouse.zip
+          if-no-files-found: error

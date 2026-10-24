@@ -85,9 +85,9 @@
           <categories>
             <li>RW_SealedCargo</li>
           </categories>
-          <disallowedSpecialFilters>
+          <specialFiltersToDisallow>
             <li>RW_ReturningCargo</li>
-          </disallowedSpecialFilters>
+          </specialFiltersToDisallow>
         </filter>
       </defaultStorageSettings>
     </building>
@@ -147,9 +147,9 @@
           <categories>
             <li>RW_SealedCargo</li>
           </categories>
-          <disallowedSpecialFilters>
+          <specialFiltersToDisallow>
             <li>RW_ReturningCargo</li>
-          </disallowedSpecialFilters>
+          </specialFiltersToDisallow>
         </filter>
       </defaultStorageSettings>
     </building>
@@ -193,9 +193,9 @@
           <categories>
             <li>RW_SealedCargo</li>
           </categories>
-          <disallowedSpecialFilters>
+          <specialFiltersToDisallow>
             <li>RW_NotReturningCargo</li>
-          </disallowedSpecialFilters>
+          </specialFiltersToDisallow>
         </filter>
       </defaultStorageSettings>
     </building>

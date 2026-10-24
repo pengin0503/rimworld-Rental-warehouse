@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Miniature stand-in for the game's def classes, so the validator can be tested without RimWorld. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <NoWarn>CS0169;CS0414;CS0649</NoWarn>
+  </PropertyGroup>
+
+</Project>
