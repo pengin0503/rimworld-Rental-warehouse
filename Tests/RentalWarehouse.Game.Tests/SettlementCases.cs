@@ -21,6 +21,7 @@ namespace RentalWarehouse.Game.Tests
             yield return ("ClaimDropsSilverOnce", ClaimDropsSilverOnce);
             yield return ("DebtPaymentConsumesExactAmount", DebtPaymentConsumesExactAmount);
             yield return ("ReturnPodIsCreatedOnceAndSendReturnsLoadedCrates", ReturnPodFlow);
+            yield return ("ReturnPodsAcceptOnlyTheirOwnContract", ReturnPodsAcceptOnlyTheirOwnContract);
         }
 
         private static ContractState ReturningContract(GameTestScope s, decimal value)
@@ -83,6 +84,31 @@ namespace RentalWarehouse.Game.Tests
             s.World.Enqueue(d.Effects);
 
             Equal(before - 34, PaymentAdapter.SpendableSilverCount(s.Map), "silver after payment");
+        }
+
+        private static void ReturnPodsAcceptOnlyTheirOwnContract(GameTestScope s)
+        {
+            Check(HarmonyGate.Active, "Harmony patches are active");
+            var area = s.FindClearRect(3);
+            var pods = new List<Building_ReturnPod>();
+            var crates = new List<Thing>();
+            for (int i = 0; i < 2; i++)
+            {
+                var c = ReturningContract(s, 500m);
+                s.TrackContract(c.Terms.ContractId);
+                var crate = s.SpawnCrate(area.Cells.ElementAt(i), c.Terms.DepositorFactionId, CargoCustody.Depositor, 500m, StorageKind.Rack, c.Terms.ContractId);
+                c.CargoStates.Clear();
+                c.CargoStates.Add(new ContractCargoState { CargoId = CargoAdapter.Comp(crate).cargoId, DeclaredValue = 500m, Delivered = true });
+                s.World.Enqueue(ReturnService.RequestPod(c, Ids.Now).Effects);
+                pods.Add(s.Map.listerThings.ThingsOfDef(ReturnAdapter.PodDef).OfType<Building_ReturnPod>().Single(p => p.contractId == c.Terms.ContractId));
+                crates.Add(crate);
+            }
+
+            Check(pods[0].Accepts(crates[0]) && pods[1].Accepts(crates[1]), "each pod accepts its own crate");
+            Check(!pods[0].Accepts(crates[1]) && !pods[1].Accepts(crates[0]), "a pod refuses another contract's crate");
+            Check(StoreUtility.TryFindBestBetterStoreCellFor(crates[1], null, s.Map, StoragePriority.Unstored, Faction.OfPlayer, out var cell), "a store cell exists");
+            Check(pods[1].AllSlotCellsList().Contains(cell), "crate goes to its own contract's pod (got " + cell + ")");
+            foreach (var pod in pods) pod.Destroy(DestroyMode.Vanish);
         }
 
         private static void ReturnPodFlow(GameTestScope s)

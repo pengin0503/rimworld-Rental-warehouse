@@ -37,7 +37,7 @@ namespace RentalWarehouse
             }
             catch (Exception e)
             {
-                Log.Error("[RentalWarehouse] Harmony patches unavailable; contract crates may be loaded into caravans and the claimable balance is not counted as wealth. " + e);
+                Log.Error("[RentalWarehouse] Harmony patches unavailable; contract crates may be loaded into caravans, return pods may accept other contracts' crates, and the claimable balance is not counted as wealth. " + e);
             }
         }
 

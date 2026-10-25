@@ -6,22 +6,18 @@ namespace RentalWarehouse.Core
     public static class PaymentService
     {
         /// <summary>
-        /// Turns this map's claimable balance into silver at <paramref name="destinationId"/>. An invalid destination
-        /// keeps the balance untouched so the player can pick another (spec 5).
+        /// Turns this map's claimable balance, plus that of maps that no longer exist, into silver at
+        /// <paramref name="destinationId"/>. An invalid destination keeps the balance untouched so the player can pick another (spec 5).
         /// </summary>
         public static Decision<WorldState> Claim(WorldState world, string mapId, string destinationId, long now)
         {
             if (string.IsNullOrEmpty(destinationId)) return Decision<WorldState>.Fail("RW_Reject_InvalidDestination", world);
-            decimal total = 0m;
-            foreach (var c in world.Contracts)
-            {
-                if (c.MapId == mapId) total += c.Receivable;
-            }
+            decimal total = world.ClaimableBalance(mapId);
             if (total <= 0m) return Decision<WorldState>.Fail("RW_Reject_NothingToClaim", world);
 
             foreach (var c in world.Contracts)
             {
-                if (c.MapId != mapId || c.Receivable <= 0m) continue;
+                if (!world.ClaimableAt(c, mapId) || c.Receivable <= 0m) continue;
                 c.ClaimedFee += c.Receivable;
                 c.Receivable = 0m;
             }

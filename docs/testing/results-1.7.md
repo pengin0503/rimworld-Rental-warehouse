@@ -1,6 +1,6 @@
 # Rental Warehouse — 1.7 検証結果
 
-記録日: 2026-10-23。[受入テスト計画](acceptance.md)のA00～A16に対する実施結果。判定は「合格」「不合格」「環境不足」「未実施」のみを使い、実ゲームで確認していない項目を合格にしない。
+記録日: 2026-10-23（2026-10-25にIssue #3〜#7の修正分を追記）。[受入テスト計画](acceptance.md)のA00～A16に対する実施結果。判定は「合格」「不合格」「環境不足」「未実施」のみを使い、実ゲームで確認していない項目を合格にしない。
 
 ## 環境
 
@@ -17,16 +17,26 @@
 
 | 検査 | コマンド | 結果 |
 |---|---|---|
-| Coreロジック | `dotnet test Tests/RentalWarehouse.Core.Tests -c Release` | 158/158 合格（Accounting 14、Cargo 12、Contract 26、Effect 8、Lifecycle 17、Loot 12、Offer 12、Payment 14、Persistence 4、Settings 7、Site 16、Threat 16） |
+| Coreロジック | `dotnet test Tests/RentalWarehouse.Core.Tests -c Release` | 164/164 合格（Accounting 14、Cargo 12、Contract 26、Effect 8、Lifecycle 21、Loot 12、Offer 12、Payment 16、Persistence 4、Settings 7、Site 16、Threat 16） |
 | ゲームDLL | `dotnet build Source/RentalWarehouse/RentalWarehouse.csproj -c Release` | 成功、警告0（参照アセンブリに対するシグネチャ一致のみを示す） |
-| 実ゲーム試験DLL | `dotnet build Tests/RentalWarehouse.Game.Tests -c Release` | 成功、警告0。31ケースを収録（実行は未実施） |
+| 実ゲーム試験DLL | `dotnet build Tests/RentalWarehouse.Game.Tests -c Release` | 成功、警告0。33ケースを収録（実行は未実施） |
 | 梱包検査の自己テスト | `python -m unittest discover -s scripts -p "test_*.py"` | 12/12 合格（ゲームDLL混入、開発物混入、秘密情報、言語キー欠落、プレースホルダ不一致、テクスチャ欠落、不正XMLを検出することを確認） |
 | 梱包 | `pwsh -File scripts/package.ps1` | `dist/RentalWarehouse.zip` 生成（24エントリ、展開後233,580バイト。ZIPのハッシュはビルド時刻を含むため毎回変わる） |
 | 配布ZIP検査 | `python scripts/validate-package.py dist/RentalWarehouse.zip --source Source` | PASS |
 | 実DLLでのビルド | `-p:RimWorldManagedPath=<提供DLL>`でMOD本体・ゲーム内試験DLL | 成功、警告0 |
-| Harmonyパッチ | 提供DLLとHarmony 3.0を読み込んだプロセスで本MODのパッチを適用 | 5/5適用 |
+| Harmonyパッチ | 提供DLLとHarmony 3.0を読み込んだプロセスで本MODのパッチを適用 | 6/6適用（回収ポッドの受け入れ判定`StorageSettings.AllowedToAccept(Thing)`を含む） |
 | XML定義 | `tools/DefValidator`（ゲームのXMLローダ規則を再現）で`Mod/Defs`を実クラス・`Data/Core/Defs`と照合 | 合格（`disallowedSpecialFilters`の記法誤りを検出・修正した後）。検査ツールのテスト19/19、バニラCore全定義で誤検知0 |
 | 参照アセンブリ | DLLメタデータ読取 | RentalWarehouse.dll → System.*、Assembly-CSharp、UnityStubs、0Harmony 2.3.1、RentalWarehouse.Core。Core → System.*のみ |
+
+### Issue #3〜#7の修正（2026-10-25）
+
+| Issue | 修正 | 確認 |
+|---|---|---|
+| #3 | 履歴整理で、未受領残高を持つ契約を削除しない | Core: 21件×72銀が整理後も1512銀のまま、受領は1回だけ、受領後に20件へ整理。修正前は失敗 |
+| #4 | 存在しなくなったマップの契約の残高を、どの拠点の受領でも支払う（`WorldState.ClaimableBalance`）。管理画面にその内訳を表示 | Core: 消失後に別拠点で20銀を1回だけ受領、存在する拠点どうしの残高は分離。修正前は失敗 |
+| #5 | 回収ポッドは自契約の返還中の箱だけを受け入れる。運搬判定の共通入口`StorageSettings.AllowedToAccept(Thing)`にHarmonyで条件を追加し、リンクした保管グループでもポッドの条件を守る | 実DLLへのパッチ適用。ゲーム内試験`ReturnPodsAcceptOnlyTheirOwnContract`を追加（未実行） |
+| #6 | 棚の固定保管設定で、金庫が必要な箱を除外する特別フィルター`RW_VaultOnlyCargo`を追加（Harmony不要） | DefValidatorで実クラス・Core定義と照合。ゲーム内試験`RackRefusesVaultCrates_HaulingPicksTheFarVault`を追加（未実行） |
+| #7 | 到着前の取消・システム取消に専用の理由キーと1回だけの通知を付け、取消も履歴に表示 | Core: 敵対化・消滅・放棄の各経路で理由と通知1件、再処理で重複なし。修正前は失敗 |
 
 GitHub Actionsの`validate`ワークフローはpush・PR・手動で実行する。CIは公開の参照アセンブリだけを使い、提供DLLは使わない（Def参照の照合はローカルのみ）。
 

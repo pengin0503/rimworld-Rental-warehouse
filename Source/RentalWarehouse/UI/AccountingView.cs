@@ -31,8 +31,10 @@ namespace RentalWarehouse
             listing.Label("RW_BalanceTotal".Translate(state.ReceivableBalance().ToString("0")));
             if (map != null && map.IsPlayerHome)
             {
-                decimal here = state.ReceivableBalance(mapId);
+                decimal here = state.ClaimableBalance(mapId);
                 listing.Label("RW_BalanceHere".Translate(here.ToString("0"), map.Parent.LabelCap));
+                decimal fromLostMaps = here - state.ReceivableBalance(mapId);
+                if (fromLostMaps > 0m) listing.Label("RW_BalanceFromLostMaps".Translate(fromLostMaps.ToString("0")));
                 if (listing.ButtonText("RW_Claim".Translate()))
                 {
                     var d = PaymentService.Claim(state, mapId, PaymentAdapter.DefaultDestination(map), Ids.Now);
@@ -74,9 +76,10 @@ namespace RentalWarehouse
             Text.Font = GameFont.Medium;
             listing.Label("RW_History".Translate());
             Text.Font = GameFont.Small;
-            foreach (var c in state.Contracts.Where(c => c.Settlement != null).Reverse().Take(HistoryShown))
+            // Cancelled contracts have no settlement but still belong in the history, with why they ended (spec 8).
+            foreach (var c in state.Contracts.Where(c => c.IsTerminal).Reverse().Take(HistoryShown))
             {
-                listing.Label(Settlement(c));
+                listing.Label(c.Settlement != null ? Settlement(c) : "RW_HistoryCancelled".Translate(c.Terms.ContractId, CancelReason(c)).ToString());
             }
             listing.End();
             Widgets.EndScrollView();
@@ -90,7 +93,17 @@ namespace RentalWarehouse
             sb.Append(c.Terms.ContractId + " — " + ("RW_Cause_" + c.SettlementCause).Translate() + ": ");
             sb.Append("RW_SettlementLine".Translate(s.AccruedFee.ToString("0.#"), s.CompletionBonus.ToString("0.#"), s.CancellationFee.ToString("0.#"),
                 s.Compensation.ToString("0.#"), s.Credit.ToString("0"), s.Debt.ToString("0"), s.GoodwillDelta.ToString("+0;-0;0")));
+            if (c.Phase == ContractPhase.SystemCancelled) sb.Append(" " + CancelReason(c));
             return sb.ToString();
+        }
+
+        public static string CancelReason(ContractState c)
+        {
+            string key = c.CancelReason;
+            if (key.NullOrEmpty()) return "";
+            // Earlier versions stored the diagnostic key of system cancellations; show the matching short reason.
+            if (key.StartsWith("RW_Diag_")) key = "RW_Cancel_" + key.Substring("RW_Diag_".Length);
+            return key.Translate();
         }
     }
 }

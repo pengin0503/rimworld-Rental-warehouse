@@ -37,7 +37,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>RW_StorageRack</defName>
     <label>sealed cargo rack</label>
-    <description>A rack for sealed cargo crates. Holds 4 crates. Counts as valid storage only indoors under a roof. Cannot be deconstructed while it holds crates.</description>
+    <description>A rack for sealed cargo crates. Holds 4 crates. Does not accept high-risk crates, which must go in a vault. Counts as valid storage only indoors under a roof. Cannot be deconstructed while it holds crates.</description>
     <thingClass>RentalWarehouse.Building_StorageRack</thingClass>
     <graphicData>
       <texPath>Things/Building/Rack</texPath>
@@ -77,6 +77,9 @@
           <categories>
             <li>RW_SealedCargo</li>
           </categories>
+          <specialFiltersToDisallow>
+            <li>RW_VaultOnlyCargo</li>
+          </specialFiltersToDisallow>
         </filter>
       </fixedStorageSettings>
       <defaultStorageSettings>
@@ -159,7 +162,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>RW_ReturnPod</defName>
     <label>cargo return pod</label>
-    <description>A pod sent by a depositor to take back its cargo. Haul the contract's crates into it, then send it. Crates count as returned only once the pod is sent. If it is destroyed, request another; the return deadline does not move.</description>
+    <description>A pod sent by a depositor to take back its cargo. It accepts only that contract's crates. Haul them into it, then send it. Crates count as returned only once the pod is sent. If it is destroyed, request another; the return deadline does not move.</description>
     <thingClass>RentalWarehouse.Building_ReturnPod</thingClass>
     <graphicData>
       <texPath>Things/Building/ReturnPod</texPath>

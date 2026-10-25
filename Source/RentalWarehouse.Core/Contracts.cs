@@ -343,13 +343,16 @@ namespace RentalWarehouse.Core
             return Decision<ContractState>.Ok(state, effects);
         }
 
-        public static Decision<ContractState> Cancel(ContractState state, long now)
+        public const string CancelByPlayer = "RW_Cancel_ByPlayer";
+
+        /// <summary>Penalty-free cancellation before any crate arrives; <paramref name="reasonKey"/> records who or what ended it.</summary>
+        public static Decision<ContractState> Cancel(ContractState state, long now, string reasonKey = CancelByPlayer)
         {
             if (state.Phase != ContractPhase.AwaitingDelivery) return Decision<ContractState>.Fail(
                 state.IsTerminal ? "RW_Reject_NotCancellable" : "RW_Reject_AlreadyArrived", state);
             if (state.CargoStates.Exists(c => c.Delivered)) return Decision<ContractState>.Fail("RW_Reject_AlreadyArrived", state);
             state.Phase = ContractPhase.Cancelled;
-            state.CancelReason = "RW_Cancel_ByPlayer";
+            state.CancelReason = reasonKey;
             state.LastAccrualTick = Math.Max(state.LastAccrualTick, now);
             return Decision<ContractState>.Ok(state);
         }

@@ -27,6 +27,17 @@
     <workerClass>RentalWarehouse.SpecialThingFilterWorker_NotReturningCargo</workerClass>
   </SpecialThingFilterDef>
 
+  <!-- Racks' fixed storage settings disallow this, so vault-only crates are never hauled to a rack (spec 3). -->
+  <SpecialThingFilterDef>
+    <defName>RW_VaultOnlyCargo</defName>
+    <label>cargo that requires a vault</label>
+    <description>High-risk crates that count as stored only in a vault.</description>
+    <parentCategory>RW_SealedCargo</parentCategory>
+    <allowedByDefault>true</allowedByDefault>
+    <saveKey>allowVaultOnlyCargo</saveKey>
+    <workerClass>RentalWarehouse.SpecialThingFilterWorker_VaultOnlyCargo</workerClass>
+  </SpecialThingFilterDef>
+
   <!-- One crate holds one manifest. Value and mass come from the ledger through CompSealedCargo, not from statBases. -->
   <ThingDef>
     <defName>RW_SealedCargo</defName>

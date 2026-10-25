@@ -60,6 +60,11 @@
   <RW_Reject_CannotOpen>This crate cannot be opened.</RW_Reject_CannotOpen>
   <RW_Reject_FacilityNotEmpty>Move the crates out first.</RW_Reject_FacilityNotEmpty>
   <RW_Cancel_ByPlayer>Cancelled before arrival.</RW_Cancel_ByPlayer>
+  <RW_Cancel_DepositorHostile>Cancelled before arrival: the depositor turned hostile.</RW_Cancel_DepositorHostile>
+  <RW_Cancel_DepositorGone>Cancelled: the depositor no longer exists.</RW_Cancel_DepositorGone>
+  <RW_Cancel_MapAbandoned>Cancelled before arrival: the storage map was abandoned.</RW_Cancel_MapAbandoned>
+  <RW_Cancel_MapVanished>Cancelled: the storage map disappeared.</RW_Cancel_MapVanished>
+  <RW_Cancel_MissingDefs>Cancelled: the cargo contains items that no longer exist.</RW_Cancel_MissingDefs>
 
   <!-- Crates and facilities -->
   <RW_CrateLabel>{0} ({1})</RW_CrateLabel>
@@ -148,6 +153,7 @@
   <RW_Balance>Claimable balance</RW_Balance>
   <RW_BalanceTotal>All maps: {0} silver</RW_BalanceTotal>
   <RW_BalanceHere>{1}: {0} silver</RW_BalanceHere>
+  <RW_BalanceFromLostMaps>Includes {0} silver earned on maps that no longer exist; it can be claimed at any base.</RW_BalanceFromLostMaps>
   <RW_Claim>Claim as silver (delivered by pod)</RW_Claim>
   <RW_Debts>Debts</RW_Debts>
   <RW_NoDebts>No debts.</RW_NoDebts>
@@ -155,7 +161,8 @@
   <RW_PayDebt>Pay {0} silver (have {1})</RW_PayDebt>
   <RW_RefuseDebt>Refuse to pay</RW_RefuseDebt>
   <RW_RefuseDebtConfirm>Refuse the debt to {0}? Their goodwill drops by {1} and they will offer you no contracts for {2} days. Contracts already running continue.</RW_RefuseDebtConfirm>
-  <RW_History>Recent settlements</RW_History>
+  <RW_History>Recent settlements and cancellations</RW_History>
+  <RW_HistoryCancelled>{0} — {1}</RW_HistoryCancelled>
   <RW_SettlementLine>fees {0} + bonus {1} − cancel fee {2} − compensation {3} → credit {4}, debt {5}, goodwill {6}</RW_SettlementLine>
   <RW_Cause_None></RW_Cause_None>
   <RW_Cause_Completed>completed</RW_Cause_Completed>
@@ -222,7 +229,9 @@
 
   <!-- Lifecycle -->
   <RW_Diag_MapVanished>Rental Warehouse: the storage map of contract {0} disappeared without being abandoned. The contract was cancelled without penalty; earned fees are kept.</RW_Diag_MapVanished>
-  <RW_Diag_DepositorGone>The depositor no longer exists. The contract was cancelled without penalty; earned fees are kept.</RW_Diag_DepositorGone>
+  <RW_Msg_DepositorGone>The depositor of contract {0} no longer exists. The contract was cancelled without penalty; earned fees are kept.</RW_Msg_DepositorGone>
+  <RW_Msg_CancelledDepositorHostile>The depositor of contract {0} turned hostile before the cargo arrived. The contract was cancelled without penalty.</RW_Msg_CancelledDepositorHostile>
+  <RW_Msg_CancelledMapAbandoned>Contract {0} was cancelled without penalty because its storage map was abandoned before the cargo arrived.</RW_Msg_CancelledMapAbandoned>
   <RW_Diag_DuplicateId>Rental Warehouse: two contracts share the ID {0}. The later one was set aside and is ignored.</RW_Diag_DuplicateId>
   <RW_Diag_DuplicateCrate>Rental Warehouse: a second crate claimed the ID {0}. It was detached from the ledger and is worth nothing.</RW_Diag_DuplicateCrate>
   <RW_Msg_DepositorHostile>The depositor of contract {0} turned hostile. Return the cargo within 3 days without penalty, or it is settled as lost.</RW_Msg_DepositorHostile>

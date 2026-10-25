@@ -46,7 +46,7 @@ namespace RentalWarehouse.Core
                 string? missing = MissingDef(world, c.Terms.CargoIds, snapshot);
                 if (missing != null)
                 {
-                    effects.AddRange(ContractEngine.SystemCancel(c, "RW_Diag_MissingDefs", now).Effects);
+                    effects.AddRange(ContractEngine.SystemCancel(c, "RW_Cancel_MissingDefs", now).Effects);
                     effects.Add(Diagnostic("RW_Diag_MissingDefs", c.Terms.ContractId + ": " + missing));
                     continue;
                 }
@@ -55,21 +55,23 @@ namespace RentalWarehouse.Core
                     if (cause == MapRemovalCause.AbandonedByPlayer) effects.AddRange(Abandon(c, now));
                     else
                     {
-                        effects.AddRange(ContractEngine.SystemCancel(c, "RW_Diag_MapVanished", now).Effects);
+                        effects.AddRange(ContractEngine.SystemCancel(c, "RW_Cancel_MapVanished", now).Effects);
                         effects.Add(Diagnostic("RW_Diag_MapVanished", c.Terms.ContractId));
                     }
                     continue;
                 }
                 if (!snapshot.FactionIds.Contains(c.Terms.DepositorFactionId))
                 {
-                    effects.AddRange(ContractEngine.SystemCancel(c, "RW_Diag_DepositorGone", now).Effects);
+                    effects.AddRange(ContractEngine.SystemCancel(c, "RW_Cancel_DepositorGone", now).Effects);
+                    effects.Add(Notice(c, "RW_Msg_DepositorGone"));
                     continue;
                 }
                 if (snapshot.HostileFactionIds.Contains(c.Terms.DepositorFactionId))
                 {
                     if (c.Phase == ContractPhase.AwaitingDelivery && !c.CargoStates.Exists(x => x.Delivered))
                     {
-                        effects.AddRange(ContractEngine.Cancel(c, now).Effects);
+                        effects.AddRange(ContractEngine.Cancel(c, now, "RW_Cancel_DepositorHostile").Effects);
+                        effects.Add(Notice(c, "RW_Msg_CancelledDepositorHostile"));
                     }
                     else if (c.Phase == ContractPhase.Active || c.Phase == ContractPhase.AwaitingStorage)
                     {
@@ -94,7 +96,9 @@ namespace RentalWarehouse.Core
         {
             if (c.Phase == ContractPhase.AwaitingDelivery && !c.CargoStates.Exists(x => x.Delivered))
             {
-                return ContractEngine.Cancel(c, now).Effects;
+                var cancelled = ContractEngine.Cancel(c, now, "RW_Cancel_MapAbandoned").Effects;
+                cancelled.Add(Notice(c, "RW_Msg_CancelledMapAbandoned"));
+                return cancelled;
             }
             var effects = new List<EffectRequest>();
             foreach (var cs in c.CargoStates)
@@ -148,6 +152,15 @@ namespace RentalWarehouse.Core
             }
         }
 
+        /// <summary>Tells the player once why a contract ended without their action (spec 8); the ID makes repeats no-ops.</summary>
+        private static EffectRequest Notice(ContractState c, string key) => new EffectRequest
+        {
+            EffectId = c.Terms.ContractId + ":system-end-notice",
+            Kind = EffectKind.Notify,
+            EntityId = c.Terms.ContractId,
+            Payload = { ["key"] = key },
+        };
+
         private static EffectRequest Diagnostic(string key, string subject, string? salt = null) => new EffectRequest
         {
             EffectId = "diag:" + key + ":" + subject + (salt == null ? "" : ":" + salt),
@@ -177,7 +190,8 @@ namespace RentalWarehouse.Core
             {
                 var c = terminal[i];
                 string prefix = c.Terms.ContractId + ":";
-                if (Pending(prefix) || world.Debts.Exists(d => d.ContractId == c.Terms.ContractId)) continue;
+                // Unclaimed silver and debts are money, not history: keep the contract until they are settled.
+                if (Pending(prefix) || c.Receivable > 0m || world.Debts.Exists(d => d.ContractId == c.Terms.ContractId)) continue;
                 world.Contracts.Remove(c);
                 var owned = new List<string>();
                 foreach (var kv in world.Cargo)
