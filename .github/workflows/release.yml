@@ -102,7 +102,15 @@ jobs:
 
       - name: Create the tag on this commit (dispatched runs)
         if: github.event_name == 'workflow_dispatch'
-        run: git ls-remote --exit-code origin "refs/tags/$TAG" >/dev/null || gh api "repos/$GH_REPO/git/refs" -f ref="refs/tags/$TAG" -f sha="$GITHUB_SHA"
+        run: |
+          # Checked again here: another run may have created the tag since the first check.
+          existing=$(git ls-remote origin "refs/tags/$TAG" | cut -f1)
+          if [ -z "$existing" ]; then
+            gh api "repos/$GH_REPO/git/refs" -f ref="refs/tags/$TAG" -f sha="$GITHUB_SHA"
+          elif [ "$existing" != "$GITHUB_SHA" ]; then
+            echo "::error::Tag $TAG points to $existing, not $GITHUB_SHA" >&2
+            exit 1
+          fi
 
       - name: Publish prerelease
         run: |
