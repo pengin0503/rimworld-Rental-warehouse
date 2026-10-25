@@ -41,8 +41,17 @@ jobs:
           fi
           git fetch origin main
           git merge-base --is-ancestor "$GITHUB_SHA" origin/main
-          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ] && git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null; then
-            echo "::error::Tag $TAG already exists" >&2; exit 1
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            # A retry after a failed publish finds its own tag on this commit and no release yet; anything else stops.
+            existing=$(git ls-remote origin "refs/tags/$TAG" | cut -f1)
+            if [ -n "$existing" ] && [ "$existing" != "$GITHUB_SHA" ]; then
+              echo "::error::Tag $TAG already exists on another commit" >&2
+              exit 1
+            fi
+            if gh release view "$TAG" >/dev/null 2>&1; then
+              echo "::error::Release $TAG already exists" >&2
+              exit 1
+            fi
           fi
 
       - name: Require the tag to match the mod version and release notes
@@ -93,7 +102,7 @@ jobs:
 
       - name: Create the tag on this commit (dispatched runs)
         if: github.event_name == 'workflow_dispatch'
-        run: gh api "repos/$GH_REPO/git/refs" -f ref="refs/tags/$TAG" -f sha="$GITHUB_SHA"
+        run: git ls-remote --exit-code origin "refs/tags/$TAG" >/dev/null || gh api "repos/$GH_REPO/git/refs" -f ref="refs/tags/$TAG" -f sha="$GITHUB_SHA"
 
       - name: Publish prerelease
         run: |
