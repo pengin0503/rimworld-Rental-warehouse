@@ -48,7 +48,7 @@ namespace RentalWarehouse
             {
                 foreach (var t in cell.GetThingList(Map))
                 {
-                    if (CargoAdapter.Comp(t)?.Record?.ContractId == contractId) list.Add(t);
+                    if (StorageRules.PodAccepts(this, t)) list.Add(t);
                 }
             }
             return list;

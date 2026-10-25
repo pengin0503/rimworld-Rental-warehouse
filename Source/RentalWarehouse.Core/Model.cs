@@ -393,6 +393,23 @@ namespace RentalWarehouse.Core
             return sum;
         }
 
+        /// <summary>
+        /// Whether <paramref name="c"/>'s balance can be claimed at <paramref name="mapId"/>: contracts of that map, and of maps
+        /// that no longer exist, whose earned fees would otherwise be unreachable (spec 8 keeps them).
+        /// </summary>
+        public bool ClaimableAt(ContractState c, string mapId) => c.MapId == mapId || RemovedMaps.ContainsKey(c.MapId);
+
+        /// <summary>Balance that a claim at <paramref name="mapId"/> pays out.</summary>
+        public decimal ClaimableBalance(string mapId)
+        {
+            decimal sum = 0m;
+            foreach (var c in Contracts)
+            {
+                if (ClaimableAt(c, mapId)) sum += c.Receivable;
+            }
+            return sum;
+        }
+
         public string NextSequenceId(string prefix)
         {
             SequenceCounter++;

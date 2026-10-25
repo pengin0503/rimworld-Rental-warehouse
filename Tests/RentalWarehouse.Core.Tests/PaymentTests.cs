@@ -91,6 +91,47 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
+        public void BalanceOfVanishedMap_IsClaimedOnceAtAnotherBase()
+        {
+            var (world, c) = ActiveNormal();
+            RunUntil(c, c.ActiveTick!.Value + 2 * D);
+            world.RemovedMaps[MapId] = MapRemovalCause.Unknown;
+            var snap = new WorldSnapshot { MapIds = { "Map_1" }, FactionIds = { Depositor, Pursuer } };
+            foreach (var kv in world.RemovedMaps) snap.RemovedMapCauses[kv.Key] = kv.Value;
+            LifecycleService.Reconcile(world, snap, c.ActiveTick!.Value + 2 * D);
+            Assert.Equal(ContractPhase.SystemCancelled, c.Phase);
+            Assert.Equal(20m, world.ClaimableBalance("Map_1"));
+
+            var first = PaymentService.Claim(world, "Map_1", Dest, 0);
+            var second = PaymentService.Claim(world, "Map_1", Dest, 0);
+
+            Assert.True(first.Success);
+            Assert.Equal(20m, first.Effects.Single().Amount);
+            Assert.Equal("Map_1", first.Effects.Single().EntityId);
+            Assert.False(second.Success);
+            Assert.Equal(0m, world.ReceivableBalance());
+        }
+
+        [Fact]
+        public void BalancesOfExistingBases_StaySeparate()
+        {
+            var a = Terms(ContractKind.Normal, "K1", new[] { 1000m });
+            var b = Terms(ContractKind.Normal, "K2", new[] { 1000m });
+            var world = World(a, b);
+            var ca = Activate(world, a);
+            var cb = Activate(world, b);
+            cb.MapId = "Map_1";
+            RunUntil(ca, ca.ActiveTick!.Value + 2 * D);
+            RunUntil(cb, cb.ActiveTick!.Value + 2 * D);
+
+            var d = PaymentService.Claim(world, "Map_1", Dest, 0);
+
+            Assert.Equal(20m, d.Effects.Single().Amount);
+            Assert.Equal(20m, world.ReceivableBalance(MapId));
+            Assert.Equal(0m, world.ClaimableBalance("Map_1"));
+        }
+
+        [Fact]
         public void SettlementDebt_IsRecordedOnce()
         {
             var (world, c) = ActiveNormal(1000m, 1000m);

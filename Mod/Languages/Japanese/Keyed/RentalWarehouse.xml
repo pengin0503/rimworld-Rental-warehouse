@@ -60,6 +60,11 @@
   <RW_Reject_CannotOpen>この箱は開けられません。</RW_Reject_CannotOpen>
   <RW_Reject_FacilityNotEmpty>先に箱を運び出してください。</RW_Reject_FacilityNotEmpty>
   <RW_Cancel_ByPlayer>到着前に取り消しました。</RW_Cancel_ByPlayer>
+  <RW_Cancel_DepositorHostile>預け主の敵対化により到着前に取り消されました。</RW_Cancel_DepositorHostile>
+  <RW_Cancel_DepositorGone>預け主が存在しなくなったため取り消されました。</RW_Cancel_DepositorGone>
+  <RW_Cancel_MapAbandoned>保管マップの放棄により到着前に取り消されました。</RW_Cancel_MapAbandoned>
+  <RW_Cancel_MapVanished>保管マップが消えたため取り消されました。</RW_Cancel_MapVanished>
+  <RW_Cancel_MissingDefs>箱の内容に存在しないアイテムがあるため取り消されました。</RW_Cancel_MissingDefs>
 
   <!-- 箱と施設 -->
   <RW_CrateLabel>{0}（{1}）</RW_CrateLabel>
@@ -148,6 +153,7 @@
   <RW_Balance>受領可能残高</RW_Balance>
   <RW_BalanceTotal>全マップ合計: {0}銀</RW_BalanceTotal>
   <RW_BalanceHere>{1}: {0}銀</RW_BalanceHere>
+  <RW_BalanceFromLostMaps>うち{0}銀は存在しなくなったマップで発生した残高で、どの拠点でも受領できます。</RW_BalanceFromLostMaps>
   <RW_Claim>銀として受領（ポッド配送）</RW_Claim>
   <RW_Debts>債務</RW_Debts>
   <RW_NoDebts>債務はありません。</RW_NoDebts>
@@ -155,7 +161,8 @@
   <RW_PayDebt>{0}銀を支払う（所持{1}）</RW_PayDebt>
   <RW_RefuseDebt>支払いを拒否</RW_RefuseDebt>
   <RW_RefuseDebtConfirm>{0}への債務を拒否しますか？友好度が{1}下がり、{2}日間その派閥からの依頼が止まります。進行中の契約は続きます。</RW_RefuseDebtConfirm>
-  <RW_History>最近の精算</RW_History>
+  <RW_History>最近の精算・取消</RW_History>
+  <RW_HistoryCancelled>{0} — {1}</RW_HistoryCancelled>
   <RW_SettlementLine>保管料{0} + 報酬{1} − 取消料{2} − 補償{3} → 入金{4}、債務{5}、友好度{6}</RW_SettlementLine>
   <RW_Cause_None></RW_Cause_None>
   <RW_Cause_Completed>完遂</RW_Cause_Completed>
@@ -222,7 +229,9 @@
 
   <!-- Lifecycle -->
   <RW_Diag_MapVanished>Rental Warehouse: 契約{0}の保管マップが放棄以外の理由で消えました。契約は罰なしで取り消し、発生済みの保管料は保持します。</RW_Diag_MapVanished>
-  <RW_Diag_DepositorGone>預け主が存在しなくなりました。契約は罰なしで取り消し、発生済みの保管料は保持します。</RW_Diag_DepositorGone>
+  <RW_Msg_DepositorGone>契約{0}の預け主が存在しなくなりました。契約は罰なしで取り消し、発生済みの保管料は保持します。</RW_Msg_DepositorGone>
+  <RW_Msg_CancelledDepositorHostile>契約{0}は、貨物の到着前に預け主が敵対したため罰なしで取り消されました。</RW_Msg_CancelledDepositorHostile>
+  <RW_Msg_CancelledMapAbandoned>契約{0}は、貨物の到着前に保管マップを放棄したため罰なしで取り消されました。</RW_Msg_CancelledMapAbandoned>
   <RW_Diag_DuplicateId>Rental Warehouse: 契約ID {0}が重複しています。後のものを隔離し、処理しません。</RW_Diag_DuplicateId>
   <RW_Diag_DuplicateCrate>Rental Warehouse: ID {0}の箱が重複していました。重複分は台帳から外し、価値はありません。</RW_Diag_DuplicateCrate>
   <RW_Msg_DepositorHostile>契約{0}の預け主が敵対しました。3日以内なら罰なしで返還できます。返還しなければ紛失として精算されます。</RW_Msg_DepositorHostile>

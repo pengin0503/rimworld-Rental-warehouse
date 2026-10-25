@@ -128,7 +128,59 @@ namespace RentalWarehouse.Core.Tests
             var d = LifecycleService.Reconcile(world, snap, 100);
 
             Assert.Equal(ContractPhase.Cancelled, world.Contract("K1")!.Phase);
+            Assert.Equal("RW_Cancel_MapAbandoned", world.Contract("K1")!.CancelReason);
+            Assert.Single(d.Effects, e => e.Kind == EffectKind.Notify && e.Payload["key"] == "RW_Msg_CancelledMapAbandoned");
             Assert.DoesNotContain(d.Effects, e => e.Kind == EffectKind.ApplyGoodwill);
+        }
+
+        [Fact]
+        public void HostileDepositor_BeforeDelivery_CancelsWithReasonAndOneNotice()
+        {
+            var t = Terms(ContractKind.Normal, "K1", new[] { 900m });
+            var world = World(t);
+            ContractEngine.Accept(t, Storage(4), world, 0);
+            var snap = Snapshot(world);
+            snap.HostileFactionIds.Add(Depositor);
+
+            var d = LifecycleService.Reconcile(world, snap, 100);
+            var again = LifecycleService.Reconcile(world, snap, 200);
+
+            var c = world.Contract("K1")!;
+            Assert.Equal(ContractPhase.Cancelled, c.Phase);
+            Assert.Equal("RW_Cancel_DepositorHostile", c.CancelReason);
+            Assert.Single(d.Effects, e => e.Kind == EffectKind.Notify && e.Payload["key"] == "RW_Msg_CancelledDepositorHostile");
+            Assert.Empty(again.Effects);
+        }
+
+        [Fact]
+        public void DepositorGone_BeforeDelivery_SystemCancelsWithReasonAndOneNotice()
+        {
+            var t = Terms(ContractKind.Normal, "K1", new[] { 900m });
+            var world = World(t);
+            ContractEngine.Accept(t, Storage(4), world, 0);
+            var snap = Snapshot(world);
+            snap.FactionIds.Remove(Depositor);
+
+            var d = LifecycleService.Reconcile(world, snap, 100);
+            var again = LifecycleService.Reconcile(world, snap, 200);
+
+            var c = world.Contract("K1")!;
+            Assert.Equal(ContractPhase.SystemCancelled, c.Phase);
+            Assert.Equal("RW_Cancel_DepositorGone", c.CancelReason);
+            Assert.Single(d.Effects, e => e.Kind == EffectKind.Notify && e.Payload["key"] == "RW_Msg_DepositorGone");
+            Assert.Empty(again.Effects);
+        }
+
+        [Fact]
+        public void PlayerCancel_RecordsPlayerReason()
+        {
+            var t = Terms(ContractKind.Normal, "K1", new[] { 900m });
+            var world = World(t);
+            ContractEngine.Accept(t, Storage(4), world, 0);
+
+            ContractEngine.Cancel(world.Contract("K1")!, 10);
+
+            Assert.Equal(ContractEngine.CancelByPlayer, world.Contract("K1")!.CancelReason);
         }
 
         [Fact]
@@ -231,6 +283,36 @@ namespace RentalWarehouse.Core.Tests
             Assert.False(world.Cargo.ContainsKey("Old0-0"));
             Assert.True(world.Effects.IsCompleted("Live:deliver:x"));
             Assert.False(world.Effects.Records.ContainsKey("Old0:settle:goodwill"));
+        }
+
+        [Fact]
+        public void History_PruneKeepsUnclaimedBalances_UntilClaimed()
+        {
+            var world = new WorldState();
+            for (int i = 0; i < 21; i++)
+            {
+                world.Contracts.Add(new ContractState
+                {
+                    Terms = new ContractTerms { ContractId = "Old" + i, DepositorFactionId = Depositor },
+                    Phase = ContractPhase.Settled,
+                    MapId = MapId,
+                    LastAccrualTick = i,
+                    Receivable = 72m,
+                    Settlement = new SettlementResult { Credit = 72m },
+                });
+            }
+
+            LifecycleService.Reconcile(world, Snapshot(world), 100 * D);
+
+            Assert.Equal(21, world.Contracts.Count);
+            Assert.Equal(1512m, world.ReceivableBalance());
+            var claim = PaymentService.Claim(world, MapId, "Cell_1_1", 100 * D);
+            Assert.Equal(1512m, claim.Effects.Single().Amount);
+            Assert.False(PaymentService.Claim(world, MapId, "Cell_1_1", 100 * D).Success);
+
+            LifecycleService.Reconcile(world, Snapshot(world), 100 * D);
+
+            Assert.Equal(LifecycleService.SettledHistoryKept, world.Contracts.Count);
         }
 
         [Fact]

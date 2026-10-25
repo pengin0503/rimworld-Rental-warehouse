@@ -23,6 +23,7 @@ namespace RentalWarehouse.Game.Tests
             yield return ("RackHoldsFourCratesWhenRoofedIndoors", RackHoldsFourCratesWhenRoofedIndoors);
             yield return ("OutdoorRackIsNotValidStorage", OutdoorRackIsNotValidStorage);
             yield return ("VaultCargoOnRackIsNotValid", VaultCargoOnRackIsNotValid);
+            yield return ("RackRefusesVaultCrates_HaulingPicksTheFarVault", RackRefusesVaultCrates);
             yield return ("FacilityWithCratesCannotBeDeconstructed", FacilityWithCratesCannotBeDeconstructed);
             yield return ("EntrustedCrateHasNoMarketValue_StolenCrateHasDeclaredValue", WealthValues);
             yield return ("DestroyedRackLeavesCratesOnTheGround", DestroyedRackLeavesCrates);
@@ -69,6 +70,22 @@ namespace RentalWarehouse.Game.Tests
             var crate = s.SpawnCrate(rack.Position, Owner, CargoCustody.Depositor, 3000m, StorageKind.Vault, "GT-K");
 
             Equal("RW_FeeStop_WrongFacility", StorageAdapter.FeeStopReason(crate, CargoAdapter.Comp(crate).Record), "fee stop reason");
+        }
+
+        private static void RackRefusesVaultCrates(GameTestScope s)
+        {
+            var room = s.BuildRoom(6);
+            var rack = Rack(s, room.Min);
+            var vault = (Building_WarehouseStorage)s.SpawnBuilding(RWDefOf.RW_Vault, new IntVec3(room.maxX - 1, 0, room.maxZ - 1));
+            var area = s.FindClearRect(2);
+            var vaultCrate = s.SpawnCrate(area.Min, Owner, CargoCustody.Depositor, 3000m, StorageKind.Vault, "GT-K");
+            var rackCrate = s.SpawnCrate(area.Max, Owner, CargoCustody.Depositor, 500m, StorageKind.Rack, "GT-K");
+
+            Check(!rack.Accepts(vaultCrate), "rack must refuse a vault-only crate");
+            Check(rack.Accepts(rackCrate), "rack accepts an ordinary crate");
+            Check(vault.Accepts(vaultCrate) && vault.Accepts(rackCrate), "vault accepts both");
+            Check(StoreUtility.TryFindBestBetterStoreCellFor(vaultCrate, null, s.Map, StoragePriority.Unstored, Faction.OfPlayer, out var cell), "a store cell exists");
+            Check(vault.AllSlotCellsList().Contains(cell), "vault-only crate goes to the vault, not the nearer rack (got " + cell + ")");
         }
 
         private static void FacilityWithCratesCannotBeDeconstructed(GameTestScope s)
