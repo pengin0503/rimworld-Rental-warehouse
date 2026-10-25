@@ -1,0 +1,103 @@
+# Publishes a prerelease of the installable ZIP from main. Start it from Actions > Release > Run workflow on main with
+# a tag such as v0.1.0, or push that tag. The tag must equal About.xml <modVersion> and the game project's <Version>,
+# and .github/releases/<tag>.md holds the notes. The same checks as validate.yml run first; a dispatched run creates
+# the tag on the checked commit only after they pass.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to create on the selected main commit, e.g. v0.1.0
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require a well-formed tag on main
+        shell: bash
+        run: |
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::Tag must look like v1.2.3 or v1.2.3-test.1: $TAG" >&2; exit 1
+          fi
+          git fetch origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ] && git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null; then
+            echo "::error::Tag $TAG already exists" >&2; exit 1
+          fi
+
+      - name: Require the tag to match the mod version and release notes
+        shell: bash
+        run: |
+          about=$(python3 -c "import xml.etree.ElementTree as E;print(E.parse('Mod/About/About.xml').findtext('modVersion'))")
+          project=$(python3 -c "import xml.etree.ElementTree as E;print(E.parse('Source/RentalWarehouse/RentalWarehouse.csproj').findtext('.//Version'))")
+          base="${TAG#v}"; base="${base%%-*}"
+          if [ "$base" != "$about" ] || [ "$base" != "$project" ]; then
+            echo "::error::Tag $TAG does not match About.xml modVersion $about and project Version $project" >&2; exit 1
+          fi
+          test -f ".github/releases/$TAG.md" || { echo "::error::Missing .github/releases/$TAG.md" >&2; exit 1; }
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Core tests
+        run: dotnet test Tests/RentalWarehouse.Core.Tests -c Release
+
+      - name: Def validator tests
+        run: dotnet test tools/DefValidator.Tests -c Release
+
+      - name: Build in-game test assembly (not run here)
+        run: dotnet build Tests/RentalWarehouse.Game.Tests -c Release
+
+      - name: Package validator self-test
+        run: python -m unittest discover -s scripts -p "test_*.py"
+
+      - name: Package
+        shell: pwsh
+        run: ./scripts/package.ps1
+
+      - name: Check XML defs against the game's classes
+        run: |
+          refs="$HOME/.nuget/packages/krafs.rimworld.ref/1.7.4985-unstable/ref/net10.0"
+          dotnet run --project tools/DefValidator -c Release -- \
+            --assembly "$refs/Assembly-CSharp.dll" \
+            --assembly Mod/1.7/Assemblies/RentalWarehouse.dll \
+            --defs Mod/Defs
+
+      - name: Validate package
+        run: python scripts/validate-package.py dist/RentalWarehouse.zip --source Source
+
+      - name: Create the tag on this commit (dispatched runs)
+        if: github.event_name == 'workflow_dispatch'
+        run: gh api "repos/$GH_REPO/git/refs" -f ref="refs/tags/$TAG" -f sha="$GITHUB_SHA"
+
+      - name: Publish prerelease
+        run: |
+          cp dist/RentalWarehouse.zip "dist/RentalWarehouse-$TAG.zip"
+          gh release create "$TAG" "dist/RentalWarehouse-$TAG.zip" --verify-tag --prerelease \
+            --title "Rental Warehouse $TAG" --notes-file ".github/releases/$TAG.md"
+          gh release view "$TAG" --json url,isPrerelease,assets

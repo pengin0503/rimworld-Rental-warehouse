@@ -50,6 +50,8 @@ dotnet run --project tools/DefValidator -- --assembly <Assembly-CSharp.dll> \
   --assembly Mod/1.7/Assemblies/RentalWarehouse.dll --defs Mod/Defs [--reference <RimWorld>/Data/Core/Defs]
 ```
 
+リリースは、`Mod/About/About.xml`の`modVersion`と`Source/RentalWarehouse/RentalWarehouse.csproj`の`Version`を揃え、`.github/releases/v<版>.md`に告知文を置いてから、GitHubのActions → Release → Run workflow（main、タグ例 `v0.1.0`）で実行します。同じ名前のタグをpushしても実行されます。検査に通った場合だけタグを作り、プレリリースとしてZIPを公開します。
+
 ローカルのゲームDLLで確認する場合は`-p:RimWorldManagedPath=<RimWorldの管理DLLフォルダ>`を付けます。ゲームDLLはリポジトリにもZIPにも含めません。実ゲームの結合試験は`Tests/RentalWarehouse.Game.Tests`（開発モードのDebug actions）で、手順は[検証結果](docs/testing/results-1.7.md)にあります。
 
 | 文書 | 内容 |
