@@ -152,6 +152,12 @@
   <RW_Rank_Col_Crates>箱数（最大）</RW_Rank_Col_Crates>
   <RW_Rank_Custom>個別設定</RW_Rank_Custom>
   <RW_Rank_Reset>ランク表を初期値に戻す</RW_Rank_Reset>
+  <RW_Rank_PresetNow>プリセット: {0}</RW_Rank_PresetNow>
+  <RW_Rank_PresetDesc>表全体を置き換えます。ランクごとの必要ポイントだけが違い、合計価値と箱数は初期値のままです。</RW_Rank_PresetDesc>
+  <RW_Rank_Preset_Standard>標準</RW_Rank_Preset_Standard>
+  <RW_Rank_Preset_Gentle>緩やか（必要ポイント半分）</RW_Rank_Preset_Gentle>
+  <RW_Rank_Preset_Strict>厳しい（必要ポイント2倍）</RW_Rank_Preset_Strict>
+  <RW_Rank_Preset_Custom>カスタム</RW_Rank_Preset_Custom>
   <RW_Rank_Warn>1箱あたり30,000銀を超え、積載33kgに収まらない恐れのあるランク: {0}。</RW_Rank_Warn>
 
   <!-- 診断 -->

@@ -152,6 +152,12 @@
   <RW_Rank_Col_Crates>Max crates</RW_Rank_Col_Crates>
   <RW_Rank_Custom>Custom</RW_Rank_Custom>
   <RW_Rank_Reset>Reset table to defaults</RW_Rank_Reset>
+  <RW_Rank_PresetNow>Preset: {0}</RW_Rank_PresetNow>
+  <RW_Rank_PresetDesc>Replaces the whole table. Only the points needed per rank differ; the totals and crate limits stay at their defaults.</RW_Rank_PresetDesc>
+  <RW_Rank_Preset_Standard>Standard</RW_Rank_Preset_Standard>
+  <RW_Rank_Preset_Gentle>Gentle (half the points)</RW_Rank_Preset_Gentle>
+  <RW_Rank_Preset_Strict>Strict (double the points)</RW_Rank_Preset_Strict>
+  <RW_Rank_Preset_Custom>custom</RW_Rank_Preset_Custom>
   <RW_Rank_Warn>These ranks ask for over 30,000 silver per crate, which may not fit in 33 kg: {0}.</RW_Rank_Warn>
 
   <!-- Diagnostics -->

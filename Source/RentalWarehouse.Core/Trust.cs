@@ -16,6 +16,16 @@ namespace RentalWarehouse.Core
         public RankRow Clone() => (RankRow)MemberwiseClone();
     }
 
+    /// <summary>Ready-made point requirements for the rank table; the totals and crate limits stay as in the standard table.</summary>
+    public enum TrustPreset
+    {
+        Standard,
+        /// <summary>Half the points per rank: ranks come sooner.</summary>
+        Gentle,
+        /// <summary>Double the points per rank: ranks take longer.</summary>
+        Strict,
+    }
+
     /// <summary>The rank table as six parallel columns, the shape the mod settings file stores.</summary>
     public sealed class RankColumns
     {
@@ -106,6 +116,31 @@ namespace RentalWarehouse.Core
                 rows.Add(row);
             }
             return rows;
+        }
+
+        private static readonly TrustPreset[] Presets = { TrustPreset.Standard, TrustPreset.Gentle, TrustPreset.Strict };
+
+        /// <summary>The default table with every rank's required points scaled by the preset; always valid.</summary>
+        public static List<RankRow> Preset(TrustPreset preset)
+        {
+            var rows = Default();
+            decimal factor = preset == TrustPreset.Gentle ? 0.5m : preset == TrustPreset.Strict ? 2m : 1m;
+            for (int i = 1; i < rows.Count; i++)
+            {
+                int points = (int)Math.Round(rows[i].RequiredPoints * factor, 0, MidpointRounding.AwayFromZero);
+                rows[i].RequiredPoints = Math.Max(points, rows[i - 1].RequiredPoints + 1);
+            }
+            return rows;
+        }
+
+        /// <summary>The preset this table equals, or null once it was edited.</summary>
+        public static TrustPreset? PresetOf(IReadOnlyList<RankRow> table)
+        {
+            foreach (var preset in Presets)
+            {
+                if (SameTable(table, Preset(preset))) return preset;
+            }
+            return null;
         }
 
         /// <summary>The highest rank whose required points the points reach.</summary>

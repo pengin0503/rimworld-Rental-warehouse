@@ -115,6 +115,57 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
+        public void Preset_Standard_IsTheDefaultTable()
+        {
+            Assert.True(TrustRanks.SameTable(TrustRanks.Default(), TrustRanks.Preset(TrustPreset.Standard)));
+        }
+
+        [Fact]
+        public void Preset_Gentle_NeedsHalfThePoints_Strict_Double_ValuesUnchanged()
+        {
+            var gentle = TrustRanks.Preset(TrustPreset.Gentle);
+            var strict = TrustRanks.Preset(TrustPreset.Strict);
+            var standard = TrustRanks.Default();
+
+            Assert.Equal(new[] { 0, 15, 50, 125, 250, 500, 1000, 2000 }, gentle.Select(r => r.RequiredPoints));
+            Assert.Equal(new[] { 0, 60, 200, 500, 1000, 2000, 4000, 8000 }, strict.Select(r => r.RequiredPoints));
+            for (int i = 0; i < TrustRanks.Count; i++)
+            {
+                foreach (var t in new[] { gentle[i], strict[i] })
+                {
+                    Assert.Equal((standard[i].NormalMin, standard[i].NormalMax, standard[i].HighRiskMin, standard[i].HighRiskMax, standard[i].MaxCrates),
+                        (t.NormalMin, t.NormalMax, t.HighRiskMin, t.HighRiskMax, t.MaxCrates));
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(TrustPreset.Standard)]
+        [InlineData(TrustPreset.Gentle)]
+        [InlineData(TrustPreset.Strict)]
+        public void Preset_IsAlwaysValid_AndFresh(TrustPreset preset)
+        {
+            var a = TrustRanks.Preset(preset);
+
+            Assert.Null(TrustRanks.Validate(a));
+            a[1].RequiredPoints = 999;
+            Assert.NotEqual(999, TrustRanks.Preset(preset)[1].RequiredPoints);
+        }
+
+        [Theory]
+        [InlineData(TrustPreset.Standard)]
+        [InlineData(TrustPreset.Gentle)]
+        [InlineData(TrustPreset.Strict)]
+        public void PresetOf_RecognisesAPresetTable_AndNullAfterAnEdit(TrustPreset preset)
+        {
+            var table = TrustRanks.Preset(preset);
+            Assert.Equal(preset, TrustRanks.PresetOf(table));
+
+            table[3].NormalMax += 1;
+            Assert.Null(TrustRanks.PresetOf(table));
+        }
+
+        [Fact]
         public void ApplyMultiplier_ScalesFromTheBaseRanges()
         {
             var row = new RankRow();
