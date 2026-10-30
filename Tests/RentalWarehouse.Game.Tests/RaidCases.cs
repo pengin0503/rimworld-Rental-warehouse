@@ -22,6 +22,7 @@ namespace RentalWarehouse.Game.Tests
             yield return ("EmptyVaultIsNotABreachTarget", EmptyVaultNotTarget);
             yield return ("RaidSpawnsThievesWithCargoLord", RaidSpawns);
             yield return ("CrateCarriedOffMapIsLost_RecoveredCrateIsNot", CarriedOffMap);
+            yield return ("ThievesLeaveWhenNothingIsLeftToSteal", ThievesLeave);
         }
 
         private static Faction Hostile() =>
@@ -62,6 +63,33 @@ namespace RentalWarehouse.Game.Tests
             var lord = s.Map.lordManager.lords.Skip(before).FirstOrDefault(l => l.LordJob is LordJob_StealCargo);
             Check(lord != null && lord.ownedPawns.Count > 0, "lord with pawns");
             foreach (var p in lord.ownedPawns.ToList()) p.Destroy(DestroyMode.Vanish);
+        }
+
+        private static void ThievesLeave(GameTestScope s)
+        {
+            var faction = Hostile();
+            var terms = DeliveryCases.Offer(s, ContractKind.HighRisk, 3000m);
+            s.World.State.Offers.RemoveAll(o => o.Terms.ContractId == terms.ContractId);
+            terms.PursuerFactionId = Ids.Of(faction);
+            var c = new ContractState { Terms = terms, Phase = ContractPhase.Active, MapId = Ids.Of(s.Map), ActiveTick = Ids.Now, EndTick = Ids.Now + 6 * CoreTime.TicksPerDay };
+            s.World.State.Contracts.Add(c);
+            int before = s.Map.lordManager.lords.Count;
+            Check(ThreatAdapter.Start(s.World, new RaidDecision { ContractId = terms.ContractId, Points = 800m, SlotIndex = 0, EffectId = "gt-leave" }), "raid started");
+            var lord = s.Map.lordManager.lords.Skip(before).First(l => l.LordJob is LordJob_StealCargo);
+            try
+            {
+                Check(lord.Graph.transitions.Any(t => t.target is LordToil_ExitMap), "the graph has a way out");
+                Check(!ThreatAdapter.AnyStealable(s.Map), "no crate of this contract is on the map");
+
+                var job = (LordJob_StealCargo)lord.LordJob;
+                int t0 = (Find.TickManager.TicksGame / 30 + 1) * 30;
+                Check(!job.ShouldRetreat(t0), "the first empty look only starts the clock");
+                Check(job.ShouldRetreat(t0 + (int)RaidRetreat.NothingToStealGraceTicks / 30 * 30 + 30), "they leave after the grace period");
+            }
+            finally
+            {
+                foreach (var p in lord.ownedPawns.ToList()) p.Destroy(DestroyMode.Vanish);
+            }
         }
 
         private static void CarriedOffMap(GameTestScope s)

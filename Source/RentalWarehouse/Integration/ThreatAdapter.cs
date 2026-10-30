@@ -93,6 +93,18 @@ namespace RentalWarehouse
             return !(crate.Position.GetFirstThing<Building_Vault>(map) is Building_Vault vault) || vault.Destroyed;
         }
 
+        /// <summary>Whether any contract crate on this map can still be taken by raiders.</summary>
+        public static bool AnyStealable(Map map)
+        {
+            var world = WarehouseWorldComponent.Instance;
+            if (world == null || map == null) return false;
+            foreach (var kv in world.AllCrates)
+            {
+                if (IsStealable(kv.Value, map)) return true;
+            }
+            return false;
+        }
+
         public static bool HoldsContractCargo(Building_Vault vault)
         {
             foreach (var crate in vault.StoredCrates())
