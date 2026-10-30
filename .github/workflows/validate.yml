@@ -47,6 +47,9 @@ jobs:
             --assembly Mod/1.7/Assemblies/RentalWarehouse.dll \
             --defs Mod/Defs
 
+      - name: Translation keys
+        run: python -B scripts/check_keys.py
+
       - name: Package validator self-test
         run: python -m unittest discover -s scripts -p "test_*.py"
 
