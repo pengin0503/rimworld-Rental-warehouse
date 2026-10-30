@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- The letter that announces new warehouse offers; its choices (open the warehouse tab / close) come from the letter class. -->
+  <LetterDef>
+    <defName>RW_OffersLetter</defName>
+    <letterClass>RentalWarehouse.ChoiceLetter_Offers</letterClass>
+    <color>(150, 180, 205)</color>
+    <flashColor>(130, 170, 200)</flashColor>
+    <flashInterval>90</flashInterval>
+    <arriveSound>LetterArrive</arriveSound>
+  </LetterDef>
+
+</Defs>

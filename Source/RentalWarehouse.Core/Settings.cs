@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace RentalWarehouse.Core
 {
@@ -16,7 +17,15 @@ namespace RentalWarehouse.Core
         public decimal FeeMultiplier = 1.0m;
         public decimal RaidScale = 1.0m;
 
-        public WarehouseSettings Clone() => (WarehouseSettings)MemberwiseClone();
+        /// <summary>The trust rank table (spec 3.3). Edited in the mod settings; applies to offers generated afterwards.</summary>
+        public List<RankRow> RankTable = TrustRanks.Default();
+
+        public WarehouseSettings Clone()
+        {
+            var copy = (WarehouseSettings)MemberwiseClone();
+            copy.RankTable = RankTable.ConvertAll(r => r.Clone());
+            return copy;
+        }
 
         /// <summary>Clamps to 0.25–4.0 and snaps to the 0.25 grid.</summary>
         public static decimal NormalizeMultiplier(decimal value)
@@ -34,8 +43,6 @@ namespace RentalWarehouse.Core
         /// <summary>Term length is drawn per offer, in whole days within this range (inclusive).</summary>
         public int MinDurationDays;
         public int MaxDurationDays;
-        public decimal MinTotalValue;
-        public decimal MaxTotalValue;
         public decimal DailyBase;
         public decimal DailyValueRate;
         public decimal CompletionRate;
@@ -48,8 +55,6 @@ namespace RentalWarehouse.Core
             Kind = ContractKind.Normal,
             MinDurationDays = 3,
             MaxDurationDays = 12,
-            MinTotalValue = 500m,
-            MaxTotalValue = 2000m,
             DailyBase = 8m,
             DailyValueRate = 0.002m,
             CompletionRate = 0.20m,
@@ -62,8 +67,6 @@ namespace RentalWarehouse.Core
             Kind = ContractKind.HighRisk,
             MinDurationDays = 3,
             MaxDurationDays = 12,
-            MinTotalValue = 2000m,
-            MaxTotalValue = 6000m,
             DailyBase = 12m,
             DailyValueRate = 0.004m,
             CompletionRate = 0.50m,
@@ -95,7 +98,10 @@ namespace RentalWarehouse.Core
         /// <summary>Mass of the empty crate (matches the ThingDef's base Mass); counts toward the 35 kg limit.</summary>
         public const decimal CrateTareKg = 2m;
         public const int MinCrates = 1;
-        public const int MaxCrates = 4;
+        /// <summary>Most crates any contract may hold, whatever the rank table says (spec 4).</summary>
+        public const int HardMaxCrates = 12;
+        /// <summary>Lowest trust rank at which the Empire offers contracts (spec 5.1).</summary>
+        public const int EmpireMinRank = 2;
         public const decimal MaxCrateMassKg = 35m;
         public const int RefuseGoodwill = -20;
         public const long RefuseBlockTicks = 15 * CoreTime.TicksPerDay;

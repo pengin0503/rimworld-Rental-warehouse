@@ -137,6 +137,10 @@ namespace RentalWarehouse.Core
         public decimal FeeMultiplier = 1m;
         public decimal RaidScale = 1m;
         public int ScheduledRaidCount;
+        /// <summary>Share of the full-term fee prepaid in the depositor's first offer; <see cref="PrepaymentRate"/> is what negotiation made of it (spec 6).</summary>
+        public decimal OpeningPrepaymentRate;
+        /// <summary>True when the Empire is the depositor: its settlements may demote two ranks instead of one (spec 3.4).</summary>
+        public bool DepositorIsEmpire;
         public decimal NominalTotalReward;
         /// <summary>Share (0–0.30) of the full-term fee paid into the claimable balance when the term starts.</summary>
         public decimal PrepaymentRate;
@@ -180,6 +184,13 @@ namespace RentalWarehouse.Core
         public ContractCargoState Clone() => (ContractCargoState)MemberwiseClone();
     }
 
+    public enum NegotiationState
+    {
+        None,
+        Succeeded,
+        Failed,
+    }
+
     public enum RaidSlotState
     {
         Pending,
@@ -201,6 +212,8 @@ namespace RentalWarehouse.Core
     {
         public ContractTerms Terms = new ContractTerms();
         public ContractPhase Phase;
+        /// <summary>Whether the prepayment of this offer was negotiated, and how it went. One attempt per offer.</summary>
+        public NegotiationState Negotiation;
         public string MapId = "";
         public long AcceptedTick;
         public long DeliveryTick;
@@ -292,6 +305,8 @@ namespace RentalWarehouse.Core
         public decimal Credit;
         public decimal Debt;
         public int GoodwillDelta;
+        /// <summary>Trust points this settlement adds or removes (spec 3.2); applied once by an ApplyTrust effect.</summary>
+        public int TrustDelta;
         public decimal ReturnValueRate;
 
         public SettlementResult Clone() => (SettlementResult)MemberwiseClone();
@@ -312,6 +327,8 @@ namespace RentalWarehouse.Core
         RemoveCargo,
         ReleaseVaultCargo,
         Notify,
+        /// <summary>Adds Amount trust points; Payload["empire"] is "1" when the depositor is the Empire (spec 3.5).</summary>
+        ApplyTrust,
     }
 
     public sealed class EffectRequest
@@ -349,7 +366,7 @@ namespace RentalWarehouse.Core
 
     public sealed class WorldState
     {
-        public const int CurrentSchemaVersion = 2;
+        public const int CurrentSchemaVersion = 3;
 
         public int SchemaVersion = CurrentSchemaVersion;
         public int WorldSeed;
@@ -362,6 +379,10 @@ namespace RentalWarehouse.Core
         /// <summary>Index of the next vault intel report; seeds that report and names its site (RWS-index).</summary>
         public int NextSiteIndex;
         public int SequenceCounter;
+        /// <summary>Trust points (spec 3.1). The rank is computed from them and the rank table, never stored.</summary>
+        public int TrustPoints;
+        /// <summary>The rank last announced to the player, so a change is reported once.</summary>
+        public int TrustAnnouncedRank;
         public List<ContractState> Offers = new List<ContractState>();
         public List<ContractState> Contracts = new List<ContractState>();
         public List<SiteRecord> Sites = new List<SiteRecord>();

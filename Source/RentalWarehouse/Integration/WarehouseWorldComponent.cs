@@ -97,6 +97,7 @@ namespace RentalWarehouse
             VaultLootAdapter.Tick(this, now);
             LifecycleAdapter.Tick(this, now);
             EffectDispatcher.ProcessQueue(this);
+            TrustAdapter.Tick(this);
         }
 
         public void Enqueue(IEnumerable<EffectRequest> effects, bool applyNow = true)

@@ -28,6 +28,22 @@
   <RW_Storage_Vault>vault</RW_Storage_Vault>
   <RW_Requires>Needs {1} {0} slot(s) for {2} days, counted from when every crate is stored.</RW_Requires>
   <RW_PrepaymentLine>Prepayment: {0}% of the full-term fee ({1} silver) is paid when the term starts. The rest and the completion bonus are paid after the crates are returned.</RW_PrepaymentLine>
+  <RW_PrepaymentLineNegotiated>Prepayment: opening {0}% → now {1}% ({2} silver), negotiation {3}. The rest and the completion bonus are paid after the crates are returned.</RW_PrepaymentLineNegotiated>
+  <RW_Negotiation_Succeeded>succeeded</RW_Negotiation_Succeeded>
+  <RW_Negotiation_Failed>failed</RW_Negotiation_Failed>
+  <RW_Negotiate>Negotiate prepayment</RW_Negotiate>
+  <RW_Negotiate_Done>Already negotiated</RW_Negotiate_Done>
+  <RW_Negotiate_NoRoom>Prepayment is at the maximum</RW_Negotiate_NoRoom>
+  <RW_NegotiateTitle>Negotiate the prepayment</RW_NegotiateTitle>
+  <RW_NegotiateIntro>Ask the depositor of contract {0} for a higher prepayment than the opening {1}%. You can try once per offer; if it fails, the opening rate stays.</RW_NegotiateIntro>
+  <RW_NegotiateNegotiator>Negotiator</RW_NegotiateNegotiator>
+  <RW_NegotiateSocial>Social {0}</RW_NegotiateSocial>
+  <RW_NegotiateAsk>Ask for a prepayment of {0}%</RW_NegotiateAsk>
+  <RW_NegotiateChance>Chance of success: {0}%</RW_NegotiateChance>
+  <RW_NegotiateGo>Negotiate</RW_NegotiateGo>
+  <RW_NegotiateNoOne>No colonist is able to negotiate right now.</RW_NegotiateNoOne>
+  <RW_Msg_NegotiationSucceeded>Contract {0}: the negotiation succeeded, the prepayment is now {1}%.</RW_Msg_NegotiationSucceeded>
+  <RW_Msg_NegotiationFailed>Contract {0}: the negotiation failed, the prepayment stays at {1}%.</RW_Msg_NegotiationFailed>
   <RW_NoPrepaymentLine>No prepayment: the whole fee and the completion bonus are paid after the crates are returned.</RW_NoPrepaymentLine>
   <RW_FeeLine>Fee {0} silver/day while stored; completion bonus up to {1}; total at most {2} silver.</RW_FeeLine>
   <RW_CompensationLine>Lost crates: you owe {0}% of their value, capped at {1} silver. Opened crates: 100% of their value.</RW_CompensationLine>
@@ -38,7 +54,11 @@
   <RW_Accept>Accept</RW_Accept>
   <RW_AcceptConfirm>Accept this contract for storage on {1}?\n\n{0}\n\nCrates arrive by drop pod tomorrow and must all be stored within one day of arrival. Returning early forfeits the completion bonus and costs a fee of up to two days' storage.</RW_AcceptConfirm>
   <RW_Msg_Accepted>Contract {0} accepted. Cargo arrives in one day.</RW_Msg_Accepted>
-  <RW_Msg_NewOffers>{0} new warehouse offer(s).</RW_Msg_NewOffers>
+  <RW_Letter_NewOffersTitle>New warehouse offers</RW_Letter_NewOffersTitle>
+  <RW_Letter_NewOffersIntro>{0} new offer(s) have arrived for your rental warehouse:</RW_Letter_NewOffersIntro>
+  <RW_Letter_OfferLine>{0} — {1}, {2} crate(s), {3} silver in total, {4} days, {5}% prepayment, open for {6}</RW_Letter_OfferLine>
+  <RW_Letter_EmpireMark>Empire</RW_Letter_EmpireMark>
+  <RW_Letter_OpenTab>Open the warehouse</RW_Letter_OpenTab>
 
   <!-- Rejections -->
   <RW_Reject_NotOffered>That offer is no longer available.</RW_Reject_NotOffered>
@@ -46,6 +66,8 @@
   <RW_Reject_InvalidManifest>The crate's contents are invalid.</RW_Reject_InvalidManifest>
   <RW_Reject_TooHeavy>A crate may weigh at most 35 kg.</RW_Reject_TooHeavy>
   <RW_Reject_OfferExpired>The offer has expired.</RW_Reject_OfferExpired>
+  <RW_Reject_AlreadyNegotiated>This offer has already been negotiated.</RW_Reject_AlreadyNegotiated>
+  <RW_Reject_InvalidRate>Ask for more than the opening prepayment, and no more than 30%.</RW_Reject_InvalidRate>
   <RW_Reject_InDebt>Settle your warehouse debt before taking new contracts.</RW_Reject_InDebt>
   <RW_Reject_FactionBlocked>This faction refuses to deal with you for now.</RW_Reject_FactionBlocked>
   <RW_Reject_TooManyContracts>You already have the maximum number of contracts.</RW_Reject_TooManyContracts>
@@ -94,6 +116,39 @@
   <RW_Letter_Delivery>The cargo for contract {0} ({1} crate(s)) has landed. Store every crate in a valid rack or vault within one day; the term starts when all are stored.</RW_Letter_Delivery>
   <RW_Msg_PrepaymentPosted>Contract {0}: prepayment of {1} silver added to your claimable balance.</RW_Msg_PrepaymentPosted>
   <RW_Msg_Settled>Contract {0} settled: {1} silver.</RW_Msg_Settled>
+  <RW_TrustRank_0>Newcomer</RW_TrustRank_0>
+  <RW_TrustRank_1>Registered Trader</RW_TrustRank_1>
+  <RW_TrustRank_2>Trusted Trader</RW_TrustRank_2>
+  <RW_TrustRank_3>Certified Keeper</RW_TrustRank_3>
+  <RW_TrustRank_4>Notable</RW_TrustRank_4>
+  <RW_TrustRank_5>Grand Keeper</RW_TrustRank_5>
+  <RW_TrustRank_6>Warehouse Noble</RW_TrustRank_6>
+  <RW_TrustRank_7>Warehouse King</RW_TrustRank_7>
+  <RW_Msg_RankUp>Your warehouse's trust rank rose to {0}.</RW_Msg_RankUp>
+  <RW_Msg_RankDown>Your warehouse's trust rank fell to {0}.</RW_Msg_RankDown>
+  <RW_Rank_WrongCount>The rank table must have exactly 8 rows.</RW_Rank_WrongCount>
+  <RW_Rank_FirstNotZero>The first rank must need 0 points.</RW_Rank_FirstNotZero>
+  <RW_Rank_PointsOrder>Each rank must need more points than the rank before it.</RW_Rank_PointsOrder>
+  <RW_Rank_RangeInvalid>Each total value range needs a minimum of at least 100 silver that is not above its maximum.</RW_Rank_RangeInvalid>
+  <RW_Rank_CratesInvalid>The crate limit must be between 1 and 12.</RW_Rank_CratesInvalid>
+  <RW_TrustSummary>Trust rank: {0} ({1} points, {2} to the next rank)</RW_TrustSummary>
+  <RW_TrustSummaryMax>Trust rank: {0} ({1} points, highest rank)</RW_TrustSummaryMax>
+  <RW_TrustLine>trust {0}</RW_TrustLine>
+  <RW_Hint_Empire>Empire contracts need trust rank {0} or higher and a colonist who holds the title {1} or higher.</RW_Hint_Empire>
+  <RW_Set_EditRanks>Edit trust rank table...</RW_Set_EditRanks>
+  <RW_Rank_Title>Trust rank table</RW_Rank_Title>
+  <RW_Rank_Hint>Totals are the combined declared value of a contract's crates, in silver. Total values and crate limits apply to new offers; required points apply at once. Typing a multiplier fills the four totals from the base ranges (normal 500-2,000, high-risk 2,000-6,000).</RW_Rank_Hint>
+  <RW_Rank_Col_Rank>Rank</RW_Rank_Col_Rank>
+  <RW_Rank_Col_Points>Points</RW_Rank_Col_Points>
+  <RW_Rank_Col_Mult>Multiplier</RW_Rank_Col_Mult>
+  <RW_Rank_Col_NormalMin>Normal min</RW_Rank_Col_NormalMin>
+  <RW_Rank_Col_NormalMax>Normal max</RW_Rank_Col_NormalMax>
+  <RW_Rank_Col_HighMin>High-risk min</RW_Rank_Col_HighMin>
+  <RW_Rank_Col_HighMax>High-risk max</RW_Rank_Col_HighMax>
+  <RW_Rank_Col_Crates>Max crates</RW_Rank_Col_Crates>
+  <RW_Rank_Custom>Custom</RW_Rank_Custom>
+  <RW_Rank_Reset>Reset table to defaults</RW_Rank_Reset>
+  <RW_Rank_Warn>These ranks ask for over 30,000 silver per crate, which may not fit in 33 kg: {0}.</RW_Rank_Warn>
 
   <!-- Diagnostics -->
   <RW_Diag_EffectAbandoned>Rental Warehouse: an action failed repeatedly and was abandoned ({0}). Nothing was granted in its place.</RW_Diag_EffectAbandoned>

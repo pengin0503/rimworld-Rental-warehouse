@@ -28,6 +28,22 @@
   <RW_Storage_Vault>金庫</RW_Storage_Vault>
   <RW_Requires>{0}の枠を{1}個、{2}日間使います。期間は全箱の収納完了から数えます。</RW_Requires>
   <RW_PrepaymentLine>前払い: 全期間の保管料の{0}%（{1}銀）を期間の開始時に受け取れます。残りと完了報酬は、箱の返還後に後払いです。</RW_PrepaymentLine>
+  <RW_PrepaymentLineNegotiated>前払い: 初回{0}% → 現在{1}%（{2}銀）・交渉{3}。残りと完了報酬は、箱の返還後に後払いです。</RW_PrepaymentLineNegotiated>
+  <RW_Negotiation_Succeeded>成功</RW_Negotiation_Succeeded>
+  <RW_Negotiation_Failed>失敗</RW_Negotiation_Failed>
+  <RW_Negotiate>前払いを交渉</RW_Negotiate>
+  <RW_Negotiate_Done>交渉済み</RW_Negotiate_Done>
+  <RW_Negotiate_NoRoom>前払いは上限です</RW_Negotiate_NoRoom>
+  <RW_NegotiateTitle>前払い率の交渉</RW_NegotiateTitle>
+  <RW_NegotiateIntro>契約{0}の依頼元に、初回提示率{1}%より高い前払いを求めます。1つの依頼につき1回だけで、失敗すると初回提示率のままです。</RW_NegotiateIntro>
+  <RW_NegotiateNegotiator>交渉役</RW_NegotiateNegotiator>
+  <RW_NegotiateSocial>社会 {0}</RW_NegotiateSocial>
+  <RW_NegotiateAsk>要求する前払い率: {0}%</RW_NegotiateAsk>
+  <RW_NegotiateChance>成功率: {0}%</RW_NegotiateChance>
+  <RW_NegotiateGo>交渉する</RW_NegotiateGo>
+  <RW_NegotiateNoOne>交渉できるコロニストがいません。</RW_NegotiateNoOne>
+  <RW_Msg_NegotiationSucceeded>契約{0}: 交渉に成功しました。前払い率は{1}%になりました。</RW_Msg_NegotiationSucceeded>
+  <RW_Msg_NegotiationFailed>契約{0}: 交渉は失敗しました。前払い率は{1}%のままです。</RW_Msg_NegotiationFailed>
   <RW_NoPrepaymentLine>前払いなし: 保管料の全額と完了報酬は、箱の返還後に後払いです。</RW_NoPrepaymentLine>
   <RW_FeeLine>保管中の料金は1日{0}銀。完了報酬は最大{1}銀、合計は最大{2}銀。</RW_FeeLine>
   <RW_CompensationLine>紛失した箱は価値の{0}%を補償（上限{1}銀）。開封した箱は価値の100%を補償。</RW_CompensationLine>
@@ -38,7 +54,11 @@
   <RW_Accept>受注</RW_Accept>
   <RW_AcceptConfirm>{1}で保管するこの契約を受注しますか？\n\n{0}\n\n貨物は翌日ポッドで届き、到着から1日以内に全箱を収納する必要があります。早期返還では完了報酬がなくなり、最大2日分の保管料を取消料として差し引きます。</RW_AcceptConfirm>
   <RW_Msg_Accepted>契約{0}を受注しました。貨物は1日後に届きます。</RW_Msg_Accepted>
-  <RW_Msg_NewOffers>貸倉庫の新しい依頼が{0}件あります。</RW_Msg_NewOffers>
+  <RW_Letter_NewOffersTitle>貸倉庫に新しい依頼が届きました</RW_Letter_NewOffersTitle>
+  <RW_Letter_NewOffersIntro>貸倉庫に新しい依頼が{0}件届きました:</RW_Letter_NewOffersIntro>
+  <RW_Letter_OfferLine>{0}（{1}）— 箱{2}個・合計{3}銀・{4}日間・前払い{5}%・受注期限まであと{6}</RW_Letter_OfferLine>
+  <RW_Letter_EmpireMark>帝国</RW_Letter_EmpireMark>
+  <RW_Letter_OpenTab>貸倉庫を開く</RW_Letter_OpenTab>
 
   <!-- 拒否理由 -->
   <RW_Reject_NotOffered>この依頼はもう受けられません。</RW_Reject_NotOffered>
@@ -46,6 +66,8 @@
   <RW_Reject_InvalidManifest>箱の内容が不正です。</RW_Reject_InvalidManifest>
   <RW_Reject_TooHeavy>箱は35kg以下でなければなりません。</RW_Reject_TooHeavy>
   <RW_Reject_OfferExpired>依頼の期限が切れています。</RW_Reject_OfferExpired>
+  <RW_Reject_AlreadyNegotiated>この依頼はすでに交渉済みです。</RW_Reject_AlreadyNegotiated>
+  <RW_Reject_InvalidRate>初回提示率より高く、30%以下の前払い率を要求してください。</RW_Reject_InvalidRate>
   <RW_Reject_InDebt>貸倉庫の債務を精算するまで新規受注できません。</RW_Reject_InDebt>
   <RW_Reject_FactionBlocked>この派閥は現在取引に応じません。</RW_Reject_FactionBlocked>
   <RW_Reject_TooManyContracts>同時に受けられる契約数の上限です。</RW_Reject_TooManyContracts>
@@ -94,6 +116,39 @@
   <RW_Letter_Delivery>契約{0}の貨物（{1}箱）が届きました。1日以内に全箱を有効な棚か金庫へ収納してください。全箱の収納で期間が始まります。</RW_Letter_Delivery>
   <RW_Msg_PrepaymentPosted>契約{0}: 前払い{1}銀が受領可能残高に加わりました。</RW_Msg_PrepaymentPosted>
   <RW_Msg_Settled>契約{0}を精算しました: {1}銀。</RW_Msg_Settled>
+  <RW_TrustRank_0>新参</RW_TrustRank_0>
+  <RW_TrustRank_1>登録業者</RW_TrustRank_1>
+  <RW_TrustRank_2>信用業者</RW_TrustRank_2>
+  <RW_TrustRank_3>認定倉庫主</RW_TrustRank_3>
+  <RW_TrustRank_4>名士</RW_TrustRank_4>
+  <RW_TrustRank_5>大倉庫主</RW_TrustRank_5>
+  <RW_TrustRank_6>倉庫貴族</RW_TrustRank_6>
+  <RW_TrustRank_7>倉庫王</RW_TrustRank_7>
+  <RW_Msg_RankUp>貸倉庫の信頼ランクが「{0}」に上がりました。</RW_Msg_RankUp>
+  <RW_Msg_RankDown>貸倉庫の信頼ランクが「{0}」に下がりました。</RW_Msg_RankDown>
+  <RW_Rank_WrongCount>ランク表は8行ちょうど必要です。</RW_Rank_WrongCount>
+  <RW_Rank_FirstNotZero>最初のランクの必要ポイントは0にしてください。</RW_Rank_FirstNotZero>
+  <RW_Rank_PointsOrder>必要ポイントは前のランクより大きくしてください。</RW_Rank_PointsOrder>
+  <RW_Rank_RangeInvalid>合計価値は、最小を100銀以上かつ最大以下にしてください。</RW_Rank_RangeInvalid>
+  <RW_Rank_CratesInvalid>箱数は1～12にしてください。</RW_Rank_CratesInvalid>
+  <RW_TrustSummary>信頼ランク: {0}（{1}点・次のランクまで{2}点）</RW_TrustSummary>
+  <RW_TrustSummaryMax>信頼ランク: {0}（{1}点・最高ランク）</RW_TrustSummaryMax>
+  <RW_TrustLine>信頼 {0}</RW_TrustLine>
+  <RW_Hint_Empire>帝国の依頼には、信頼ランク「{0}」以上と、爵位「{1}」以上を持つコロニストが必要です。</RW_Hint_Empire>
+  <RW_Set_EditRanks>信頼ランク表を編集…</RW_Set_EditRanks>
+  <RW_Rank_Title>信頼ランク表</RW_Rank_Title>
+  <RW_Rank_Hint>合計は、契約の箱の申告価値の合計（銀）です。合計価値と箱数は新しい依頼から、必要ポイントはすぐに反映されます。倍率を入力すると、基準（通常500～2,000、高危険度2,000～6,000）に掛けた値が4つの合計に入ります。</RW_Rank_Hint>
+  <RW_Rank_Col_Rank>ランク</RW_Rank_Col_Rank>
+  <RW_Rank_Col_Points>必要ポイント</RW_Rank_Col_Points>
+  <RW_Rank_Col_Mult>価値倍率</RW_Rank_Col_Mult>
+  <RW_Rank_Col_NormalMin>通常 最小</RW_Rank_Col_NormalMin>
+  <RW_Rank_Col_NormalMax>通常 最大</RW_Rank_Col_NormalMax>
+  <RW_Rank_Col_HighMin>高危険度 最小</RW_Rank_Col_HighMin>
+  <RW_Rank_Col_HighMax>高危険度 最大</RW_Rank_Col_HighMax>
+  <RW_Rank_Col_Crates>箱数（最大）</RW_Rank_Col_Crates>
+  <RW_Rank_Custom>個別設定</RW_Rank_Custom>
+  <RW_Rank_Reset>ランク表を初期値に戻す</RW_Rank_Reset>
+  <RW_Rank_Warn>1箱あたり30,000銀を超え、積載33kgに収まらない恐れのあるランク: {0}。</RW_Rank_Warn>
 
   <!-- 診断 -->
   <RW_Diag_EffectAbandoned>Rental Warehouse: 処理が繰り返し失敗したため中止しました（{0}）。代わりの物は付与していません。</RW_Diag_EffectAbandoned>

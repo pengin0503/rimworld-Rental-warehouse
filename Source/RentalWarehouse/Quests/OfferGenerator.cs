@@ -33,23 +33,34 @@ namespace RentalWarehouse
                 goods = new List<Good>();
                 foreach (var (defName, stuffName) in Catalog)
                 {
-                    var def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
-                    var stuff = stuffName == null ? null : DefDatabase<ThingDef>.GetNamedSilentFail(stuffName);
-                    if (def == null || (stuffName != null && stuff == null) || def.IsIngestible || def.HasComp(typeof(CompRottable))) continue;
-                    if (def.MadeFromStuff && stuff == null) stuff = GenStuff.DefaultStuffFor(def);
-                    float value = def.GetStatValueAbstract(StatDefOf.MarketValue, stuff);
-                    float mass = def.GetStatValueAbstract(StatDefOf.Mass, stuff);
-                    if (value <= 0f) continue;
-                    int? quality = def.HasComp(typeof(CompQuality)) ? (int)QualityCategory.Normal : (int?)null;
-                    goods.Add(new Good(def.defName, def.MadeFromStuff ? stuff?.defName : null, (decimal)value, (decimal)mass, quality));
+                    var good = MakeGood(defName, stuffName);
+                    if (good != null) goods.Add(good);
                 }
                 return goods;
             }
         }
 
+        /// <summary>
+        /// A priced, non-perishable good from a def name (and the stuff it is made of), or null when the def is missing
+        /// (for example a DLC that is not active) or has no value.
+        /// </summary>
+        public static Good MakeGood(string defName, string stuffName)
+        {
+            var def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+            var stuff = stuffName == null ? null : DefDatabase<ThingDef>.GetNamedSilentFail(stuffName);
+            if (def == null || (stuffName != null && stuff == null) || def.IsIngestible || def.HasComp(typeof(CompRottable))) return null;
+            if (def.MadeFromStuff && stuff == null) stuff = GenStuff.DefaultStuffFor(def);
+            float value = def.GetStatValueAbstract(StatDefOf.MarketValue, stuff);
+            float mass = def.GetStatValueAbstract(StatDefOf.Mass, stuff);
+            if (value <= 0f) return null;
+            int? quality = def.HasComp(typeof(CompQuality)) ? (int)QualityCategory.Normal : (int?)null;
+            return new Good(def.defName, def.MadeFromStuff ? stuff?.defName : null, (decimal)value, (decimal)mass, quality);
+        }
+
         public static OfferContext BuildContext()
         {
-            var ctx = new OfferContext { Goods = Goods };
+            var ctx = new OfferContext { Goods = Goods, EmpireTitleFactor = EmpireAdapter.TitleFactor(), EmpireGoods = EmpireAdapter.Catalogue() };
+            var empire = EmpireAdapter.EmpireFaction();
             var all = Find.FactionManager.AllFactionsListForReading;
             foreach (var f in all)
             {
@@ -60,6 +71,7 @@ namespace RentalWarehouse
                     Humanlike = f.def.humanlikeFaction,
                     Defeated = f.defeated,
                     HostileToPlayer = f.HostileTo(Faction.OfPlayer),
+                    IsEmpire = empire != null && f == empire,
                 };
                 foreach (var other in all)
                 {
@@ -77,11 +89,7 @@ namespace RentalWarehouse
                 OfferService.ExpireOffers(world.State, now);
                 return;
             }
-            var created = OfferService.Generate(world.State, BuildContext(), now);
-            if (created.Count > 0)
-            {
-                Messages.Message("RW_Msg_NewOffers".Translate(created.Count), MessageTypeDefOf.NeutralEvent, historical: true);
-            }
+            OfferNotice.Send(world, OfferService.Generate(world.State, BuildContext(), now));
         }
     }
 }

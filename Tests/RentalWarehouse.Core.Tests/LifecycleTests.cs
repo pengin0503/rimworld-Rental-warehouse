@@ -384,12 +384,26 @@ namespace RentalWarehouse.Core.Tests
             var upgraded = Migration.Upgrade(v1);
             var loaded = StateCodec.Import(upgraded);
 
-            Assert.Equal(2, upgraded.SchemaVersion);
-            Assert.Equal(2, loaded.SchemaVersion);
+            Assert.Equal(WorldState.CurrentSchemaVersion, upgraded.SchemaVersion);
+            Assert.Equal(WorldState.CurrentSchemaVersion, loaded.SchemaVersion);
             Assert.Equal(3, loaded.NextOfferBatch);
             Assert.Equal(2, loaded.NextSiteIndex);
             Assert.Equal(world.NextOfferTick, loaded.NextOfferTick);
             Assert.Equal(world.NextSiteTick, loaded.NextSiteTick);
+            Assert.Equal(upgraded.Payload, Migration.Upgrade(upgraded).Payload);
+        }
+
+        [Fact]
+        public void Migration_V2_BecomesV3_WithZeroTrust()
+        {
+            var world = new WorldState { WorldSeed = 5, SchemaVersion = 2 };
+
+            var upgraded = Migration.Upgrade(StateCodec.Export(world));
+            var loaded = StateCodec.Import(upgraded);
+
+            Assert.Equal(3, upgraded.SchemaVersion);
+            Assert.Equal(3, loaded.SchemaVersion);
+            Assert.Equal(0, loaded.TrustPoints);
             Assert.Equal(upgraded.Payload, Migration.Upgrade(upgraded).Payload);
         }
 

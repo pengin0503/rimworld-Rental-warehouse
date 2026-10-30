@@ -11,6 +11,8 @@ namespace RentalWarehouse.Core
         public bool Humanlike;
         public bool Defeated;
         public bool HostileToPlayer;
+        /// <summary>The Empire of the Royalty DLC (spec 5). It only becomes a depositor once <see cref="OfferContext.EmpireTitleFactor"/> allows it.</summary>
+        public bool IsEmpire;
         /// <summary>IDs of non-player factions this faction is hostile to.</summary>
         public HashSet<string> HostileTo = new HashSet<string>();
     }
@@ -20,6 +22,13 @@ namespace RentalWarehouse.Core
         public List<FactionInfo> Factions = new List<FactionInfo>();
         /// <summary>Non-perishable goods priced by the game (spec 3).</summary>
         public IList<Good> Goods = new List<Good>();
+        /// <summary>
+        /// Scale of Empire offers from the highest Empire title among the player's colonists (spec 5.2); 0 when no colonist
+        /// holds Knight or higher, when Royalty is off, or when the Knight title is unknown.
+        /// </summary>
+        public decimal EmpireTitleFactor;
+        /// <summary>The Royalty-only items Empire offers are made of (spec 5.3).</summary>
+        public IList<Good> EmpireGoods = new List<Good>();
     }
 
     /// <summary>
@@ -112,11 +121,15 @@ namespace RentalWarehouse.Core
             foreach (var f in ctx.Factions)
             {
                 if (!f.Humanlike || f.Defeated || f.HostileToPlayer || f.FactionId == CargoService.PlayerFactionId) continue;
+                if (f.IsEmpire && !EmpireMayOffer(world, ctx)) continue;
                 if (world.FactionBlockedUntil.TryGetValue(f.FactionId, out long until) && now < until) continue;
                 list.Add(f);
             }
             return list;
         }
+
+        private static bool EmpireMayOffer(WorldState world, OfferContext ctx) =>
+            ctx.EmpireTitleFactor > 0m && ctx.EmpireGoods.Count > 0 && TrustService.Rank(world) >= Limits.EmpireMinRank;
 
         /// <summary>Humanlike factions hostile to both the player and the depositor (spec 4).</summary>
         public static List<FactionInfo> Pursuers(OfferContext ctx, FactionInfo depositor)
@@ -132,6 +145,7 @@ namespace RentalWarehouse.Core
         private static ContractTerms? MakeOffer(WorldState world, OfferContext ctx, List<FactionInfo> depositors, ContractKind kind, string contractId, DeterministicRandom rng, long now)
         {
             var p = ContractParameters.For(kind);
+            var row = TrustService.Row(world);
             var candidates = kind == ContractKind.HighRisk ? depositors.FindAll(d => Pursuers(ctx, d).Count > 0) : depositors;
             if (candidates.Count == 0) return null;
             var depositor = candidates[rng.Next(candidates.Count)];
@@ -139,17 +153,24 @@ namespace RentalWarehouse.Core
             string? pursuer = pursuers.Count > 0 ? pursuers[rng.Next(pursuers.Count)].FactionId : null;
 
             int raids = kind == ContractKind.HighRisk ? 2 : (pursuer != null && rng.Chance(0.2m) ? 1 : 0);
-            decimal total = rng.Range(p.MinTotalValue / ManifestBuilder.MinFillRatio, p.MaxTotalValue);
-            int crates = rng.Range(Limits.MinCrates, Limits.MaxCrates);
+            bool empire = depositor.IsEmpire;
+            var goods = empire ? ctx.EmpireGoods : ctx.Goods;
+            decimal scale = empire ? ctx.EmpireTitleFactor : 1m;
+            decimal min = (kind == ContractKind.HighRisk ? row.HighRiskMin : row.NormalMin) * scale;
+            decimal max = (kind == ContractKind.HighRisk ? row.HighRiskMax : row.NormalMax) * scale;
+            // Crates are filled to 90-100% of their target, so the target starts at min / 0.9; a row whose min / 0.9 is above
+            // its max aims at the max instead and never exceeds it.
+            decimal total = rng.Range(Math.Min(min / ManifestBuilder.MinFillRatio, max), max);
+            int crates = rng.Range(Limits.MinCrates, row.MaxCrates);
             int seed = rng.Next(int.MaxValue);
             long duration = p.DrawDurationTicks(rng);
             decimal prepayment = rng.Range(0, Limits.MaxPrepaymentPercent) / 100m;
 
-            for (int n = crates; n <= Limits.MaxCrates; n++)
+            for (int n = crates; n <= row.MaxCrates; n++)
             {
                 var targets = new List<decimal>();
                 for (int i = 0; i < n; i++) targets.Add(decimal.Round(total / n, 2));
-                var manifests = ManifestBuilder.Build(ctx.Goods, targets, Limits.MaxCrateMassKg - Limits.CrateTareKg, rng);
+                var manifests = ManifestBuilder.Build(goods, targets, Limits.MaxCrateMassKg - Limits.CrateTareKg, rng);
                 if (manifests == null) continue;
 
                 var cargo = new List<(string, decimal)>();
@@ -171,6 +192,7 @@ namespace RentalWarehouse.Core
                     cargo.Add((cargoId, value));
                 }
                 var terms = ContractTermsFactory.Create(p, contractId, depositor.FactionId, pursuer, cargo, raids, duration, prepayment, world.Settings, world.SettingsVersion, seed, now);
+                terms.DepositorIsEmpire = empire;
                 world.Offers.Add(new ContractState { Terms = terms, Phase = ContractPhase.Offered });
                 return terms;
             }

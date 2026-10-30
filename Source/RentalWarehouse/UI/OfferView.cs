@@ -17,11 +17,19 @@ namespace RentalWarehouse
         {
             var world = WarehouseWorldComponent.Instance;
             var offers = world.State.Offers;
-            var top = new Rect(rect.x, rect.y, rect.width, 48f);
-            Widgets.Label(top, LoadSummary(world, Find.CurrentMap));
-            var list = new Rect(rect.x, top.yMax + 4f, rect.width, rect.height - top.height - 4f);
+            var top = new Rect(rect.x, rect.y, rect.width, 68f);
+            Widgets.Label(top, LoadSummary(world, Find.CurrentMap) + "\n" + TrustView.Summary(world.State));
+            float y = top.yMax + 4f;
+            string hint = EmpireAdapter.Hint(world);
+            if (hint != null)
+            {
+                float hintHeight = WarehouseTab.TextHeight(hint, rect.width);
+                Widgets.Label(new Rect(rect.x, y, rect.width, hintHeight), hint);
+                y += hintHeight + 4f;
+            }
+            var list = new Rect(rect.x, y, rect.width, rect.yMax - y);
             return WarehouseTab.ScrollList(list, scroll, offers,
-                (o, w) => WarehouseTab.TextHeight(Describe(world, o.Terms), w - ButtonWidth - 12f) + 8f,
+                (o, w) => Mathf.Max(WarehouseTab.TextHeight(Describe(world, o.Terms, o.Negotiation), w - ButtonWidth - 12f), 76f) + 8f,
                 (o, r) => DrawOffer(world, o, r), "RW_NoOffers");
         }
 
@@ -41,7 +49,7 @@ namespace RentalWarehouse
 
         public static string FactionName(string id) => Ids.Faction(id)?.Name ?? "RW_UnknownFaction".Translate().Resolve();
 
-        public static string Describe(WarehouseWorldComponent world, ContractTerms t)
+        public static string Describe(WarehouseWorldComponent world, ContractTerms t, NegotiationState negotiation = NegotiationState.None)
         {
             var sb = new StringBuilder();
             sb.AppendLine(("RW_Kind_" + t.Kind).Translate() + " — " + "RW_From".Translate(FactionName(t.DepositorFactionId)));
@@ -52,9 +60,17 @@ namespace RentalWarehouse
             }
             sb.AppendLine("RW_Requires".Translate(("RW_Storage_" + t.RequiredStorage).Translate(), t.CargoIds.Count, (t.DurationTicks / (float)CoreTime.TicksPerDay).ToString("0.#")));
             sb.AppendLine("RW_FeeLine".Translate(Accounting.FullDailyFee(t).ToString("0.##"), (Accounting.FullTermFee(t) * t.CompletionRate).ToString("0"), t.NominalTotalReward.ToString("0")));
-            sb.AppendLine(t.PrepaymentRate > 0m
-                ? "RW_PrepaymentLine".Translate((t.PrepaymentRate * 100m).ToString("0"), Accounting.Prepayment(t).ToString("0"))
-                : "RW_NoPrepaymentLine".Translate());
+            if (negotiation != NegotiationState.None)
+            {
+                sb.AppendLine("RW_PrepaymentLineNegotiated".Translate((t.OpeningPrepaymentRate * 100m).ToString("0"), (t.PrepaymentRate * 100m).ToString("0"),
+                    Accounting.Prepayment(t).ToString("0"), ("RW_Negotiation_" + negotiation).Translate()));
+            }
+            else
+            {
+                sb.AppendLine(t.PrepaymentRate > 0m
+                    ? "RW_PrepaymentLine".Translate((t.PrepaymentRate * 100m).ToString("0"), Accounting.Prepayment(t).ToString("0"))
+                    : "RW_NoPrepaymentLine".Translate());
+            }
             sb.AppendLine("RW_CompensationLine".Translate((Limits.LossCompensationRate * 100m).ToString("0"), t.NominalTotalReward.ToString("0")));
             if (t.ScheduledRaidCount > 0)
             {
@@ -84,20 +100,33 @@ namespace RentalWarehouse
         private static void DrawOffer(WarehouseWorldComponent world, ContractState offer, Rect rect)
         {
             var text = new Rect(rect.x, rect.y, rect.width - ButtonWidth - 12f, rect.height);
-            Widgets.Label(text, Describe(world, offer.Terms));
+            Widgets.Label(text, Describe(world, offer.Terms, offer.Negotiation));
             var button = new Rect(rect.xMax - ButtonWidth, rect.y, ButtonWidth, 32f);
             if (Widgets.ButtonText(button, "RW_Accept".Translate()))
             {
                 var terms = offer.Terms;
                 var map = Find.CurrentMap;
                 Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
-                    "RW_AcceptConfirm".Translate(Describe(world, terms), map?.Parent?.LabelCap ?? "-"),
+                    "RW_AcceptConfirm".Translate(Describe(world, terms, offer.Negotiation), map?.Parent?.LabelCap ?? "-"),
                     () =>
                     {
                         var d = StorageQuest.Accept(world, terms, map);
                         if (d.Success) Messages.Message("RW_Msg_Accepted".Translate(terms.ContractId), MessageTypeDefOf.PositiveEvent, historical: false);
                         else Messages.Message(d.ReasonKey.Translate(), MessageTypeDefOf.RejectInput, historical: false);
                     }));
+            }
+            var negotiate = new Rect(button.x, button.yMax + 4f, ButtonWidth, 32f);
+            if (offer.Negotiation != NegotiationState.None)
+            {
+                Widgets.Label(negotiate, "RW_Negotiate_Done".Translate());
+            }
+            else if (offer.Terms.PrepaymentRate >= NegotiationService.MaxPercent / 100m)
+            {
+                Widgets.Label(negotiate, "RW_Negotiate_NoRoom".Translate());
+            }
+            else if (Widgets.ButtonText(negotiate, "RW_Negotiate".Translate()))
+            {
+                Find.WindowStack.Add(new NegotiationDialog(offer));
             }
         }
     }

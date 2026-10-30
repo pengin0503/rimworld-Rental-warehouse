@@ -17,6 +17,7 @@ namespace RentalWarehouse.Core
                 RequiredStorage = p.RequiredStorage,
                 DurationTicks = durationTicks,
                 PrepaymentRate = prepaymentRate,
+                OpeningPrepaymentRate = prepaymentRate,
                 DailyBase = p.DailyBase,
                 DailyValueRate = p.DailyValueRate,
                 CompletionRate = p.CompletionRate,
@@ -85,8 +86,9 @@ namespace RentalWarehouse.Core
 
         private static bool ValidTerms(ContractTerms t, WorldState world)
         {
-            if (t.CargoIds.Count < Limits.MinCrates || t.CargoIds.Count > Limits.MaxCrates) return false;
+            if (t.CargoIds.Count < Limits.MinCrates || t.CargoIds.Count > Limits.HardMaxCrates) return false;
             if (t.CargoIds.Count != t.CargoValues.Count) return false;
+            if (t.PrepaymentRate < 0m || t.PrepaymentRate > Limits.MaxPrepaymentPercent / 100m) return false;
             if (t.DurationTicks <= 0 || t.DailyBase < 0m || t.DailyValueRate < 0m || t.CompletionRate < 0m || t.FeeMultiplier <= 0m) return false;
             if (string.IsNullOrEmpty(t.ContractId) || string.IsNullOrEmpty(t.DepositorFactionId)) return false;
             var seen = new HashSet<string>();
@@ -397,6 +399,17 @@ namespace RentalWarehouse.Core
                     EntityId = state.Terms.DepositorFactionId,
                     Amount = result.GoodwillDelta,
                     Payload = { ["contract"] = state.Terms.ContractId },
+                });
+            }
+            if (result.TrustDelta != 0)
+            {
+                effects.Add(new EffectRequest
+                {
+                    EffectId = Id(state, "settle", "trust"),
+                    Kind = EffectKind.ApplyTrust,
+                    EntityId = state.Terms.ContractId,
+                    Amount = result.TrustDelta,
+                    Payload = { ["empire"] = state.Terms.DepositorIsEmpire ? "1" : "0" },
                 });
             }
             effects.Add(new EffectRequest

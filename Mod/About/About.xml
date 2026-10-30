@@ -18,6 +18,7 @@
   </modDependencies>
   <loadAfter>
     <li>brrainz.harmony</li>
+    <li>ludeon.rimworld.royalty</li>
   </loadAfter>
   <description>Run a rental warehouse: store other factions' sealed cargo for fees, defend it from raiders who come to steal it, and raid other factions' independent vault sites.
 
