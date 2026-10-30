@@ -251,8 +251,31 @@ namespace RentalWarehouse.Core
             {
                 throw new StateCodecException("RW_Diag_LedgerFromNewerVersion", "ledger schema " + saved.SchemaVersion + " is newer than " + WorldState.CurrentSchemaVersion);
             }
-            // Version 1 is the first released schema; later versions add steps here, one per version.
+            // One step per version, oldest first.
+            if (saved.SchemaVersion == 1) saved = FromV1(saved);
             return saved;
         }
+
+        /// <summary>
+        /// Version 1 ran offers every 2 days and intel every 5 days from fixed first delays and derived the batch index
+        /// from the due tick. Version 2 draws each gap, so the next index is stored; recover it from the old schedule so
+        /// new contract and site IDs never repeat ones already used.
+        /// </summary>
+        private static SavedState FromV1(SavedState saved)
+        {
+            const long v1OfferInterval = 2 * CoreTime.TicksPerDay;
+            const long v1DiscoveryInterval = 5 * CoreTime.TicksPerDay;
+            var world = StateCodec.Import(saved);
+            if (world.BusinessStartTick != null)
+            {
+                long start = world.BusinessStartTick.Value;
+                if (world.NextOfferTick != null) world.NextOfferBatch = V1Index(world.NextOfferTick.Value - start - Limits.FirstOfferDelay, v1OfferInterval);
+                if (world.NextSiteTick != null) world.NextSiteIndex = V1Index(world.NextSiteTick.Value - start - VaultSiteParameters.FirstDiscoveryDelay, v1DiscoveryInterval);
+            }
+            world.SchemaVersion = 2;
+            return StateCodec.Export(world);
+        }
+
+        private static int V1Index(long sinceFirst, long interval) => sinceFirst <= 0 ? 0 : (int)((sinceFirst + interval - 1) / interval);
     }
 }

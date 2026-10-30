@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace RentalWarehouse.Core
 {
     public static class ContractTermsFactory
     {
         public static ContractTerms Create(ContractParameters p, string contractId, string depositorFactionId, string? pursuerFactionId,
-            IList<(string CargoId, decimal Value)> cargo, int scheduledRaids, WarehouseSettings settings, int settingsVersion, int seed, long now)
+            IList<(string CargoId, decimal Value)> cargo, int scheduledRaids, long durationTicks, decimal prepaymentRate, WarehouseSettings settings, int settingsVersion, int seed, long now)
         {
             var terms = new ContractTerms
             {
@@ -16,7 +15,8 @@ namespace RentalWarehouse.Core
                 PursuerFactionId = pursuerFactionId,
                 Kind = p.Kind,
                 RequiredStorage = p.RequiredStorage,
-                DurationTicks = p.DurationTicks,
+                DurationTicks = durationTicks,
+                PrepaymentRate = prepaymentRate,
                 DailyBase = p.DailyBase,
                 DailyValueRate = p.DailyValueRate,
                 CompletionRate = p.CompletionRate,
@@ -141,6 +141,7 @@ namespace RentalWarehouse.Core
                         state.Phase = ContractPhase.Active;
                         state.ActiveTick = now;
                         state.EndTick = now + state.Terms.DurationTicks;
+                        PostPrepayment(state, effects);
                     }
                     else if (now >= state.DeliveredTick.GetValueOrDefault(now) + Limits.StorageDeadline)
                     {
@@ -184,33 +185,18 @@ namespace RentalWarehouse.Core
             return Decision<ContractState>.Ok(state, effects);
         }
 
-        /// <summary>Accrues to <paramref name="now"/> (never past maturity), posting the day-2/day-4 payments and maturing on the way.</summary>
+        /// <summary>Accrues to <paramref name="now"/> (never past maturity) and matures the contract at the end of the term.</summary>
         private static void Progress(ContractState state, long now, List<EffectRequest> effects)
         {
-            long active = state.ActiveTick!.Value;
             long end = state.EndTick!.Value;
-            while (state.Phase == ContractPhase.Active)
+            if (end > now)
             {
-                long boundary = state.PaymentsPosted < Limits.PaymentDays.Length
-                    ? Math.Min(active + Limits.PaymentDays[state.PaymentsPosted], end)
-                    : end;
-                if (boundary > now)
-                {
-                    AccrueTo(state, now);
-                    return;
-                }
-                AccrueTo(state, boundary);
-                if (boundary == end)
-                {
-                    state.PaymentsPosted = Limits.PaymentDays.Length;
-                    BeginReturn(state, ReturnReason.Matured, end);
-                    effects.Add(Notice(state, "matured", "RW_Msg_Matured"));
-                }
-                else
-                {
-                    PostPayment(state, effects);
-                }
+                AccrueTo(state, now);
+                return;
             }
+            AccrueTo(state, end);
+            BeginReturn(state, ReturnReason.Matured, end);
+            effects.Add(Notice(state, "matured", "RW_Msg_Matured"));
         }
 
         private static void AccrueTo(ContractState state, long t)
@@ -228,20 +214,20 @@ namespace RentalWarehouse.Core
             state.LastAccrualTick = t;
         }
 
-        private static void PostPayment(ContractState state, List<EffectRequest> effects)
+        /// <summary>Pays the prepayment into the claimable balance once, when the term starts. Everything else is paid at settlement.</summary>
+        private static void PostPrepayment(ContractState state, List<EffectRequest> effects)
         {
-            state.PaymentsPosted++;
-            decimal amount = decimal.Floor(state.AccruedFee) - state.PostedFee;
+            decimal amount = Accounting.Prepayment(state.Terms);
             if (amount <= 0m) return;
             state.PostedFee += amount;
             state.Receivable += amount;
             effects.Add(new EffectRequest
             {
-                EffectId = Id(state, "pay", state.PaymentsPosted.ToString(CultureInfo.InvariantCulture)),
+                EffectId = Id(state, "prepay", "start"),
                 Kind = EffectKind.Notify,
                 EntityId = state.Terms.ContractId,
                 Amount = amount,
-                Payload = { ["key"] = "RW_Msg_PaymentPosted" },
+                Payload = { ["key"] = "RW_Msg_PrepaymentPosted" },
             });
         }
 

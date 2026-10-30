@@ -61,6 +61,12 @@ namespace RentalWarehouse.Core
 
         public int Range(int minInclusive, int maxInclusive) => minInclusive + Next(maxInclusive - minInclusive + 1);
 
+        public long Range(long minInclusive, long maxInclusive)
+        {
+            if (maxInclusive <= minInclusive) return minInclusive;
+            return minInclusive + (long)(NextULong() % (ulong)(maxInclusive - minInclusive + 1));
+        }
+
         /// <summary>Uniform in [0, 1) with 1/1,000,000 resolution.</summary>
         public decimal NextDecimal() => Next(1000000) / 1000000m;
 

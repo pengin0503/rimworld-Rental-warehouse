@@ -23,9 +23,9 @@ namespace RentalWarehouse.Core
     }
 
     /// <summary>
-    /// Offer schedule (spec 4): first batch one day after opening, then every two days, at most two per batch and four
-    /// open at once. Each batch draws from a seed derived from the world seed and the batch's place in the schedule,
-    /// so closing and reopening the business never rerolls anything.
+    /// Offer schedule (spec 4): first batch one day after opening, then one every 1–3 days, at most two per batch and four
+    /// open at once. Each batch, and the gap after it, draws from a seed derived from the world seed and the batch's place
+    /// in the schedule, so closing and reopening the business never rerolls anything.
     /// </summary>
     public static class OfferService
     {
@@ -46,11 +46,21 @@ namespace RentalWarehouse.Core
             var created = new List<ContractTerms>();
             if (world.NextOfferTick == null || world.BusinessStartTick == null || now < world.NextOfferTick.Value) return created;
 
-            long due = world.NextOfferTick.Value;
-            long batch = (due - world.BusinessStartTick.Value - Limits.FirstOfferDelay) / Limits.OfferInterval;
-            if (world.BusinessOpen) created.AddRange(MakeBatch(world, ctx, batch, now));
-            while (world.NextOfferTick.Value <= now) world.NextOfferTick += Limits.OfferInterval;
+            if (world.BusinessOpen) created.AddRange(MakeBatch(world, ctx, world.NextOfferBatch, now));
+            // A batch missed while ticks were skipped is passed over, like a batch due while the business is closed.
+            while (world.NextOfferTick.Value <= now)
+            {
+                world.NextOfferTick += OfferInterval(world.WorldSeed, world.NextOfferBatch);
+                world.NextOfferBatch++;
+            }
             return created;
+        }
+
+        /// <summary>Gap between batch <paramref name="batch"/> and the next one.</summary>
+        public static long OfferInterval(int worldSeed, int batch)
+        {
+            var rng = new DeterministicRandom(DeterministicRandom.Mix(worldSeed, "offer-interval:" + batch.ToString(CultureInfo.InvariantCulture)));
+            return rng.Range(Limits.MinOfferInterval, Limits.MaxOfferInterval);
         }
 
         public static void ExpireOffers(WorldState world, long now)
@@ -64,7 +74,7 @@ namespace RentalWarehouse.Core
             }
         }
 
-        private static List<ContractTerms> MakeBatch(WorldState world, OfferContext ctx, long batch, long now)
+        private static List<ContractTerms> MakeBatch(WorldState world, OfferContext ctx, int batch, long now)
         {
             var result = new List<ContractTerms>();
             var rng = new DeterministicRandom(DeterministicRandom.Mix(world.WorldSeed, "offers:" + batch.ToString(CultureInfo.InvariantCulture)));
@@ -132,6 +142,8 @@ namespace RentalWarehouse.Core
             decimal total = rng.Range(p.MinTotalValue / ManifestBuilder.MinFillRatio, p.MaxTotalValue);
             int crates = rng.Range(Limits.MinCrates, Limits.MaxCrates);
             int seed = rng.Next(int.MaxValue);
+            long duration = p.DrawDurationTicks(rng);
+            decimal prepayment = rng.Range(0, Limits.MaxPrepaymentPercent) / 100m;
 
             for (int n = crates; n <= Limits.MaxCrates; n++)
             {
@@ -158,7 +170,7 @@ namespace RentalWarehouse.Core
                     };
                     cargo.Add((cargoId, value));
                 }
-                var terms = ContractTermsFactory.Create(p, contractId, depositor.FactionId, pursuer, cargo, raids, world.Settings, world.SettingsVersion, seed, now);
+                var terms = ContractTermsFactory.Create(p, contractId, depositor.FactionId, pursuer, cargo, raids, duration, prepayment, world.Settings, world.SettingsVersion, seed, now);
                 world.Offers.Add(new ContractState { Terms = terms, Phase = ContractPhase.Offered });
                 return terms;
             }

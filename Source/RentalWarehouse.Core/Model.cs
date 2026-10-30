@@ -138,6 +138,8 @@ namespace RentalWarehouse.Core
         public decimal RaidScale = 1m;
         public int ScheduledRaidCount;
         public decimal NominalTotalReward;
+        /// <summary>Share (0–0.30) of the full-term fee paid into the claimable balance when the term starts.</summary>
+        public decimal PrepaymentRate;
         public int Seed;
         public int SettingsVersion;
         public long OfferedTick;
@@ -209,13 +211,12 @@ namespace RentalWarehouse.Core
         public long LastAccrualTick;
         public List<ContractCargoState> CargoStates = new List<ContractCargoState>();
         public decimal AccruedFee;
-        /// <summary>Whole silver moved into the claimable balance so far.</summary>
+        /// <summary>Whole silver moved into the claimable balance before settlement (the prepayment).</summary>
         public decimal PostedFee;
         /// <summary>Whole silver actually claimed as silver so far.</summary>
         public decimal ClaimedFee;
         /// <summary>Claimable balance currently held for this contract.</summary>
         public decimal Receivable;
-        public int PaymentsPosted;
         public int StartedRaids;
         public decimal BaselineThreatPoints;
         public List<RaidSlot> RaidPlan = new List<RaidSlot>();
@@ -348,7 +349,7 @@ namespace RentalWarehouse.Core
 
     public sealed class WorldState
     {
-        public const int CurrentSchemaVersion = 1;
+        public const int CurrentSchemaVersion = 2;
 
         public int SchemaVersion = CurrentSchemaVersion;
         public int WorldSeed;
@@ -356,8 +357,10 @@ namespace RentalWarehouse.Core
         public long? BusinessStartTick;
         public long? NextOfferTick;
         public long? NextSiteTick;
-        public int OfferCounter;
-        public int SiteCounter;
+        /// <summary>Index of the next offer batch; seeds that batch and names its contracts (RWC-batch-slot).</summary>
+        public int NextOfferBatch;
+        /// <summary>Index of the next vault intel report; seeds that report and names its site (RWS-index).</summary>
+        public int NextSiteIndex;
         public int SequenceCounter;
         public List<ContractState> Offers = new List<ContractState>();
         public List<ContractState> Contracts = new List<ContractState>();

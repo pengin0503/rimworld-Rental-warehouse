@@ -109,14 +109,24 @@ namespace RentalWarehouse.Core
             return site;
         }
 
+        /// <summary>Gap between intel report <paramref name="index"/> and the next one (spec 7: 3–12 days).</summary>
+        public static long DiscoveryInterval(int worldSeed, int index)
+        {
+            var rng = new DeterministicRandom(DeterministicRandom.Mix(worldSeed, "site-interval:" + index.ToString(CultureInfo.InvariantCulture)));
+            return rng.Range(VaultSiteParameters.MinDiscoveryInterval, VaultSiteParameters.MaxDiscoveryInterval);
+        }
+
         public static Decision<List<SiteRecord>> Discover(WorldState world, SiteContext ctx, long now)
         {
             var created = new List<SiteRecord>();
             if (world.BusinessStartTick == null || world.NextSiteTick == null || now < world.NextSiteTick.Value) return Decision<List<SiteRecord>>.Ok(created);
 
-            long due = world.NextSiteTick.Value;
-            long index = (due - world.BusinessStartTick.Value - VaultSiteParameters.FirstDiscoveryDelay) / VaultSiteParameters.DiscoveryInterval;
-            while (world.NextSiteTick.Value <= now) world.NextSiteTick += VaultSiteParameters.DiscoveryInterval;
+            int index = world.NextSiteIndex;
+            while (world.NextSiteTick.Value <= now)
+            {
+                world.NextSiteTick += DiscoveryInterval(world.WorldSeed, world.NextSiteIndex);
+                world.NextSiteIndex++;
+            }
             if (!world.BusinessOpen || !world.Settings.VaultSitesEnabled) return Decision<List<SiteRecord>>.Ok(created);
 
             int unvisited = 0;

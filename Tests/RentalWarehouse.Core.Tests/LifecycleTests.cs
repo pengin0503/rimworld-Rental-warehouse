@@ -372,6 +372,40 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
+        public void Migration_V1Schedule_ContinuesBatchAndSiteNumbering()
+        {
+            var world = new WorldState { WorldSeed = 5, BusinessOpen = true, BusinessStartTick = 1000 };
+            // Version 1: offers at start+1d every 2 days, intel at start+2d every 5 days; 3 batches and 2 reports done.
+            world.NextOfferTick = 1000 + D + 3 * 2 * D;
+            world.NextSiteTick = 1000 + 2 * D + 2 * 5 * D;
+            world.SchemaVersion = 1;
+            var v1 = StateCodec.Export(world);
+
+            var upgraded = Migration.Upgrade(v1);
+            var loaded = StateCodec.Import(upgraded);
+
+            Assert.Equal(2, upgraded.SchemaVersion);
+            Assert.Equal(2, loaded.SchemaVersion);
+            Assert.Equal(3, loaded.NextOfferBatch);
+            Assert.Equal(2, loaded.NextSiteIndex);
+            Assert.Equal(world.NextOfferTick, loaded.NextOfferTick);
+            Assert.Equal(world.NextSiteTick, loaded.NextSiteTick);
+            Assert.Equal(upgraded.Payload, Migration.Upgrade(upgraded).Payload);
+        }
+
+        [Fact]
+        public void Migration_V1NeverOpened_StartsNumberingAtZero()
+        {
+            var world = new WorldState { WorldSeed = 5, SchemaVersion = 1 };
+
+            var loaded = StateCodec.Import(Migration.Upgrade(StateCodec.Export(world)));
+
+            Assert.Equal(0, loaded.NextOfferBatch);
+            Assert.Equal(0, loaded.NextSiteIndex);
+            Assert.Equal(WorldState.CurrentSchemaVersion, loaded.SchemaVersion);
+        }
+
+        [Fact]
         public void Migration_EmptyLedgerFromOldSave_BecomesFreshCurrent()
         {
             var upgraded = Migration.Upgrade(new SavedState { SchemaVersion = 0, Payload = "" });

@@ -32,7 +32,7 @@ namespace RentalWarehouse.Core.Tests
         public void ChangedSettings_DoNotAffectAcceptedTerms()
         {
             var settings = new WarehouseSettings { FeeMultiplier = 1.0m };
-            var terms = ContractTermsFactory.Create(ContractParameters.Normal, "K", "F", null, new[] { ("K-0", 1000m) }, 0, settings, 0, 1, 0);
+            var terms = ContractTermsFactory.Create(ContractParameters.Normal, "K", "F", null, new[] { ("K-0", 1000m) }, 0, Fixtures.Term, 0m, settings, 0, 1, 0);
             settings.FeeMultiplier = 3.0m;
 
             Assert.Equal(1.0m, terms.FeeMultiplier);

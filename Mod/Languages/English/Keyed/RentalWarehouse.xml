@@ -19,7 +19,7 @@
   <RW_UnknownFaction>(unknown faction)</RW_UnknownFaction>
 
   <!-- Offers -->
-  <RW_NoOffers>No offers at the moment. Offers arrive every two days while the business is open.</RW_NoOffers>
+  <RW_NoOffers>No offers at the moment. Offers arrive every one to three days while the business is open.</RW_NoOffers>
   <RW_Kind_Normal>Ordinary storage</RW_Kind_Normal>
   <RW_Kind_HighRisk>High-risk storage</RW_Kind_HighRisk>
   <RW_From>from {0}</RW_From>
@@ -27,6 +27,8 @@
   <RW_Storage_Rack>rack or vault</RW_Storage_Rack>
   <RW_Storage_Vault>vault</RW_Storage_Vault>
   <RW_Requires>Needs {1} {0} slot(s) for {2} days, counted from when every crate is stored.</RW_Requires>
+  <RW_PrepaymentLine>Prepayment: {0}% of the full-term fee ({1} silver) is paid when the term starts. The rest and the completion bonus are paid after the crates are returned.</RW_PrepaymentLine>
+  <RW_NoPrepaymentLine>No prepayment: the whole fee and the completion bonus are paid after the crates are returned.</RW_NoPrepaymentLine>
   <RW_FeeLine>Fee {0} silver/day while stored; completion bonus up to {1}; total at most {2} silver.</RW_FeeLine>
   <RW_CompensationLine>Lost crates: you owe {0}% of their value, capped at {1} silver. Opened crates: 100% of their value.</RW_CompensationLine>
   <RW_RaidLine>Up to {0} raid(s) aimed at the cargo, about {1}× normal threat points, by {2}.</RW_RaidLine>
@@ -83,14 +85,14 @@
   <RW_FacilityCapacity>Crates: {0}/{1}</RW_FacilityCapacity>
   <RW_Embezzle>Open (embezzle)</RW_Embezzle>
   <RW_EmbezzleDesc>Break the seal and take the contents. The owner will demand the full value and relations drop sharply.</RW_EmbezzleDesc>
-  <RW_EmbezzleConfirm>Open this crate held for another faction?\n\nThis is embezzlement: you will owe 100% of its declared value ({0} silver) at settlement and the owner's goodwill falls by 30 instead of the usual loss penalty.</RW_EmbezzleConfirm>
+  <RW_EmbezzleConfirm>Open this crate held for another faction?\n\nThis is embezzlement: you will owe 100% of its declared value ({0} silver) at settlement and the owner's goodwill falls by {1} instead of the usual loss penalty.</RW_EmbezzleConfirm>
   <RW_OpenCrate>Open crate</RW_OpenCrate>
   <RW_OpenCrateDesc>Break the seal and unpack the contents here.</RW_OpenCrateDesc>
 
   <!-- Messages and letters -->
   <RW_Letter_DeliveryTitle>Cargo delivered</RW_Letter_DeliveryTitle>
   <RW_Letter_Delivery>The cargo for contract {0} ({1} crate(s)) has landed. Store every crate in a valid rack or vault within one day; the term starts when all are stored.</RW_Letter_Delivery>
-  <RW_Msg_PaymentPosted>Contract {0}: {1} silver added to your claimable balance.</RW_Msg_PaymentPosted>
+  <RW_Msg_PrepaymentPosted>Contract {0}: prepayment of {1} silver added to your claimable balance.</RW_Msg_PrepaymentPosted>
   <RW_Msg_Settled>Contract {0} settled: {1} silver.</RW_Msg_Settled>
 
   <!-- Diagnostics -->
@@ -184,7 +186,7 @@
   <RW_CrateBeingStolen>being carried off by {0}!</RW_CrateBeingStolen>
 
   <!-- Vault sites -->
-  <RW_NoSites>No vault intel yet. Intel arrives every five days while the business is open.</RW_NoSites>
+  <RW_NoSites>No vault intel yet. Intel arrives every three to twelve days while the business is open.</RW_NoSites>
   <RW_ShowOnWorld>Show on world</RW_ShowOnWorld>
   <RW_SiteLabel>{0} vault ({1})</RW_SiteLabel>
   <RW_Tier_Small>small</RW_Tier_Small>

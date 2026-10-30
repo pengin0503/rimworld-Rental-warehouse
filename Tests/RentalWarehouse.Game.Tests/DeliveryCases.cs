@@ -43,7 +43,7 @@ namespace RentalWarehouse.Game.Tests
                 };
                 cargo.Add((cid, values[i]));
             }
-            var terms = ContractTermsFactory.Create(ContractParameters.For(kind), id, Ids.Of(depositor), null, cargo, 0, new WarehouseSettings(), 0, 1, Ids.Now);
+            var terms = ContractTermsFactory.Create(ContractParameters.For(kind), id, Ids.Of(depositor), null, cargo, 0, 6 * CoreTime.TicksPerDay, 0m, new WarehouseSettings(), 0, 1, Ids.Now);
             s.World.State.Offers.Add(new ContractState { Terms = terms, Phase = ContractPhase.Offered });
             s.TrackContract(id);
             return terms;

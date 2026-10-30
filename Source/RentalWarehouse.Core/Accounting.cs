@@ -19,9 +19,16 @@ namespace RentalWarehouse.Core
         public static decimal FeeForTicks(ContractTerms terms, decimal cargoValue, long ticks) =>
             DailyFee(terms, cargoValue) * ticks / CoreTime.TicksPerDay;
 
+        /// <summary>Storage fee of every crate for the whole term, without the completion bonus.</summary>
+        public static decimal FullTermFee(ContractTerms terms) =>
+            FullDailyFee(terms) * terms.DurationTicks / CoreTime.TicksPerDay;
+
+        /// <summary>Whole silver paid in advance when the term starts: <see cref="ContractTerms.PrepaymentRate"/> of <see cref="FullTermFee"/>.</summary>
+        public static decimal Prepayment(ContractTerms terms) => decimal.Floor(FullTermFee(terms) * terms.PrepaymentRate);
+
         /// <summary>Full-term, all-raids, full-return reward; the cap for ordinary loss compensation.</summary>
         public static decimal NominalTotalReward(ContractTerms terms) =>
-            FullDailyFee(terms) * terms.DurationTicks / CoreTime.TicksPerDay * (1m + terms.CompletionRate);
+            FullTermFee(terms) * (1m + terms.CompletionRate);
 
         public static decimal RaidFulfilment(int scheduled, int started)
         {

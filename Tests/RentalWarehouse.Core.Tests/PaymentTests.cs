@@ -9,32 +9,32 @@ namespace RentalWarehouse.Core.Tests
     {
         private const string Dest = "Cell_10_10";
 
+        /// <summary>A one-crate 1,000-silver contract: 60 silver of fee for the term, 30% (18) of it prepaid.</summary>
         private static (WorldState World, ContractState Contract) ActiveNormal(params decimal[] values)
         {
-            var terms = Terms(ContractKind.Normal, "K1", values.Length == 0 ? new[] { 1000m } : values);
+            var terms = Terms(ContractKind.Normal, "K1", values.Length == 0 ? new[] { 1000m } : values, prepay: 0.30m);
             var world = World(terms);
             return (world, Activate(world, terms));
         }
 
         [Fact]
-        public void Claims_PayTwentyTwentyThenThirtyTwo()
+        public void Claims_PayThePrepaymentAtStartThenTheRestAfterReturn()
         {
             var (world, c) = ActiveNormal();
             long active = c.ActiveTick!.Value;
 
+            var prepaid = PaymentService.Claim(world, MapId, Dest, active);
             RunUntil(c, active + 2 * D);
-            var day2 = PaymentService.Claim(world, MapId, Dest, active + 2 * D);
-            RunUntil(c, active + 4 * D);
-            var day4 = PaymentService.Claim(world, MapId, Dest, active + 4 * D);
+            Assert.False(PaymentService.Claim(world, MapId, Dest, active + 2 * D).Success);
             RunUntil(c, c.EndTick!.Value);
+            Assert.False(PaymentService.Claim(world, MapId, Dest, c.EndTick!.Value).Success);
             Assert.True(ReturnService.RequestPod(c, c.EndTick!.Value).Success);
             ReturnService.Dispatch(c, c.Terms.CargoIds, c.EndTick!.Value + 10);
-            var last = PaymentService.Claim(world, MapId, Dest, c.EndTick!.Value + 20);
+            var rest = PaymentService.Claim(world, MapId, Dest, c.EndTick!.Value + 20);
 
-            Assert.Equal(20m, Assert.Single(day2.Effects).Amount);
-            Assert.Equal(20m, Assert.Single(day4.Effects).Amount);
-            Assert.Equal(32m, Assert.Single(last.Effects).Amount);
-            Assert.All(new[] { day2, day4, last }, d => Assert.Equal(EffectKind.SpawnSilver, d.Effects[0].Kind));
+            Assert.Equal(18m, Assert.Single(prepaid.Effects).Amount);
+            Assert.Equal(54m, Assert.Single(rest.Effects).Amount);
+            Assert.All(new[] { prepaid, rest }, d => Assert.Equal(EffectKind.SpawnSilver, d.Effects[0].Kind));
             Assert.Equal(72m, c.ClaimedFee);
             Assert.Equal(0m, world.ReceivableBalance());
         }
@@ -43,7 +43,6 @@ namespace RentalWarehouse.Core.Tests
         public void SecondClaim_AddsNothing()
         {
             var (world, c) = ActiveNormal();
-            RunUntil(c, c.ActiveTick!.Value + 2 * D);
 
             var first = PaymentService.Claim(world, MapId, Dest, c.ActiveTick!.Value + 2 * D);
             var second = PaymentService.Claim(world, MapId, Dest, c.ActiveTick!.Value + 2 * D);
@@ -59,11 +58,13 @@ namespace RentalWarehouse.Core.Tests
         public void ClaimEffectIds_AreUnique()
         {
             var (world, c) = ActiveNormal();
-            RunUntil(c, c.ActiveTick!.Value + 2 * D);
             var a = PaymentService.Claim(world, MapId, Dest, 0);
-            RunUntil(c, c.ActiveTick!.Value + 4 * D);
+            RunUntil(c, c.EndTick!.Value);
+            ReturnAll(c, c.EndTick!.Value + 10);
             var b = PaymentService.Claim(world, MapId, Dest, 0);
 
+            Assert.True(a.Success);
+            Assert.True(b.Success);
             Assert.NotEqual(a.Effects[0].EffectId, b.Effects[0].EffectId);
         }
 
@@ -71,23 +72,21 @@ namespace RentalWarehouse.Core.Tests
         public void InvalidDestination_KeepsBalance()
         {
             var (world, c) = ActiveNormal();
-            RunUntil(c, c.ActiveTick!.Value + 2 * D);
 
             var d = PaymentService.Claim(world, MapId, "", 0);
 
             Assert.False(d.Success);
             Assert.Equal("RW_Reject_InvalidDestination", d.ReasonKey);
-            Assert.Equal(20m, world.ReceivableBalance(MapId));
+            Assert.Equal(18m, world.ReceivableBalance(MapId));
         }
 
         [Fact]
         public void Claim_OnlyTakesBalanceOfThatMap()
         {
             var (world, c) = ActiveNormal();
-            RunUntil(c, c.ActiveTick!.Value + 2 * D);
 
             Assert.False(PaymentService.Claim(world, "Map_99", Dest, 0).Success);
-            Assert.Equal(20m, world.ReceivableBalance(MapId));
+            Assert.Equal(18m, world.ReceivableBalance(MapId));
         }
 
         [Fact]
@@ -115,19 +114,17 @@ namespace RentalWarehouse.Core.Tests
         [Fact]
         public void BalancesOfExistingBases_StaySeparate()
         {
-            var a = Terms(ContractKind.Normal, "K1", new[] { 1000m });
-            var b = Terms(ContractKind.Normal, "K2", new[] { 1000m });
+            var a = Terms(ContractKind.Normal, "K1", new[] { 1000m }, prepay: 0.30m);
+            var b = Terms(ContractKind.Normal, "K2", new[] { 1000m }, prepay: 0.30m);
             var world = World(a, b);
             var ca = Activate(world, a);
             var cb = Activate(world, b);
             cb.MapId = "Map_1";
-            RunUntil(ca, ca.ActiveTick!.Value + 2 * D);
-            RunUntil(cb, cb.ActiveTick!.Value + 2 * D);
 
             var d = PaymentService.Claim(world, "Map_1", Dest, 0);
 
-            Assert.Equal(20m, d.Effects.Single().Amount);
-            Assert.Equal(20m, world.ReceivableBalance(MapId));
+            Assert.Equal(18m, d.Effects.Single().Amount);
+            Assert.Equal(18m, world.ReceivableBalance(MapId));
             Assert.Equal(0m, world.ClaimableBalance("Map_1"));
         }
 
