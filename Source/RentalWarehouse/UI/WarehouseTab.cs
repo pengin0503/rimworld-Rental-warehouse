@@ -17,6 +17,7 @@ namespace RentalWarehouse
             Vaults,
         }
 
+        private static readonly Page[] Pages = (Page[])Enum.GetValues(typeof(Page));
         private static Page current = Page.Offers;
         private Vector2 scroll;
 
@@ -55,7 +56,7 @@ namespace RentalWarehouse
             DrawHeader(header, world);
 
             var tabs = new List<TabRecord>();
-            foreach (Page page in Enum.GetValues(typeof(Page)))
+            foreach (var page in Pages)
             {
                 if (!Views.ContainsKey(page)) continue;
                 var p = page;

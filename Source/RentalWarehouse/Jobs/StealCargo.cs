@@ -16,10 +16,19 @@ namespace RentalWarehouse
         static RWJobDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(RWJobDefOf));
     }
 
-    /// <summary>Raid of thieves after one contract's cargo (spec 6). Every pawn gets the cargo-stealing duty.</summary>
+    /// <summary>
+    /// Raid of thieves after one contract's cargo (spec 6). Every pawn gets the cargo-stealing duty. They leave like an
+    /// ordinary raid does (after a while, after heavy losses) and also once no contract crate is left to steal (issue #11).
+    /// </summary>
     public class LordJob_StealCargo : LordJob
     {
+        /// <summary>Looking for stealable crates every tick would be wasteful; twice a second is plenty.</summary>
+        private const int CheckEveryTicks = 30;
+
         public string contractId;
+
+        /// <summary>Tick at which nothing was first seen to be left to steal, or -1 while something is.</summary>
+        private int nothingSince = -1;
 
         public LordJob_StealCargo()
         {
@@ -35,13 +44,43 @@ namespace RentalWarehouse
         public override StateGraph CreateGraph()
         {
             var graph = new StateGraph();
-            graph.AddToil(new LordToil_StealCargo());
+            var steal = new LordToil_StealCargo();
+            var leave = new LordToil_ExitMap(LocomotionUrgency.Jog);
+            graph.AddToil(steal);
+            graph.AddToil(leave);
+
+            var retreat = new Transition(steal, leave);
+            retreat.AddTrigger(new Trigger_TicksPassed(RaidRetreat.GiveUpTicks));
+            retreat.AddTrigger(new Trigger_FractionPawnsLost((float)RaidRetreat.CasualtyFraction));
+            retreat.AddTrigger(new Trigger_Custom(signal => signal.type == TriggerSignalType.Tick && ShouldRetreat(Find.TickManager.TicksGame)));
+            retreat.AddPreAction(new TransitionAction_Message("RW_Msg_RaidersLeave".Translate(), MessageTypeDefOf.NeutralEvent));
+            graph.AddTransition(retreat);
             return graph;
         }
 
         public override void ExposeData()
         {
             Scribe_Values.Look(ref contractId, "contractId");
+            Scribe_Values.Look(ref nothingSince, "nothingSince", -1);
+        }
+
+        /// <summary>True once there has been neither a crate to steal nor a vault to break open for a short while, with nobody on the way out carrying a crate.</summary>
+        public bool ShouldRetreat(int now)
+        {
+            if (lord == null || now % CheckEveryTicks != 0) return false;
+            var (since, retreat) = RaidRetreat.Observe(nothingSince < 0 ? (long?)null : nothingSince, ThreatAdapter.AnyWorkLeft(lord.Map), SomeoneCarriesACrate(), now);
+            nothingSince = since.HasValue ? (int)since.Value : -1;
+            return retreat;
+        }
+
+        private bool SomeoneCarriesACrate()
+        {
+            foreach (var pawn in lord.ownedPawns)
+            {
+                var carried = pawn.carryTracker?.CarriedThing;
+                if (carried != null && CargoAdapter.Comp(carried) != null) return true;
+            }
+            return false;
         }
     }
 
@@ -96,7 +135,7 @@ namespace RentalWarehouse
         {
             Building_Vault target = null;
             float best = float.MaxValue;
-            foreach (var b in pawn.Map.listerBuildings.allBuildingsColonist)
+            foreach (var b in pawn.Map.listerBuildings.AllBuildingsColonistOfDef(RWDefOf.RW_Vault))
             {
                 if (!(b is Building_Vault vault) || vault.IsSiteVault || !ThreatAdapter.HoldsContractCargo(vault)) continue;
                 float d = pawn.Position.DistanceToSquared(vault.Position);

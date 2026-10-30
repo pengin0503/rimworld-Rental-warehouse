@@ -18,6 +18,7 @@ namespace RentalWarehouse
         private readonly ContractState offer;
         private readonly List<Negotiator> candidates;
         private readonly int opening;
+        private readonly int maxPercent;
         private int selected;
         private int requested;
         private Vector2 scroll;
@@ -28,7 +29,8 @@ namespace RentalWarehouse
             candidates = NegotiatorAdapter.Candidates();
             candidates.Sort((a, b) => b.Social.CompareTo(a.Social));
             opening = (int)Math.Round(Math.Max(offer.Terms.OpeningPrepaymentRate, offer.Terms.PrepaymentRate) * 100m, MidpointRounding.AwayFromZero);
-            requested = Math.Min(NegotiationService.MaxPercent, opening + 5);
+            maxPercent = NegotiationService.MaxPercentFor(TrustService.Rank(WarehouseWorldComponent.Instance.State));
+            requested = Math.Min(maxPercent, opening + 5);
             doCloseButton = true;
             doCloseX = true;
             absorbInputAroundWindow = true;
@@ -43,7 +45,7 @@ namespace RentalWarehouse
             Text.Font = GameFont.Medium;
             Widgets.Label(new Rect(inRect.x, inRect.y, inRect.width, 32f), "RW_NegotiateTitle".Translate());
             Text.Font = GameFont.Small;
-            string intro = "RW_NegotiateIntro".Translate(offer.Terms.ContractId, opening);
+            string intro = "RW_NegotiateIntro".Translate(offer.Terms.ContractId, opening, maxPercent);
             float introHeight = Text.CalcHeight(intro, inRect.width);
             Widgets.Label(new Rect(inRect.x, inRect.y + 36f, inRect.width, introHeight), intro);
 
@@ -72,12 +74,16 @@ namespace RentalWarehouse
 
             Widgets.Label(new Rect(inRect.x, y, inRect.width, 24f), "RW_NegotiateAsk".Translate(requested));
             y += 26f;
-            requested = Mathf.RoundToInt(Widgets.HorizontalSlider(new Rect(inRect.x, y, inRect.width, 24f), requested, opening + 1, NegotiationService.MaxPercent));
-            requested = Mathf.Clamp(requested, opening + 1, NegotiationService.MaxPercent);
+            requested = Mathf.RoundToInt(Widgets.HorizontalSlider(new Rect(inRect.x, y, inRect.width, 24f), requested, opening + 1, maxPercent));
+            requested = Mathf.Clamp(requested, opening + 1, maxPercent);
             y += 30f;
 
             decimal chance = NegotiationService.SuccessChance(opening, requested, candidates[selected].Social, TrustService.Rank(world.State));
             Widgets.Label(new Rect(inRect.x, y, inRect.width, 24f), "RW_NegotiateChance".Translate((chance * 100m).ToString("0")));
+            y += 26f;
+
+            decimal after = NegotiationService.CompletionRateAfter(offer.Terms.CompletionRate, requested - opening);
+            Widgets.Label(new Rect(inRect.x, y, inRect.width, 24f), "RW_NegotiateCost".Translate((offer.Terms.CompletionRate * 100m).ToString("0.#"), (after * 100m).ToString("0.#")));
             y += 34f;
 
             if (Widgets.ButtonText(new Rect(inRect.x, y, 200f, 32f), "RW_NegotiateGo".Translate())) Go(world);
@@ -93,7 +99,7 @@ namespace RentalWarehouse
             }
             else if (result.NewState.Negotiation == NegotiationState.Succeeded)
             {
-                Messages.Message("RW_Msg_NegotiationSucceeded".Translate(id, requested), MessageTypeDefOf.PositiveEvent, historical: false);
+                Messages.Message("RW_Msg_NegotiationSucceeded".Translate(id, requested, (result.NewState.Terms.CompletionRate * 100m).ToString("0.#")), MessageTypeDefOf.PositiveEvent, historical: false);
             }
             else
             {

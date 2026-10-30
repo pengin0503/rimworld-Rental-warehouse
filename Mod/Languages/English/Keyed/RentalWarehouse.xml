@@ -34,15 +34,21 @@
   <RW_Negotiate>Negotiate prepayment</RW_Negotiate>
   <RW_Negotiate_Done>Already negotiated</RW_Negotiate_Done>
   <RW_Negotiate_NoRoom>Prepayment is at the maximum</RW_Negotiate_NoRoom>
+  <RW_CapacityOk>Storage: {0} crate slot(s) in {1}; {2} free on this map.</RW_CapacityOk>
+  <RW_CapacityShort>Storage: {0} crate slot(s) in {1}, but only {2} free on this map (open contracts included) — build more or wait for space.</RW_CapacityShort>
+  <RW_CapacityUnknown>Storage: {0} crate slot(s) needed (open a home map to compare).</RW_CapacityUnknown>
+  <RW_Set_CapacityAware>Offer no more crates than my racks and vaults can hold</RW_Set_CapacityAware>
+  <RW_Set_CapacityAwareDesc>New offers are limited to the crate slots of the intact racks and vaults on the home map with the most room (vaults only for high-risk offers). Total values stay the same, so crates hold more.</RW_Set_CapacityAwareDesc>
   <RW_NegotiateTitle>Negotiate the prepayment</RW_NegotiateTitle>
-  <RW_NegotiateIntro>Ask the depositor of contract {0} for a higher prepayment than the opening {1}%. You can try once per offer; if it fails, the opening rate stays.</RW_NegotiateIntro>
+  <RW_NegotiateIntro>Ask the depositor of contract {0} for a higher prepayment than the opening {1}%, up to {2}% at your trust rank. You can try once per offer; if it fails, the opening rate stays. If it works, each point gained costs 2% of the completion rate.</RW_NegotiateIntro>
+  <RW_NegotiateCost>If it works, the completion rate falls from {0}% to {1}%.</RW_NegotiateCost>
   <RW_NegotiateNegotiator>Negotiator</RW_NegotiateNegotiator>
   <RW_NegotiateSocial>Social {0}</RW_NegotiateSocial>
   <RW_NegotiateAsk>Ask for a prepayment of {0}%</RW_NegotiateAsk>
   <RW_NegotiateChance>Chance of success: {0}%</RW_NegotiateChance>
   <RW_NegotiateGo>Negotiate</RW_NegotiateGo>
   <RW_NegotiateNoOne>No colonist is able to negotiate right now.</RW_NegotiateNoOne>
-  <RW_Msg_NegotiationSucceeded>Contract {0}: the negotiation succeeded, the prepayment is now {1}%.</RW_Msg_NegotiationSucceeded>
+  <RW_Msg_NegotiationSucceeded>Contract {0}: the negotiation succeeded, the prepayment is now {1}% and the completion rate {2}%.</RW_Msg_NegotiationSucceeded>
   <RW_Msg_NegotiationFailed>Contract {0}: the negotiation failed, the prepayment stays at {1}%.</RW_Msg_NegotiationFailed>
   <RW_NoPrepaymentLine>No prepayment: the whole fee and the completion bonus are paid after the crates are returned.</RW_NoPrepaymentLine>
   <RW_FeeLine>Fee {0} silver/day while stored; completion bonus up to {1}; total at most {2} silver.</RW_FeeLine>
@@ -67,7 +73,7 @@
   <RW_Reject_TooHeavy>A crate may weigh at most 35 kg.</RW_Reject_TooHeavy>
   <RW_Reject_OfferExpired>The offer has expired.</RW_Reject_OfferExpired>
   <RW_Reject_AlreadyNegotiated>This offer has already been negotiated.</RW_Reject_AlreadyNegotiated>
-  <RW_Reject_InvalidRate>Ask for more than the opening prepayment, and no more than 30%.</RW_Reject_InvalidRate>
+  <RW_Reject_InvalidRate>Ask for more than the opening prepayment, and no more than your trust rank allows.</RW_Reject_InvalidRate>
   <RW_Reject_InDebt>Settle your warehouse debt before taking new contracts.</RW_Reject_InDebt>
   <RW_Reject_FactionBlocked>This faction refuses to deal with you for now.</RW_Reject_FactionBlocked>
   <RW_Reject_TooManyContracts>You already have the maximum number of contracts.</RW_Reject_TooManyContracts>
@@ -134,6 +140,11 @@
   <RW_TrustSummary>Trust rank: {0} ({1} points, {2} to the next rank)</RW_TrustSummary>
   <RW_TrustSummaryMax>Trust rank: {0} ({1} points, highest rank)</RW_TrustSummaryMax>
   <RW_TrustLine>trust {0}</RW_TrustLine>
+  <RW_TrustHistory>Trust history</RW_TrustHistory>
+  <RW_TrustHistoryNone>No change in trust points yet.</RW_TrustHistoryNone>
+  <RW_TrustHistoryLine>{0}: {1} points ({2} → {3}), rank {4}</RW_TrustHistoryLine>
+  <RW_TrustHistoryRankSame>{0}</RW_TrustHistoryRankSame>
+  <RW_TrustHistoryRankChanged>{0} → {1}</RW_TrustHistoryRankChanged>
   <RW_Set_EditRanks>Edit trust rank table...</RW_Set_EditRanks>
   <RW_Rank_Title>Trust rank table</RW_Rank_Title>
   <RW_Rank_Hint>Totals are the combined declared value of a contract's crates, in silver. Total values and crate limits apply to new offers; required points apply at once. Typing a multiplier fills the four totals from the base ranges (normal 500-2,000, high-risk 2,000-6,000).</RW_Rank_Hint>
@@ -147,6 +158,12 @@
   <RW_Rank_Col_Crates>Max crates</RW_Rank_Col_Crates>
   <RW_Rank_Custom>Custom</RW_Rank_Custom>
   <RW_Rank_Reset>Reset table to defaults</RW_Rank_Reset>
+  <RW_Rank_PresetNow>Preset: {0}</RW_Rank_PresetNow>
+  <RW_Rank_PresetDesc>Replaces the whole table. Only the points needed per rank differ; the totals and crate limits stay at their defaults.</RW_Rank_PresetDesc>
+  <RW_Rank_Preset_Standard>Standard</RW_Rank_Preset_Standard>
+  <RW_Rank_Preset_Gentle>Gentle (half the points)</RW_Rank_Preset_Gentle>
+  <RW_Rank_Preset_Strict>Strict (double the points)</RW_Rank_Preset_Strict>
+  <RW_Rank_Preset_Custom>custom</RW_Rank_Preset_Custom>
   <RW_Rank_Warn>These ranks ask for over 30,000 silver per crate, which may not fit in 33 kg: {0}.</RW_Rank_Warn>
 
   <!-- Diagnostics -->
@@ -234,6 +251,7 @@
   <RW_Reject_UnknownDebt>That debt no longer exists.</RW_Reject_UnknownDebt>
 
   <!-- Cargo raids -->
+  <RW_Msg_RaidersLeave>The cargo thieves have given up and are leaving the map.</RW_Msg_RaidersLeave>
   <RW_Letter_CargoRaidTitle>Cargo raid</RW_Letter_CargoRaidTitle>
   <RW_Letter_CargoRaid>{0} have come for the cargo of contract {1} ({2} raider(s)). They will grab crates that are not locked in an intact vault and run for the map edge. Crates carried off the map are lost; take them back before that and the contract continues.</RW_Letter_CargoRaid>
   <RW_Msg_CrateCarried>Raiders are carrying a crate of contract {0} toward the map edge!</RW_Msg_CrateCarried>

@@ -12,15 +12,26 @@ namespace RentalWarehouse
     {
         private const float ButtonWidth = 150f;
 
+        private static readonly System.Collections.Generic.List<SiteRecord> open = new System.Collections.Generic.List<SiteRecord>();
+
         public static Vector2 Draw(Rect rect, Vector2 scroll)
         {
             var world = WarehouseWorldComponent.Instance;
-            var sites = world.State.Sites.Where(s => !s.Closed).ToList();
+            open.Clear();
+            foreach (var s in world.State.Sites)
+            {
+                if (!s.Closed) open.Add(s);
+            }
+            var sites = open;
             return WarehouseTab.ScrollList(rect, scroll, sites,
-                (s, w) => WarehouseTab.TextHeight(Describe(world, s), w - ButtonWidth - 12f) + 8f,
+                (s, w) =>
+                {
+                    DescribeCached(world, s);
+                    return UiTextCache.Height(s, w - ButtonWidth - 12f) + 8f;
+                },
                 (s, r) =>
                 {
-                    Widgets.Label(new Rect(r.x, r.y, r.width - ButtonWidth - 12f, r.height), Describe(world, s));
+                    Widgets.Label(new Rect(r.x, r.y, r.width - ButtonWidth - 12f, r.height), DescribeCached(world, s));
                     var site = VaultDiscovery.FindSite(s.SiteId);
                     if (site != null && Widgets.ButtonText(new Rect(r.xMax - ButtonWidth, r.y, ButtonWidth, 32f), "RW_ShowOnWorld".Translate()))
                     {
@@ -30,6 +41,9 @@ namespace RentalWarehouse
         }
 
         /// <summary>Rounded estimate only: exact contents are unknown until the crates are opened.</summary>
+        private static string DescribeCached(WarehouseWorldComponent world, SiteRecord s) =>
+            UiTextCache.Text(s, () => Describe(world, s));
+
         public static string Describe(WarehouseWorldComponent world, SiteRecord s)
         {
             var sb = new StringBuilder();

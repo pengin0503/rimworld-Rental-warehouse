@@ -115,6 +115,57 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
+        public void Preset_Standard_IsTheDefaultTable()
+        {
+            Assert.True(TrustRanks.SameTable(TrustRanks.Default(), TrustRanks.Preset(TrustPreset.Standard)));
+        }
+
+        [Fact]
+        public void Preset_Gentle_NeedsHalfThePoints_Strict_Double_ValuesUnchanged()
+        {
+            var gentle = TrustRanks.Preset(TrustPreset.Gentle);
+            var strict = TrustRanks.Preset(TrustPreset.Strict);
+            var standard = TrustRanks.Default();
+
+            Assert.Equal(new[] { 0, 15, 50, 125, 250, 500, 1000, 2000 }, gentle.Select(r => r.RequiredPoints));
+            Assert.Equal(new[] { 0, 60, 200, 500, 1000, 2000, 4000, 8000 }, strict.Select(r => r.RequiredPoints));
+            for (int i = 0; i < TrustRanks.Count; i++)
+            {
+                foreach (var t in new[] { gentle[i], strict[i] })
+                {
+                    Assert.Equal((standard[i].NormalMin, standard[i].NormalMax, standard[i].HighRiskMin, standard[i].HighRiskMax, standard[i].MaxCrates),
+                        (t.NormalMin, t.NormalMax, t.HighRiskMin, t.HighRiskMax, t.MaxCrates));
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(TrustPreset.Standard)]
+        [InlineData(TrustPreset.Gentle)]
+        [InlineData(TrustPreset.Strict)]
+        public void Preset_IsAlwaysValid_AndFresh(TrustPreset preset)
+        {
+            var a = TrustRanks.Preset(preset);
+
+            Assert.Null(TrustRanks.Validate(a));
+            a[1].RequiredPoints = 999;
+            Assert.NotEqual(999, TrustRanks.Preset(preset)[1].RequiredPoints);
+        }
+
+        [Theory]
+        [InlineData(TrustPreset.Standard)]
+        [InlineData(TrustPreset.Gentle)]
+        [InlineData(TrustPreset.Strict)]
+        public void PresetOf_RecognisesAPresetTable_AndNullAfterAnEdit(TrustPreset preset)
+        {
+            var table = TrustRanks.Preset(preset);
+            Assert.Equal(preset, TrustRanks.PresetOf(table));
+
+            table[3].NormalMax += 1;
+            Assert.Null(TrustRanks.PresetOf(table));
+        }
+
+        [Fact]
         public void ApplyMultiplier_ScalesFromTheBaseRanges()
         {
             var row = new RankRow();
@@ -269,6 +320,73 @@ namespace RentalWarehouse.Core.Tests
             Assert.Equal(10, c.Settlement!.TrustDelta);
         }
 
+        private static ContractState MaturedWith(ContractKind kind, long term, params decimal[] values)
+        {
+            var terms = Terms(kind, "K1", values, term: term);
+            var world = World(terms);
+            var c = Activate(world, terms);
+            RunUntil(c, c.EndTick!.Value);
+            ReturnAll(c, c.EndTick!.Value + 10);
+            return c;
+        }
+
+        [Theory]
+        [InlineData(3, 5)]
+        [InlineData(6, 10)]
+        [InlineData(9, 15)]
+        [InlineData(12, 20)]
+        public void Gain_GrowsWithTheTermLength(int days, int expected)
+        {
+            var c = MaturedWith(ContractKind.Normal, days * D, 1000m);
+
+            Assert.Equal(expected, c.Settlement!.TrustDelta);
+        }
+
+        [Fact]
+        public void Gain_HighRiskEarnsOneAndAHalfTimesAsMuch()
+        {
+            var c = MaturedWith(ContractKind.HighRisk, 6 * D, 1000m);
+
+            Assert.Equal(15, c.Settlement!.TrustDelta);
+        }
+
+        [Fact]
+        public void Gain_LongHighRiskTermCombinesBothFactors()
+        {
+            var c = MaturedWith(ContractKind.HighRisk, 12 * D, 1000m);
+
+            Assert.Equal(30, c.Settlement!.TrustDelta);
+        }
+
+        [Theory]
+        [InlineData(ContractKind.Normal, 1, 0.5)]
+        [InlineData(ContractKind.Normal, 3, 0.5)]
+        [InlineData(ContractKind.Normal, 6, 1)]
+        [InlineData(ContractKind.Normal, 12, 2)]
+        [InlineData(ContractKind.Normal, 30, 2)]
+        [InlineData(ContractKind.HighRisk, 1, 0.75)]
+        [InlineData(ContractKind.HighRisk, 30, 3)]
+        public void GainFactor_IsClampedToHalfAndDouble_ThenTimesTheKindFactor(ContractKind kind, int days, double expected)
+        {
+            var terms = Terms(kind, "K1", new[] { 1000m }, term: days * D);
+
+            Assert.Equal((decimal)expected, TrustService.GainFactor(terms));
+        }
+
+        [Fact]
+        public void Loss_IsNotScaledByTermOrKind()
+        {
+            var terms = Terms(ContractKind.HighRisk, "K1", new[] { 1000m, 1000m }, term: 12 * D);
+            var world = World(terms);
+            var c = Activate(world, terms);
+            ContractEngine.MarkLost(c, terms.CargoIds[1], LossCause.Lost, c.ActiveTick!.Value + 4 * D);
+            RunUntil(c, c.EndTick!.Value);
+            ReturnAll(c, c.EndTick!.Value + 10);
+
+            // 1000 returned x 2.0 x 1.5 = 30 earned; 1000 lost = 20 lost, whatever the term or kind.
+            Assert.Equal(30 - 20, c.Settlement!.TrustDelta);
+        }
+
         [Fact]
         public void Delta_OneLostOneReturned()
         {
@@ -408,6 +526,57 @@ namespace RentalWarehouse.Core.Tests
 
             var small = new WorldState { TrustPoints = 1000 };
             Assert.Equal((1000, 900), TrustService.Apply(small, -100, empire: false));
+        }
+
+        [Fact]
+        public void Apply_ForAContract_RecordsAHistoryEntry()
+        {
+            var w = new WorldState { TrustPoints = 1000 };
+
+            TrustService.Apply(w, -720, empire: false, contractId: "K7", now: 12345);
+
+            var e = Assert.Single(w.TrustLog);
+            Assert.Equal("K7", e.ContractId);
+            Assert.Equal(12345, e.Tick);
+            Assert.Equal(-720, e.Delta);
+            Assert.Equal((1000, 500), (e.Before, e.After));
+            Assert.Equal((5, 4), (e.RankBefore, e.RankAfter));
+        }
+
+        [Fact]
+        public void Apply_WithoutAContract_RecordsNothing()
+        {
+            var w = new WorldState { TrustPoints = 1000 };
+
+            TrustService.Apply(w, 50, empire: false);
+
+            Assert.Empty(w.TrustLog);
+        }
+
+        [Fact]
+        public void History_KeepsTheNewestThirtyEntriesInOrder()
+        {
+            var w = new WorldState();
+
+            for (int i = 0; i < TrustService.HistoryKept + 5; i++) TrustService.Apply(w, 1, empire: false, contractId: "K" + i, now: i);
+
+            Assert.Equal(TrustService.HistoryKept, w.TrustLog.Count);
+            Assert.Equal("K5", w.TrustLog[0].ContractId);
+            Assert.Equal("K" + (TrustService.HistoryKept + 4), w.TrustLog[^1].ContractId);
+        }
+
+        [Fact]
+        public void History_SurvivesJsonRoundTrip_AndAnOldPayloadStartsEmpty()
+        {
+            var w = new WorldState();
+            TrustService.Apply(w, 40, empire: false, contractId: "K1", now: 9);
+
+            var back = StateCodec.Import(StateCodec.Export(w));
+            var e = Assert.Single(back.TrustLog);
+            Assert.Equal(("K1", 9L, 40, 0, 40), (e.ContractId, e.Tick, e.Delta, e.Before, e.After));
+
+            var old = StateCodec.Import(new SavedState { SchemaVersion = 3, Payload = "{\"SchemaVersion\":3}" });
+            Assert.Empty(old.TrustLog);
         }
 
         [Fact]

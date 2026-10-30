@@ -383,6 +383,8 @@ namespace RentalWarehouse.Core
         public int TrustPoints;
         /// <summary>The rank last announced to the player, so a change is reported once.</summary>
         public int TrustAnnouncedRank;
+        /// <summary>The newest changes of the trust points, oldest first (at most <see cref="TrustService.HistoryKept"/>).</summary>
+        public List<TrustEvent> TrustLog = new List<TrustEvent>();
         public List<ContractState> Offers = new List<ContractState>();
         public List<ContractState> Contracts = new List<ContractState>();
         public List<SiteRecord> Sites = new List<SiteRecord>();
@@ -404,7 +406,15 @@ namespace RentalWarehouse.Core
         /// <summary>Runtime only (not public, so never serialised): set while the effect queue is being processed.</summary>
         internal bool ProcessingEffects;
 
-        public ContractState? Contract(string contractId) => Contracts.Find(c => c.Terms.ContractId == contractId);
+        /// <summary>Looked up from every crate check in the game, so it is a plain loop that allocates nothing.</summary>
+        public ContractState? Contract(string contractId)
+        {
+            for (int i = 0; i < Contracts.Count; i++)
+            {
+                if (Contracts[i].Terms.ContractId == contractId) return Contracts[i];
+            }
+            return null;
+        }
 
         /// <summary>Total claimable balance across contracts, optionally limited to one map.</summary>
         public decimal ReceivableBalance(string? mapId = null)

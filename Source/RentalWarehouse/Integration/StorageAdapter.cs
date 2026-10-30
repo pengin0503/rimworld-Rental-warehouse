@@ -8,13 +8,46 @@ namespace RentalWarehouse
     /// <summary>Reads the player's racks and vaults into a <see cref="StorageSnapshot"/> for the Core.</summary>
     public static class StorageAdapter
     {
+        private static IEnumerable<ThingDef> StorageDefs()
+        {
+            yield return RWDefOf.RW_StorageRack;
+            yield return RWDefOf.RW_Vault;
+        }
+
         public static IEnumerable<Building_WarehouseStorage> Facilities(Map map)
         {
             if (map == null) yield break;
-            foreach (var b in map.listerBuildings.allBuildingsColonist)
+            // Only the two storage defs are listed; walking every colonist building of a big base for this was the costly part.
+            foreach (var def in StorageDefs())
             {
-                if (b is Building_WarehouseStorage s && s.Faction == Faction.OfPlayer) yield return s;
+                foreach (var b in map.listerBuildings.AllBuildingsColonistOfDef(def))
+                {
+                    if (b is Building_WarehouseStorage s && s.Faction == Faction.OfPlayer) yield return s;
+                }
             }
+        }
+
+        /// <summary>
+        /// Crates the intact racks and vaults of the home map with the most room can hold: normal cargo may use either kind,
+        /// high-risk cargo only vaults. Used to keep offers within what the colony can store.
+        /// </summary>
+        public static (int Rack, int Vault) BestCapacity()
+        {
+            int bestRack = 0, bestVault = 0;
+            foreach (var map in Find.Maps)
+            {
+                if (!map.IsPlayerHome) continue;
+                int racks = 0, vaults = 0;
+                foreach (var f in Facilities(map))
+                {
+                    if (!f.IsValidFacility) continue;
+                    if (f.Kind == StorageKind.Vault) vaults += Building_WarehouseStorage.CapacityCrates;
+                    else racks += Building_WarehouseStorage.CapacityCrates;
+                }
+                bestRack = System.Math.Max(bestRack, racks + vaults);
+                bestVault = System.Math.Max(bestVault, vaults);
+            }
+            return (bestRack, bestVault);
         }
 
         public static StorageSnapshot Capture(string mapId)

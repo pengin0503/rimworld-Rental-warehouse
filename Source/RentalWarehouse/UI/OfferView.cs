@@ -22,7 +22,11 @@ namespace RentalWarehouse
             float y = top.yMax + 4f;
             var list = new Rect(rect.x, y, rect.width, rect.yMax - y);
             return WarehouseTab.ScrollList(list, scroll, offers,
-                (o, w) => Mathf.Max(WarehouseTab.TextHeight(Describe(world, o.Terms, o.Negotiation), w - ButtonWidth - 12f), 76f) + 8f,
+                (o, w) =>
+                {
+                    DescribeCached(world, o);
+                    return Mathf.Max(UiTextCache.Height(o, w - ButtonWidth - 12f), 76f) + 8f;
+                },
                 (o, r) => DrawOffer(world, o, r), "RW_NoOffers");
         }
 
@@ -33,14 +37,40 @@ namespace RentalWarehouse
             string slots = "-";
             if (map != null && map.IsPlayerHome)
             {
-                var snap = StorageAdapter.Capture(Ids.Of(map));
+                var snap = Snapshot(map);
                 slots = "RW_SlotsFree".Translate(snap.FreeSlots(StorageKind.Rack), snap.FreeSlots(StorageKind.Vault));
             }
             string debt = world.State.Debts.Count > 0 ? "  " + "RW_InDebtWarning".Translate() : "";
             return "RW_LoadSummary".Translate(open, Limits.MaxActiveContracts, slots) + debt;
         }
 
+        private static string snapshotMapId;
+        private static int snapshotStamp = -1;
+        private static StorageSnapshot snapshot;
+
+        /// <summary>
+        /// The map's storage as of the last few ticks. The offer list asks several times per frame, and scanning every
+        /// building that often is wasteful while nothing changes.
+        /// </summary>
+        public static StorageSnapshot Snapshot(Map map)
+        {
+            if (map == null || !map.IsPlayerHome) return null;
+            string id = Ids.Of(map);
+            int stamp = Find.TickManager.TicksGame / 15;
+            if (snapshot == null || snapshotMapId != id || snapshotStamp != stamp)
+            {
+                snapshot = StorageAdapter.Capture(id);
+                snapshotMapId = id;
+                snapshotStamp = stamp;
+            }
+            return snapshot;
+        }
+
         public static string FactionName(string id) => Ids.Faction(id)?.Name ?? "RW_UnknownFaction".Translate().Resolve();
+
+        /// <summary>The offer's text as drawn every frame: rebuilt a few times a second, not on every pass.</summary>
+        private static string DescribeCached(WarehouseWorldComponent world, ContractState offer) =>
+            UiTextCache.Text(offer, () => Describe(world, offer.Terms, offer.Negotiation));
 
         public static string Describe(WarehouseWorldComponent world, ContractTerms t, NegotiationState negotiation = NegotiationState.None)
         {
@@ -52,6 +82,7 @@ namespace RentalWarehouse
                 sb.AppendLine("  " + "RW_CrateLine".Translate(i + 1, t.CargoValues[i].ToString("0"), record?.MassKg.ToString("0.#") ?? "?", Manifest(record)));
             }
             sb.AppendLine("RW_Requires".Translate(("RW_Storage_" + t.RequiredStorage).Translate(), t.CargoIds.Count, (t.DurationTicks / (float)CoreTime.TicksPerDay).ToString("0.#")));
+            sb.AppendLine(CapacityLine(world, t));
             sb.AppendLine("RW_FeeLine".Translate(Accounting.FullDailyFee(t).ToString("0.##"), (Accounting.FullTermFee(t) * t.CompletionRate).ToString("0"), t.NominalTotalReward.ToString("0")));
             if (negotiation != NegotiationState.None)
             {
@@ -80,6 +111,16 @@ namespace RentalWarehouse
             return sb.ToString();
         }
 
+        /// <summary>How many slots the offer needs and whether this map's racks and vaults can take it now (reservations included).</summary>
+        public static string CapacityLine(WarehouseWorldComponent world, ContractTerms t)
+        {
+            var snap = Snapshot(Find.CurrentMap);
+            if (snap == null) return "RW_CapacityUnknown".Translate(t.CargoIds.Count).ToString();
+            int free = t.RequiredStorage == StorageKind.Vault ? snap.FreeSlots(StorageKind.Vault) : snap.FreeSlots(StorageKind.Rack) + snap.FreeSlots(StorageKind.Vault);
+            return (ContractEngine.HasCapacity(t, snap, world.State) ? "RW_CapacityOk" : "RW_CapacityShort")
+                .Translate(t.CargoIds.Count, ("RW_Storage_" + t.RequiredStorage).Translate(), free).ToString();
+        }
+
         public static string Manifest(CargoRecord record)
         {
             if (record == null) return "?";
@@ -93,7 +134,7 @@ namespace RentalWarehouse
         private static void DrawOffer(WarehouseWorldComponent world, ContractState offer, Rect rect)
         {
             var text = new Rect(rect.x, rect.y, rect.width - ButtonWidth - 12f, rect.height);
-            Widgets.Label(text, Describe(world, offer.Terms, offer.Negotiation));
+            Widgets.Label(text, DescribeCached(world, offer));
             var button = new Rect(rect.xMax - ButtonWidth, rect.y, ButtonWidth, 32f);
             if (Widgets.ButtonText(button, "RW_Accept".Translate()))
             {
@@ -113,7 +154,7 @@ namespace RentalWarehouse
             {
                 Widgets.Label(negotiate, "RW_Negotiate_Done".Translate());
             }
-            else if (offer.Terms.PrepaymentRate >= NegotiationService.MaxPercent / 100m)
+            else if (offer.Terms.PrepaymentRate * 100m >= NegotiationService.MaxPercentFor(TrustService.Rank(world.State)))
             {
                 Widgets.Label(negotiate, "RW_Negotiate_NoRoom".Translate());
             }

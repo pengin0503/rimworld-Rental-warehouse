@@ -16,6 +16,16 @@ namespace RentalWarehouse.Core
         public RankRow Clone() => (RankRow)MemberwiseClone();
     }
 
+    /// <summary>Ready-made point requirements for the rank table; the totals and crate limits stay as in the standard table.</summary>
+    public enum TrustPreset
+    {
+        Standard,
+        /// <summary>Half the points per rank: ranks come sooner.</summary>
+        Gentle,
+        /// <summary>Double the points per rank: ranks take longer.</summary>
+        Strict,
+    }
+
     /// <summary>The rank table as six parallel columns, the shape the mod settings file stores.</summary>
     public sealed class RankColumns
     {
@@ -65,6 +75,19 @@ namespace RentalWarehouse.Core
         }
     }
 
+    /// <summary>One change of the trust points caused by a settled contract, kept for the history on the accounts page.</summary>
+    public sealed class TrustEvent
+    {
+        public string ContractId = "";
+        public long Tick;
+        /// <summary>What the settlement asked for; <see cref="After"/> minus <see cref="Before"/> can differ (demotion floor, cap).</summary>
+        public int Delta;
+        public int Before;
+        public int After;
+        public int RankBefore;
+        public int RankAfter;
+    }
+
     /// <summary>The trust rank table (spec 3.3) and the arithmetic around it. Pure functions of a table.</summary>
     public static class TrustRanks
     {
@@ -93,6 +116,31 @@ namespace RentalWarehouse.Core
                 rows.Add(row);
             }
             return rows;
+        }
+
+        private static readonly TrustPreset[] Presets = { TrustPreset.Standard, TrustPreset.Gentle, TrustPreset.Strict };
+
+        /// <summary>The default table with every rank's required points scaled by the preset; always valid.</summary>
+        public static List<RankRow> Preset(TrustPreset preset)
+        {
+            var rows = Default();
+            decimal factor = preset == TrustPreset.Gentle ? 0.5m : preset == TrustPreset.Strict ? 2m : 1m;
+            for (int i = 1; i < rows.Count; i++)
+            {
+                int points = (int)Math.Round(rows[i].RequiredPoints * factor, 0, MidpointRounding.AwayFromZero);
+                rows[i].RequiredPoints = Math.Max(points, rows[i - 1].RequiredPoints + 1);
+            }
+            return rows;
+        }
+
+        /// <summary>The preset this table equals, or null once it was edited.</summary>
+        public static TrustPreset? PresetOf(IReadOnlyList<RankRow> table)
+        {
+            foreach (var preset in Presets)
+            {
+                if (SameTable(table, Preset(preset))) return preset;
+            }
+            return null;
         }
 
         /// <summary>The highest rank whose required points the points reach.</summary>
@@ -190,10 +238,17 @@ namespace RentalWarehouse.Core
     /// <summary>Trust points of one ledger: how settlements change them and which rank they make (spec 3).</summary>
     public static class TrustService
     {
+        /// <summary>Most history entries kept in the ledger.</summary>
+        public const int HistoryKept = 30;
         private const decimal PointValue = 100m;
         private const decimal LossWeight = 2m;
         private const decimal EmbezzleWeight = 4m;
         private const decimal AbandonWeight = 0.5m;
+        /// <summary>A 6-day term earns the plain rate; shorter and longer terms scale with the days, within half and double.</summary>
+        private const decimal BaselineTermDays = 6m;
+        private const decimal MinTermFactor = 0.5m;
+        private const decimal MaxTermFactor = 2m;
+        private const decimal HighRiskFactor = 1.5m;
 
         /// <summary>The table in force: the ledger's own, or the default when the ledger holds an unusable one.</summary>
         private static List<RankRow> Table(WorldState world) =>
@@ -215,8 +270,16 @@ namespace RentalWarehouse.Core
             return rank + 1 < table.Count ? table[rank + 1].RequiredPoints - Points(world) : (int?)null;
         }
 
+        /// <summary>What a full-term return earns per 100 silver of value is multiplied by: the term length, then 1.5 for high risk.</summary>
+        public static decimal GainFactor(ContractTerms terms)
+        {
+            decimal days = terms.DurationTicks / (decimal)CoreTime.TicksPerDay;
+            decimal term = Math.Max(MinTermFactor, Math.Min(MaxTermFactor, days / BaselineTermDays));
+            return terms.Kind == ContractKind.HighRisk ? term * HighRiskFactor : term;
+        }
+
         /// <summary>
-        /// Points a settled contract earns or loses (spec 3.2): returned value on a full term earns, lost and embezzled
+        /// Points a settled contract earns or loses (spec 3.2): returned value on a full term earns (more for a long or high-risk term), lost and embezzled
         /// value costs, an early return or a failed storage costs half the contract's value. System cancellations are neutral.
         /// </summary>
         public static int DeltaFor(ContractState c)
@@ -229,7 +292,7 @@ namespace RentalWarehouse.Core
                 else if (cs.Loss == LossCause.Lost) lost += cs.DeclaredValue;
                 else if (cs.Loss == LossCause.Embezzled) embezzled += cs.DeclaredValue;
             }
-            decimal gain = c.ReturnReason == ReturnReason.Matured ? returned / PointValue : 0m;
+            decimal gain = c.ReturnReason == ReturnReason.Matured ? returned / PointValue * GainFactor(c.Terms) : 0m;
             decimal loss = lost / PointValue * LossWeight + embezzled / PointValue * EmbezzleWeight;
             bool abandoned = c.ReturnReason == ReturnReason.EarlyByPlayer || c.ReturnReason == ReturnReason.StorageFailed;
             decimal abandon = abandoned ? c.Terms.TotalValue / PointValue * AbandonWeight : 0m;
@@ -240,7 +303,7 @@ namespace RentalWarehouse.Core
         /// Adds <paramref name="delta"/> to the points. A loss never takes the points below the requirement of the rank
         /// one step below (two for the Empire) the rank held before it (spec 3.4).
         /// </summary>
-        public static (int Before, int After) Apply(WorldState world, int delta, bool empire)
+        public static (int Before, int After) Apply(WorldState world, int delta, bool empire, string? contractId = null, long now = 0)
         {
             var table = Table(world);
             int before = Points(world);
@@ -252,7 +315,23 @@ namespace RentalWarehouse.Core
             }
             after = Math.Max(0, Math.Min(after, TrustRanks.PointCap(table)));
             world.TrustPoints = after;
+            if (contractId != null) Record(world, contractId, now, delta, before, after, table);
             return (before, after);
+        }
+
+        private static void Record(WorldState world, string contractId, long now, int delta, int before, int after, IReadOnlyList<RankRow> table)
+        {
+            world.TrustLog.Add(new TrustEvent
+            {
+                ContractId = contractId,
+                Tick = now,
+                Delta = delta,
+                Before = before,
+                After = after,
+                RankBefore = TrustRanks.RankOf(table, before),
+                RankAfter = TrustRanks.RankOf(table, after),
+            });
+            if (world.TrustLog.Count > HistoryKept) world.TrustLog.RemoveRange(0, world.TrustLog.Count - HistoryKept);
         }
 
         /// <summary>The rank change not yet announced, or null. Marks it announced.</summary>

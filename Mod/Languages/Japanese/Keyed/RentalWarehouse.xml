@@ -34,15 +34,21 @@
   <RW_Negotiate>前払いを交渉</RW_Negotiate>
   <RW_Negotiate_Done>交渉済み</RW_Negotiate_Done>
   <RW_Negotiate_NoRoom>前払いは上限です</RW_Negotiate_NoRoom>
+  <RW_CapacityOk>収納: {1}に{0}枠。このマップの空きは{2}枠です。</RW_CapacityOk>
+  <RW_CapacityShort>収納: {1}に{0}枠が必要ですが、このマップの空きは{2}枠だけです（進行中の依頼を含む）。施設を増やすか、空きを待ってください。</RW_CapacityShort>
+  <RW_CapacityUnknown>収納: {0}枠が必要です（拠点マップを開くと空きと比べられます）。</RW_CapacityUnknown>
+  <RW_Set_CapacityAware>棚と金庫に入る箱数までしか依頼を出さない</RW_Set_CapacityAware>
+  <RW_Set_CapacityAwareDesc>新しい依頼の箱数を、いちばん余裕のある拠点マップの無傷の棚と金庫の枠数までに抑えます（高危険度は金庫のみ）。合計価値は変わらないので、箱ひとつあたりの価値が上がります。</RW_Set_CapacityAwareDesc>
   <RW_NegotiateTitle>前払い率の交渉</RW_NegotiateTitle>
-  <RW_NegotiateIntro>契約{0}の依頼元に、初回提示率{1}%より高い前払いを求めます。1つの依頼につき1回だけで、失敗すると初回提示率のままです。</RW_NegotiateIntro>
+  <RW_NegotiateIntro>契約{0}の依頼元に、初回提示率{1}%より高い前払いを求めます（信頼ランクにより最大{2}%）。1つの依頼につき1回だけで、失敗すると初回提示率のままです。成功すると、上げた1ポイントごとに完了報酬率が2%（相対）下がります。</RW_NegotiateIntro>
+  <RW_NegotiateCost>成功すると、完了報酬率が{0}%から{1}%に下がります。</RW_NegotiateCost>
   <RW_NegotiateNegotiator>交渉役</RW_NegotiateNegotiator>
   <RW_NegotiateSocial>社会 {0}</RW_NegotiateSocial>
   <RW_NegotiateAsk>要求する前払い率: {0}%</RW_NegotiateAsk>
   <RW_NegotiateChance>成功率: {0}%</RW_NegotiateChance>
   <RW_NegotiateGo>交渉する</RW_NegotiateGo>
   <RW_NegotiateNoOne>交渉できるコロニストがいません。</RW_NegotiateNoOne>
-  <RW_Msg_NegotiationSucceeded>契約{0}: 交渉に成功しました。前払い率は{1}%になりました。</RW_Msg_NegotiationSucceeded>
+  <RW_Msg_NegotiationSucceeded>契約{0}: 交渉に成功しました。前払い率は{1}%、完了報酬率は{2}%になりました。</RW_Msg_NegotiationSucceeded>
   <RW_Msg_NegotiationFailed>契約{0}: 交渉は失敗しました。前払い率は{1}%のままです。</RW_Msg_NegotiationFailed>
   <RW_NoPrepaymentLine>前払いなし: 保管料の全額と完了報酬は、箱の返還後に後払いです。</RW_NoPrepaymentLine>
   <RW_FeeLine>保管中の料金は1日{0}銀。完了報酬は最大{1}銀、合計は最大{2}銀。</RW_FeeLine>
@@ -67,7 +73,7 @@
   <RW_Reject_TooHeavy>箱は35kg以下でなければなりません。</RW_Reject_TooHeavy>
   <RW_Reject_OfferExpired>依頼の期限が切れています。</RW_Reject_OfferExpired>
   <RW_Reject_AlreadyNegotiated>この依頼はすでに交渉済みです。</RW_Reject_AlreadyNegotiated>
-  <RW_Reject_InvalidRate>初回提示率より高く、30%以下の前払い率を要求してください。</RW_Reject_InvalidRate>
+  <RW_Reject_InvalidRate>初回提示率より高く、信頼ランクで許される上限以下の前払い率を要求してください。</RW_Reject_InvalidRate>
   <RW_Reject_InDebt>貸倉庫の債務を精算するまで新規受注できません。</RW_Reject_InDebt>
   <RW_Reject_FactionBlocked>この派閥は現在取引に応じません。</RW_Reject_FactionBlocked>
   <RW_Reject_TooManyContracts>同時に受けられる契約数の上限です。</RW_Reject_TooManyContracts>
@@ -134,6 +140,11 @@
   <RW_TrustSummary>信頼ランク: {0}（{1}点・次のランクまで{2}点）</RW_TrustSummary>
   <RW_TrustSummaryMax>信頼ランク: {0}（{1}点・最高ランク）</RW_TrustSummaryMax>
   <RW_TrustLine>信頼 {0}</RW_TrustLine>
+  <RW_TrustHistory>信頼ポイントの履歴</RW_TrustHistory>
+  <RW_TrustHistoryNone>信頼ポイントの変動はまだありません。</RW_TrustHistoryNone>
+  <RW_TrustHistoryLine>{0}: {1}点（{2} → {3}）・ランク {4}</RW_TrustHistoryLine>
+  <RW_TrustHistoryRankSame>{0}</RW_TrustHistoryRankSame>
+  <RW_TrustHistoryRankChanged>{0} → {1}</RW_TrustHistoryRankChanged>
   <RW_Set_EditRanks>信頼ランク表を編集…</RW_Set_EditRanks>
   <RW_Rank_Title>信頼ランク表</RW_Rank_Title>
   <RW_Rank_Hint>合計は、契約の箱の申告価値の合計（銀）です。合計価値と箱数は新しい依頼から、必要ポイントはすぐに反映されます。倍率を入力すると、基準（通常500～2,000、高危険度2,000～6,000）に掛けた値が4つの合計に入ります。</RW_Rank_Hint>
@@ -147,6 +158,12 @@
   <RW_Rank_Col_Crates>箱数（最大）</RW_Rank_Col_Crates>
   <RW_Rank_Custom>個別設定</RW_Rank_Custom>
   <RW_Rank_Reset>ランク表を初期値に戻す</RW_Rank_Reset>
+  <RW_Rank_PresetNow>プリセット: {0}</RW_Rank_PresetNow>
+  <RW_Rank_PresetDesc>表全体を置き換えます。ランクごとの必要ポイントだけが違い、合計価値と箱数は初期値のままです。</RW_Rank_PresetDesc>
+  <RW_Rank_Preset_Standard>標準</RW_Rank_Preset_Standard>
+  <RW_Rank_Preset_Gentle>緩やか（必要ポイント半分）</RW_Rank_Preset_Gentle>
+  <RW_Rank_Preset_Strict>厳しい（必要ポイント2倍）</RW_Rank_Preset_Strict>
+  <RW_Rank_Preset_Custom>カスタム</RW_Rank_Preset_Custom>
   <RW_Rank_Warn>1箱あたり30,000銀を超え、積載33kgに収まらない恐れのあるランク: {0}。</RW_Rank_Warn>
 
   <!-- 診断 -->
@@ -234,6 +251,7 @@
   <RW_Reject_UnknownDebt>その債務はもうありません。</RW_Reject_UnknownDebt>
 
   <!-- Cargo raids -->
+  <RW_Msg_RaidersLeave>貨物泥棒たちは諦めて、マップから立ち去ろうとしています。</RW_Msg_RaidersLeave>
   <RW_Letter_CargoRaidTitle>貨物強奪の襲撃</RW_Letter_CargoRaidTitle>
   <RW_Letter_CargoRaid>{0}が契約{1}の貨物を狙って来ました（{2}人）。無傷の金庫に入っていない箱を奪い、マップ端へ逃げます。マップ外へ持ち去られた箱は失われますが、その前に取り戻せば契約は続きます。</RW_Letter_CargoRaid>
   <RW_Msg_CrateCarried>契約{0}の箱が敵に持ち去られようとしています！</RW_Msg_CrateCarried>

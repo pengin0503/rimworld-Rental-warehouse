@@ -13,16 +13,31 @@ namespace RentalWarehouse
     {
         private const float ButtonWidth = 170f;
 
+        /// <summary>The open contracts, refilled every frame instead of building a new list.</summary>
+        private static readonly List<ContractState> open = new List<ContractState>();
+
         public static Vector2 Draw(Rect rect, Vector2 scroll)
         {
             var world = WarehouseWorldComponent.Instance;
-            var list = world.State.Contracts.Where(c => !c.IsTerminal).ToList();
+            open.Clear();
+            foreach (var c in world.State.Contracts)
+            {
+                if (!c.IsTerminal) open.Add(c);
+            }
+            var list = open;
             return WarehouseTab.ScrollList(rect, scroll, list,
-                (c, w) => Mathf.Max(WarehouseTab.TextHeight(Describe(world, c), w - ButtonWidth - 12f), 3 * 36f) + 8f,
+                (c, w) =>
+                {
+                    DescribeCached(world, c);
+                    return Mathf.Max(UiTextCache.Height(c, w - ButtonWidth - 12f), 3 * 36f) + 8f;
+                },
                 (c, r) => DrawContract(world, c, r), "RW_NoContracts");
         }
 
         private static string Days(long ticks) => ((int)System.Math.Max(0, ticks)).ToStringTicksToPeriod();
+
+        private static string DescribeCached(WarehouseWorldComponent world, ContractState c) =>
+            UiTextCache.Text(c, () => Describe(world, c));
 
         public static string Describe(WarehouseWorldComponent world, ContractState c)
         {
@@ -75,7 +90,7 @@ namespace RentalWarehouse
 
         private static void DrawContract(WarehouseWorldComponent world, ContractState c, Rect rect)
         {
-            Widgets.Label(new Rect(rect.x, rect.y, rect.width - ButtonWidth - 12f, rect.height), Describe(world, c));
+            Widgets.Label(new Rect(rect.x, rect.y, rect.width - ButtonWidth - 12f, rect.height), DescribeCached(world, c));
             float y = rect.y;
             Rect Next()
             {

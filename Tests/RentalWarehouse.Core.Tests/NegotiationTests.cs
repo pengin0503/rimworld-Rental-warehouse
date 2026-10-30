@@ -63,10 +63,10 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
-        public void Attempt_RollBelowChance_Succeeds_AndChangesOnlyThePrepayment()
+        public void Attempt_RollBelowChance_Succeeds_RaisesThePrepayment_AndLowersTheCompletionRate()
         {
             var (world, terms) = Offer(SeedWhere(r => r < 0.05m));
-            decimal reward = terms.NominalTotalReward;
+            decimal fullFee = Accounting.FullTermFee(terms);
 
             var d = NegotiationService.Attempt(world, "K1", 15, socialLevel: 0, now: D);
 
@@ -74,8 +74,79 @@ namespace RentalWarehouse.Core.Tests
             Assert.Equal(NegotiationState.Succeeded, d.NewState.Negotiation);
             Assert.Equal(0.15m, terms.PrepaymentRate);
             Assert.Equal(0.10m, terms.OpeningPrepaymentRate);
-            Assert.Equal(reward, terms.NominalTotalReward);
+            // 5 points more prepayment cost 5 x 2% of the 20% completion rate.
+            Assert.Equal(0.18m, terms.CompletionRate);
+            Assert.Equal(fullFee * 1.18m, terms.NominalTotalReward);
             Assert.Equal(9m, Accounting.Prepayment(terms));
+        }
+
+        [Theory]
+        [InlineData(0.20, 1, 0.196)]
+        [InlineData(0.20, 10, 0.16)]
+        [InlineData(0.50, 14, 0.36)]
+        [InlineData(0.20, 0, 0.20)]
+        public void CompletionRateAfter_LosesTwoPercentOfItselfPerPointAsked(double rate, int points, double expected)
+        {
+            Assert.Equal((decimal)expected, NegotiationService.CompletionRateAfter((decimal)rate, points));
+        }
+
+        [Fact]
+        public void Attempt_Failing_LeavesTheCompletionRateAlone()
+        {
+            var (world, terms) = Offer(SeedWhere(r => r >= 0.95m), points: 4000);
+            decimal rate = terms.CompletionRate;
+
+            NegotiationService.Attempt(world, "K1", 11, socialLevel: 20, now: D);
+
+            Assert.Equal(rate, terms.CompletionRate);
+        }
+
+        [Theory]
+        [InlineData(0, 30)]
+        [InlineData(1, 32)]
+        [InlineData(3, 36)]
+        [InlineData(7, 44)]
+        public void MaxPercentFor_RisesTwoPointsPerRank(int rank, int expected)
+        {
+            Assert.Equal(expected, NegotiationService.MaxPercentFor(rank));
+        }
+
+        [Theory]
+        [InlineData(250, 36, true)]
+        [InlineData(250, 37, false)]
+        [InlineData(4000, 44, true)]
+        [InlineData(4000, 45, false)]
+        [InlineData(0, 31, false)]
+        public void Attempt_TheHighestRateAllowedFollowsTheRank(int points, int requested, bool allowed)
+        {
+            var (world, _) = Offer(1, prepay: 0.10m, points: points);
+
+            var d = NegotiationService.Attempt(world, "K1", requested, 10, D);
+
+            Assert.Equal(allowed, d.Success);
+            if (!allowed) Assert.Equal("RW_Reject_InvalidRate", d.ReasonKey);
+        }
+
+        [Fact]
+        public void Attempt_AnOpeningAtTheRankLimit_LeavesNoRoom_ButAHigherRankDoes()
+        {
+            var (low, _) = Offer(1, prepay: 0.30m, points: 0);
+            var (high, _) = Offer(1, prepay: 0.30m, points: 250);
+
+            Assert.Equal("RW_Reject_InvalidRate", NegotiationService.Attempt(low, "K1", 31, 10, D).ReasonKey);
+            Assert.True(NegotiationService.Attempt(high, "K1", 31, 10, D).Success);
+        }
+
+        [Fact]
+        public void NegotiatedAboveThirty_FlowsIntoTheAcceptedContract()
+        {
+            var (world, terms) = Offer(SeedWhere(r => r < 0.05m), prepay: 0.30m, points: 4000);
+            Assert.Equal(NegotiationState.Succeeded, NegotiationService.Attempt(world, "K1", 40, 0, D).NewState.Negotiation);
+
+            var c = Activate(world, terms);
+
+            Assert.Equal(0.40m, c.Terms.PrepaymentRate);
+            Assert.Equal(24m, c.Receivable);
         }
 
         [Fact]
@@ -111,7 +182,7 @@ namespace RentalWarehouse.Core.Tests
         [InlineData(10)]
         [InlineData(9)]
         [InlineData(31)]
-        public void Attempt_RejectsRatesThatAreNotAboveTheOpeningOrAboveThirty(int requested)
+        public void Attempt_RejectsRatesThatAreNotAboveTheOpeningOrAboveTheRankLimit(int requested)
         {
             var (world, terms) = Offer(1);
 
@@ -126,7 +197,7 @@ namespace RentalWarehouse.Core.Tests
         [Theory]
         [InlineData(30)]
         [InlineData(31)]
-        public void Attempt_WhenTheOpeningIsAlreadyThirty_NothingCanBeAsked(int requested)
+        public void Attempt_WhenTheOpeningIsAlreadyAtTheRankLimit_NothingCanBeAsked(int requested)
         {
             var (world, _) = Offer(1, prepay: 0.30m);
 
@@ -173,10 +244,10 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
-        public void Validation_RejectsAPrepaymentAboveThirtyPercent()
+        public void Validation_RejectsAPrepaymentAboveTheHighestNegotiableRate()
         {
             var (world, terms) = Offer(1);
-            terms.PrepaymentRate = 0.31m;
+            terms.PrepaymentRate = 0.45m;
 
             Assert.Equal("RW_Reject_InvalidTerms", ContractEngine.Accept(terms, Storage(4), world, 0).ReasonKey);
         }

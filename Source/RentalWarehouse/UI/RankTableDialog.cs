@@ -59,7 +59,7 @@ namespace RentalWarehouse
             DrawHeader(new Rect(inRect.x, y, inRect.width, RowHeight));
             y += RowHeight;
 
-            float footer = 110f;
+            float footer = 140f;
             var outRect = new Rect(inRect.x, y, inRect.width, inRect.yMax - y - footer);
             var viewRect = new Rect(0f, 0f, outRect.width - 16f, TrustRanks.Count * RowHeight);
             Widgets.BeginScrollView(outRect, ref scroll, viewRect);
@@ -89,7 +89,20 @@ namespace RentalWarehouse
                     GUI.color = Color.white;
                 }
             }
-            if (Widgets.ButtonText(new Rect(inRect.x, y + 30f, 260f, 30f), "RW_Rank_Reset".Translate())) Reset();
+            float row = y + 30f;
+            var current = TrustRanks.PresetOf(rows);
+            Widgets.Label(new Rect(inRect.x, row, inRect.width, 24f),
+                "RW_Rank_PresetNow".Translate(current.HasValue ? ("RW_Rank_Preset_" + current.Value).Translate() : "RW_Rank_Preset_Custom".Translate()));
+            row += 28f;
+            float x = inRect.x;
+            foreach (TrustPreset preset in System.Enum.GetValues(typeof(TrustPreset)))
+            {
+                var button = new Rect(x, row, 170f, 30f);
+                TooltipHandler.TipRegion(button, "RW_Rank_PresetDesc".Translate());
+                if (Widgets.ButtonText(button, ("RW_Rank_Preset_" + preset).Translate())) ApplyTable(TrustRanks.Preset(preset));
+                x += 176f;
+            }
+            if (Widgets.ButtonText(new Rect(x + 20f, row, 260f, 30f), "RW_Rank_Reset".Translate())) ApplyTable(TrustRanks.Default());
         }
 
         private void DrawHeader(Rect rect)
@@ -156,10 +169,11 @@ namespace RentalWarehouse
             if (error == null) settings.SetRankRows(rows);
         }
 
-        private void Reset()
+        /// <summary>Replaces the whole table (a preset, or the defaults) and stores it at once.</summary>
+        private void ApplyTable(List<RankRow> table)
         {
             rows.Clear();
-            rows.AddRange(TrustRanks.Default());
+            rows.AddRange(table);
             for (int i = 0; i < rows.Count; i++)
             {
                 multiplierText[i] = MultiplierText(rows[i]);

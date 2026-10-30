@@ -12,6 +12,7 @@ namespace RentalWarehouse
         public bool highRiskContracts = true;
         public bool vaultSites = true;
         public bool nonHostileVaultSites;
+        public bool capacityAwareOffers = true;
         public float feeMultiplier = 1f;
         public float raidScale = 1f;
 
@@ -28,12 +29,23 @@ namespace RentalWarehouse
             ResetRanks();
         }
 
+        /// <summary>
+        /// Raised whenever the settings are saved or loaded, which is when the settings window closes. The ledger is brought up to
+        /// date only then, instead of comparing every value every step.
+        /// </summary>
+        public static int Revision { get; private set; }
+
+        private static WorldState syncedState;
+        private static int syncedRevision = -1;
+
         public override void ExposeData()
         {
+            if (Scribe.mode == LoadSaveMode.Saving || Scribe.mode == LoadSaveMode.PostLoadInit) Revision++;
             Scribe_Values.Look(ref normalContracts, "normalContracts", true);
             Scribe_Values.Look(ref highRiskContracts, "highRiskContracts", true);
             Scribe_Values.Look(ref vaultSites, "vaultSites", true);
             Scribe_Values.Look(ref nonHostileVaultSites, "nonHostileVaultSites", false);
+            Scribe_Values.Look(ref capacityAwareOffers, "capacityAwareOffers", true);
             Scribe_Values.Look(ref feeMultiplier, "feeMultiplier", 1f);
             Scribe_Values.Look(ref raidScale, "raidScale", 1f);
             Scribe_Collections.Look(ref rankPoints, "rankPoints", LookMode.Value);
@@ -92,6 +104,7 @@ namespace RentalWarehouse
             HighRiskContractsEnabled = highRiskContracts,
             VaultSitesEnabled = vaultSites,
             NonHostileVaultSitesEnabled = nonHostileVaultSites,
+            CapacityAwareOffers = capacityAwareOffers,
             FeeMultiplier = WarehouseSettings.NormalizeMultiplier((decimal)feeMultiplier),
             RaidScale = WarehouseSettings.NormalizeMultiplier((decimal)raidScale),
             RankTable = RankRows(),
@@ -100,11 +113,15 @@ namespace RentalWarehouse
         /// <summary>Copies the settings into the ledger, bumping its version only when something changed.</summary>
         public static void SyncInto(WorldState state)
         {
+            if (ReferenceEquals(syncedState, state) && syncedRevision == Revision) return;
             var next = RentalWarehouseMod.Settings?.ToCore();
             if (next == null) return;
+            syncedState = state;
+            syncedRevision = Revision;
             var cur = state.Settings;
             if (cur.NormalContractsEnabled == next.NormalContractsEnabled && cur.HighRiskContractsEnabled == next.HighRiskContractsEnabled
                 && cur.VaultSitesEnabled == next.VaultSitesEnabled && cur.NonHostileVaultSitesEnabled == next.NonHostileVaultSitesEnabled
+                && cur.CapacityAwareOffers == next.CapacityAwareOffers
                 && cur.FeeMultiplier == next.FeeMultiplier && cur.RaidScale == next.RaidScale
                 && TrustRanks.SameTable(cur.RankTable, next.RankTable))
             {
@@ -125,6 +142,7 @@ namespace RentalWarehouse
             l.CheckboxLabeled("RW_Set_HighRisk".Translate(), ref s.highRiskContracts);
             l.CheckboxLabeled("RW_Set_Sites".Translate(), ref s.vaultSites);
             l.CheckboxLabeled("RW_Set_NonHostileSites".Translate(), ref s.nonHostileVaultSites, "RW_Set_NonHostileSitesDesc".Translate());
+            l.CheckboxLabeled("RW_Set_CapacityAware".Translate(), ref s.capacityAwareOffers, "RW_Set_CapacityAwareDesc".Translate());
             l.Gap();
             l.Label("RW_Set_FeeMultiplier".Translate(s.feeMultiplier.ToString("0.00")));
             s.feeMultiplier = Snap(l.Slider(s.feeMultiplier, (float)WarehouseSettings.MultiplierMin, (float)WarehouseSettings.MultiplierMax));
@@ -138,6 +156,7 @@ namespace RentalWarehouse
             {
                 s.normalContracts = s.highRiskContracts = s.vaultSites = true;
                 s.nonHostileVaultSites = false;
+                s.capacityAwareOffers = true;
                 s.feeMultiplier = s.raidScale = 1f;
                 s.ResetRanks();
             }

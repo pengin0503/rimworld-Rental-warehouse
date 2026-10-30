@@ -225,6 +225,57 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
+        public void Tick_DoesNotBuildAContextBeforeTheFirstRaidIsDue()
+        {
+            var world = World();
+            var c = Active(ContractKind.HighRisk, 2, "K1", world);
+            int built = 0;
+
+            for (long now = c.ActiveTick!.Value; now < c.ActiveTick!.Value + D; now += CoreTime.CheckIntervalTicks)
+            {
+                ThreatScheduler.Tick(world, _ => { built++; return Calm(now); }, d => true, now);
+            }
+
+            Assert.Equal(0, built);
+            Assert.NotEmpty(c.RaidPlan);
+        }
+
+        [Fact]
+        public void Tick_BuildsTheContextOnlyOnceARaidIsDue_AndNotAgainAfterEveryRaidStarted()
+        {
+            var world = World();
+            var c = Active(ContractKind.HighRisk, 2, "K1", world);
+            long active = c.ActiveTick!.Value;
+            int built = 0;
+            RaidContext Build(long now) { built++; return Calm(now); }
+
+            ThreatScheduler.Tick(world, _ => Build(active + 2 * D), d => true, active + 2 * D);
+            Assert.Equal(1, built);
+
+            ThreatScheduler.Tick(world, _ => Build(active + 4 * D), d => true, active + 4 * D);
+            Assert.Equal(2, built);
+            Assert.Equal(2, c.StartedRaids);
+
+            ThreatScheduler.Tick(world, _ => Build(active + 5 * D), d => true, active + 5 * D);
+            Assert.Equal(2, built);
+        }
+
+        [Fact]
+        public void Tick_SkipsPendingRaidsOfAReturningContract_WithoutBuildingAContext()
+        {
+            var world = World();
+            var c = Active(ContractKind.HighRisk, 2, "K1", world);
+            ThreatScheduler.EnsurePlan(c);
+            RunUntil(c, c.EndTick!.Value);
+            int built = 0;
+
+            ThreatScheduler.Tick(world, _ => { built++; return Calm(c.EndTick!.Value); }, d => true, c.EndTick!.Value);
+
+            Assert.Equal(0, built);
+            Assert.All(c.RaidPlan, r => Assert.Equal(RaidSlotState.Skipped, r.State));
+        }
+
+        [Fact]
         public void FailedStart_IsNotCounted_AndRetried()
         {
             var world = World();

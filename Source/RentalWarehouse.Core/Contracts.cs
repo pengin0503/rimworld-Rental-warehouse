@@ -88,7 +88,7 @@ namespace RentalWarehouse.Core
         {
             if (t.CargoIds.Count < Limits.MinCrates || t.CargoIds.Count > Limits.HardMaxCrates) return false;
             if (t.CargoIds.Count != t.CargoValues.Count) return false;
-            if (t.PrepaymentRate < 0m || t.PrepaymentRate > Limits.MaxPrepaymentPercent / 100m) return false;
+            if (t.PrepaymentRate < 0m || t.PrepaymentRate > Limits.MaxNegotiatedPercent / 100m) return false;
             if (t.DurationTicks <= 0 || t.DailyBase < 0m || t.DailyValueRate < 0m || t.CompletionRate < 0m || t.FeeMultiplier <= 0m) return false;
             if (string.IsNullOrEmpty(t.ContractId) || string.IsNullOrEmpty(t.DepositorFactionId)) return false;
             var seen = new HashSet<string>();
@@ -102,10 +102,10 @@ namespace RentalWarehouse.Core
         }
 
         /// <summary>
-        /// Vault cargo needs vault slots; rack cargo may use either. Slots already promised to accepted but
+        /// Whether the map's racks and vaults can take this offer now. Vault cargo needs vault slots; rack cargo may use either. Slots already promised to accepted but
         /// not yet stored contracts on the same map are reserved.
         /// </summary>
-        private static bool HasCapacity(ContractTerms terms, StorageSnapshot storage, WorldState world)
+        public static bool HasCapacity(ContractTerms terms, StorageSnapshot storage, WorldState world)
         {
             int reservedVault = 0, reservedAll = 0;
             foreach (var c in world.Contracts)
