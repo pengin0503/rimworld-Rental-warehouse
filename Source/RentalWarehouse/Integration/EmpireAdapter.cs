@@ -69,15 +69,5 @@ namespace RentalWarehouse
             }
             return catalogue;
         }
-
-        /// <summary>One line saying what is missing for Empire contracts, or null when they are possible or the Empire is not an option.</summary>
-        public static string Hint(WarehouseWorldComponent world)
-        {
-            var empire = EmpireFaction();
-            if (empire == null || empire.defeated || empire.HostileTo(Faction.OfPlayer)) return null;
-            if (TrustService.Rank(world.State) >= Limits.EmpireMinRank && TitleFactor() > 0m && Catalogue().Count > 0) return null;
-            string knight = DefDatabase<RoyalTitleDef>.GetNamedSilentFail(KnightDefName)?.LabelCap.ToString() ?? KnightDefName;
-            return "RW_Hint_Empire".Translate(TrustAdapter.RankName(Limits.EmpireMinRank), knight).ToString();
-        }
     }
 }
