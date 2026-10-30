@@ -173,6 +173,16 @@ namespace RentalWarehouse.Core
             return true;
         }
 
+        /// <summary>
+        /// Scale of Empire offers (spec 5.2): 1 for a Knight and 0.1 more per 100 points of title seniority above it; 0 when
+        /// nobody holds Knight or higher or the Knight title is unknown (<paramref name="knightSeniority"/> below 0).
+        /// </summary>
+        public static decimal EmpireTitleFactor(int? highestSeniority, int knightSeniority)
+        {
+            if (highestSeniority == null || knightSeniority < 0 || highestSeniority.Value < knightSeniority) return 0m;
+            return 1m + (highestSeniority.Value - knightSeniority) / 1000m;
+        }
+
         private static decimal Scale(decimal value, decimal multiplier) =>
             Math.Round(value * multiplier, 0, MidpointRounding.AwayFromZero);
     }
