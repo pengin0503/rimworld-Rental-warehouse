@@ -113,6 +113,10 @@ namespace RentalWarehouse.Core
         public const int CancellationFeeDays = 2;
         /// <summary>Each offer pays 0–30% of its full-term fee in advance, when the term starts (whole percent); the rest is paid after settlement.</summary>
         public const int MaxPrepaymentPercent = 30;
+        /// <summary>Negotiation lifts the highest prepayment the player may ask for by this many percent per trust rank.</summary>
+        public const int PrepaymentPercentPerRank = 2;
+        /// <summary>The most any accepted contract may prepay: what the top rank can negotiate.</summary>
+        public const int MaxNegotiatedPercent = MaxPrepaymentPercent + PrepaymentPercentPerRank * (TrustRanks.Count - 1);
     }
 
     /// <summary>NPC vault site parameters (spec 7).</summary>

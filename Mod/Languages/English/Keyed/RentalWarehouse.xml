@@ -35,14 +35,15 @@
   <RW_Negotiate_Done>Already negotiated</RW_Negotiate_Done>
   <RW_Negotiate_NoRoom>Prepayment is at the maximum</RW_Negotiate_NoRoom>
   <RW_NegotiateTitle>Negotiate the prepayment</RW_NegotiateTitle>
-  <RW_NegotiateIntro>Ask the depositor of contract {0} for a higher prepayment than the opening {1}%. You can try once per offer; if it fails, the opening rate stays.</RW_NegotiateIntro>
+  <RW_NegotiateIntro>Ask the depositor of contract {0} for a higher prepayment than the opening {1}%, up to {2}% at your trust rank. You can try once per offer; if it fails, the opening rate stays. If it works, each point gained costs 2% of the completion rate.</RW_NegotiateIntro>
+  <RW_NegotiateCost>If it works, the completion rate falls from {0}% to {1}%.</RW_NegotiateCost>
   <RW_NegotiateNegotiator>Negotiator</RW_NegotiateNegotiator>
   <RW_NegotiateSocial>Social {0}</RW_NegotiateSocial>
   <RW_NegotiateAsk>Ask for a prepayment of {0}%</RW_NegotiateAsk>
   <RW_NegotiateChance>Chance of success: {0}%</RW_NegotiateChance>
   <RW_NegotiateGo>Negotiate</RW_NegotiateGo>
   <RW_NegotiateNoOne>No colonist is able to negotiate right now.</RW_NegotiateNoOne>
-  <RW_Msg_NegotiationSucceeded>Contract {0}: the negotiation succeeded, the prepayment is now {1}%.</RW_Msg_NegotiationSucceeded>
+  <RW_Msg_NegotiationSucceeded>Contract {0}: the negotiation succeeded, the prepayment is now {1}% and the completion rate {2}%.</RW_Msg_NegotiationSucceeded>
   <RW_Msg_NegotiationFailed>Contract {0}: the negotiation failed, the prepayment stays at {1}%.</RW_Msg_NegotiationFailed>
   <RW_NoPrepaymentLine>No prepayment: the whole fee and the completion bonus are paid after the crates are returned.</RW_NoPrepaymentLine>
   <RW_FeeLine>Fee {0} silver/day while stored; completion bonus up to {1}; total at most {2} silver.</RW_FeeLine>
@@ -67,7 +68,7 @@
   <RW_Reject_TooHeavy>A crate may weigh at most 35 kg.</RW_Reject_TooHeavy>
   <RW_Reject_OfferExpired>The offer has expired.</RW_Reject_OfferExpired>
   <RW_Reject_AlreadyNegotiated>This offer has already been negotiated.</RW_Reject_AlreadyNegotiated>
-  <RW_Reject_InvalidRate>Ask for more than the opening prepayment, and no more than 30%.</RW_Reject_InvalidRate>
+  <RW_Reject_InvalidRate>Ask for more than the opening prepayment, and no more than your trust rank allows.</RW_Reject_InvalidRate>
   <RW_Reject_InDebt>Settle your warehouse debt before taking new contracts.</RW_Reject_InDebt>
   <RW_Reject_FactionBlocked>This faction refuses to deal with you for now.</RW_Reject_FactionBlocked>
   <RW_Reject_TooManyContracts>You already have the maximum number of contracts.</RW_Reject_TooManyContracts>

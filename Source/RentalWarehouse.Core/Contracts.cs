@@ -88,7 +88,7 @@ namespace RentalWarehouse.Core
         {
             if (t.CargoIds.Count < Limits.MinCrates || t.CargoIds.Count > Limits.HardMaxCrates) return false;
             if (t.CargoIds.Count != t.CargoValues.Count) return false;
-            if (t.PrepaymentRate < 0m || t.PrepaymentRate > Limits.MaxPrepaymentPercent / 100m) return false;
+            if (t.PrepaymentRate < 0m || t.PrepaymentRate > Limits.MaxNegotiatedPercent / 100m) return false;
             if (t.DurationTicks <= 0 || t.DailyBase < 0m || t.DailyValueRate < 0m || t.CompletionRate < 0m || t.FeeMultiplier <= 0m) return false;
             if (string.IsNullOrEmpty(t.ContractId) || string.IsNullOrEmpty(t.DepositorFactionId)) return false;
             var seen = new HashSet<string>();

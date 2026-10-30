@@ -113,7 +113,7 @@ namespace RentalWarehouse
             {
                 Widgets.Label(negotiate, "RW_Negotiate_Done".Translate());
             }
-            else if (offer.Terms.PrepaymentRate >= NegotiationService.MaxPercent / 100m)
+            else if (offer.Terms.PrepaymentRate * 100m >= NegotiationService.MaxPercentFor(TrustService.Rank(world.State)))
             {
                 Widgets.Label(negotiate, "RW_Negotiate_NoRoom".Translate());
             }

@@ -35,14 +35,15 @@
   <RW_Negotiate_Done>交渉済み</RW_Negotiate_Done>
   <RW_Negotiate_NoRoom>前払いは上限です</RW_Negotiate_NoRoom>
   <RW_NegotiateTitle>前払い率の交渉</RW_NegotiateTitle>
-  <RW_NegotiateIntro>契約{0}の依頼元に、初回提示率{1}%より高い前払いを求めます。1つの依頼につき1回だけで、失敗すると初回提示率のままです。</RW_NegotiateIntro>
+  <RW_NegotiateIntro>契約{0}の依頼元に、初回提示率{1}%より高い前払いを求めます（信頼ランクにより最大{2}%）。1つの依頼につき1回だけで、失敗すると初回提示率のままです。成功すると、上げた1ポイントごとに完了報酬率が2%（相対）下がります。</RW_NegotiateIntro>
+  <RW_NegotiateCost>成功すると、完了報酬率が{0}%から{1}%に下がります。</RW_NegotiateCost>
   <RW_NegotiateNegotiator>交渉役</RW_NegotiateNegotiator>
   <RW_NegotiateSocial>社会 {0}</RW_NegotiateSocial>
   <RW_NegotiateAsk>要求する前払い率: {0}%</RW_NegotiateAsk>
   <RW_NegotiateChance>成功率: {0}%</RW_NegotiateChance>
   <RW_NegotiateGo>交渉する</RW_NegotiateGo>
   <RW_NegotiateNoOne>交渉できるコロニストがいません。</RW_NegotiateNoOne>
-  <RW_Msg_NegotiationSucceeded>契約{0}: 交渉に成功しました。前払い率は{1}%になりました。</RW_Msg_NegotiationSucceeded>
+  <RW_Msg_NegotiationSucceeded>契約{0}: 交渉に成功しました。前払い率は{1}%、完了報酬率は{2}%になりました。</RW_Msg_NegotiationSucceeded>
   <RW_Msg_NegotiationFailed>契約{0}: 交渉は失敗しました。前払い率は{1}%のままです。</RW_Msg_NegotiationFailed>
   <RW_NoPrepaymentLine>前払いなし: 保管料の全額と完了報酬は、箱の返還後に後払いです。</RW_NoPrepaymentLine>
   <RW_FeeLine>保管中の料金は1日{0}銀。完了報酬は最大{1}銀、合計は最大{2}銀。</RW_FeeLine>
@@ -67,7 +68,7 @@
   <RW_Reject_TooHeavy>箱は35kg以下でなければなりません。</RW_Reject_TooHeavy>
   <RW_Reject_OfferExpired>依頼の期限が切れています。</RW_Reject_OfferExpired>
   <RW_Reject_AlreadyNegotiated>この依頼はすでに交渉済みです。</RW_Reject_AlreadyNegotiated>
-  <RW_Reject_InvalidRate>初回提示率より高く、30%以下の前払い率を要求してください。</RW_Reject_InvalidRate>
+  <RW_Reject_InvalidRate>初回提示率より高く、信頼ランクで許される上限以下の前払い率を要求してください。</RW_Reject_InvalidRate>
   <RW_Reject_InDebt>貸倉庫の債務を精算するまで新規受注できません。</RW_Reject_InDebt>
   <RW_Reject_FactionBlocked>この派閥は現在取引に応じません。</RW_Reject_FactionBlocked>
   <RW_Reject_TooManyContracts>同時に受けられる契約数の上限です。</RW_Reject_TooManyContracts>
