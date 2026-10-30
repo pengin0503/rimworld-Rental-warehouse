@@ -28,6 +28,22 @@
   <RW_Storage_Vault>vault</RW_Storage_Vault>
   <RW_Requires>Needs {1} {0} slot(s) for {2} days, counted from when every crate is stored.</RW_Requires>
   <RW_PrepaymentLine>Prepayment: {0}% of the full-term fee ({1} silver) is paid when the term starts. The rest and the completion bonus are paid after the crates are returned.</RW_PrepaymentLine>
+  <RW_PrepaymentLineNegotiated>Prepayment: opening {0}% → now {1}% ({2} silver), negotiation {3}. The rest and the completion bonus are paid after the crates are returned.</RW_PrepaymentLineNegotiated>
+  <RW_Negotiation_Succeeded>succeeded</RW_Negotiation_Succeeded>
+  <RW_Negotiation_Failed>failed</RW_Negotiation_Failed>
+  <RW_Negotiate>Negotiate prepayment</RW_Negotiate>
+  <RW_Negotiate_Done>Already negotiated</RW_Negotiate_Done>
+  <RW_Negotiate_NoRoom>Prepayment is at the maximum</RW_Negotiate_NoRoom>
+  <RW_NegotiateTitle>Negotiate the prepayment</RW_NegotiateTitle>
+  <RW_NegotiateIntro>Ask the depositor of contract {0} for a higher prepayment than the opening {1}%. You can try once per offer; if it fails, the opening rate stays.</RW_NegotiateIntro>
+  <RW_NegotiateNegotiator>Negotiator</RW_NegotiateNegotiator>
+  <RW_NegotiateSocial>Social {0}</RW_NegotiateSocial>
+  <RW_NegotiateAsk>Ask for a prepayment of {0}%</RW_NegotiateAsk>
+  <RW_NegotiateChance>Chance of success: {0}%</RW_NegotiateChance>
+  <RW_NegotiateGo>Negotiate</RW_NegotiateGo>
+  <RW_NegotiateNoOne>No colonist is able to negotiate right now.</RW_NegotiateNoOne>
+  <RW_Msg_NegotiationSucceeded>Contract {0}: the negotiation succeeded, the prepayment is now {1}%.</RW_Msg_NegotiationSucceeded>
+  <RW_Msg_NegotiationFailed>Contract {0}: the negotiation failed, the prepayment stays at {1}%.</RW_Msg_NegotiationFailed>
   <RW_NoPrepaymentLine>No prepayment: the whole fee and the completion bonus are paid after the crates are returned.</RW_NoPrepaymentLine>
   <RW_FeeLine>Fee {0} silver/day while stored; completion bonus up to {1}; total at most {2} silver.</RW_FeeLine>
   <RW_CompensationLine>Lost crates: you owe {0}% of their value, capped at {1} silver. Opened crates: 100% of their value.</RW_CompensationLine>

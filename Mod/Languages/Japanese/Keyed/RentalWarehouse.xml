@@ -28,6 +28,22 @@
   <RW_Storage_Vault>金庫</RW_Storage_Vault>
   <RW_Requires>{0}の枠を{1}個、{2}日間使います。期間は全箱の収納完了から数えます。</RW_Requires>
   <RW_PrepaymentLine>前払い: 全期間の保管料の{0}%（{1}銀）を期間の開始時に受け取れます。残りと完了報酬は、箱の返還後に後払いです。</RW_PrepaymentLine>
+  <RW_PrepaymentLineNegotiated>前払い: 初回{0}% → 現在{1}%（{2}銀）・交渉{3}。残りと完了報酬は、箱の返還後に後払いです。</RW_PrepaymentLineNegotiated>
+  <RW_Negotiation_Succeeded>成功</RW_Negotiation_Succeeded>
+  <RW_Negotiation_Failed>失敗</RW_Negotiation_Failed>
+  <RW_Negotiate>前払いを交渉</RW_Negotiate>
+  <RW_Negotiate_Done>交渉済み</RW_Negotiate_Done>
+  <RW_Negotiate_NoRoom>前払いは上限です</RW_Negotiate_NoRoom>
+  <RW_NegotiateTitle>前払い率の交渉</RW_NegotiateTitle>
+  <RW_NegotiateIntro>契約{0}の依頼元に、初回提示率{1}%より高い前払いを求めます。1つの依頼につき1回だけで、失敗すると初回提示率のままです。</RW_NegotiateIntro>
+  <RW_NegotiateNegotiator>交渉役</RW_NegotiateNegotiator>
+  <RW_NegotiateSocial>社会 {0}</RW_NegotiateSocial>
+  <RW_NegotiateAsk>要求する前払い率: {0}%</RW_NegotiateAsk>
+  <RW_NegotiateChance>成功率: {0}%</RW_NegotiateChance>
+  <RW_NegotiateGo>交渉する</RW_NegotiateGo>
+  <RW_NegotiateNoOne>交渉できるコロニストがいません。</RW_NegotiateNoOne>
+  <RW_Msg_NegotiationSucceeded>契約{0}: 交渉に成功しました。前払い率は{1}%になりました。</RW_Msg_NegotiationSucceeded>
+  <RW_Msg_NegotiationFailed>契約{0}: 交渉は失敗しました。前払い率は{1}%のままです。</RW_Msg_NegotiationFailed>
   <RW_NoPrepaymentLine>前払いなし: 保管料の全額と完了報酬は、箱の返還後に後払いです。</RW_NoPrepaymentLine>
   <RW_FeeLine>保管中の料金は1日{0}銀。完了報酬は最大{1}銀、合計は最大{2}銀。</RW_FeeLine>
   <RW_CompensationLine>紛失した箱は価値の{0}%を補償（上限{1}銀）。開封した箱は価値の100%を補償。</RW_CompensationLine>
