@@ -7,15 +7,17 @@ namespace RentalWarehouse.Core.Tests
     internal static class Fixtures
     {
         public const long D = CoreTime.TicksPerDay;
+        /// <summary>Term used by fixtures; real offers draw 3–12 days.</summary>
+        public const long Term = 6 * D;
         public const string MapId = "Map_0";
         public const string Depositor = "Faction_1";
         public const string Pursuer = "Faction_2";
 
-        public static ContractTerms Terms(ContractKind kind, string contractId, decimal[] values, int raids = 0, long now = 0)
+        public static ContractTerms Terms(ContractKind kind, string contractId, decimal[] values, int raids = 0, long now = 0, long term = Term)
         {
             var cargo = values.Select((v, i) => (contractId + "-C" + i, v)).ToList();
             return ContractTermsFactory.Create(
-                ContractParameters.For(kind), contractId, Depositor, Pursuer, cargo, raids,
+                ContractParameters.For(kind), contractId, Depositor, Pursuer, cargo, raids, term,
                 new WarehouseSettings(), settingsVersion: 0, seed: 12345, now: now);
         }
 

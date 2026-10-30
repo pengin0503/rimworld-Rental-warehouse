@@ -69,6 +69,43 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
+        public void LaterBatchesArriveEveryOneToThreeDays()
+        {
+            var world = OpenWorld();
+            Assert.Equal(D, world.NextOfferTick);
+            int batches = 0;
+            for (long t = 0; t <= 30 * D; t += CoreTime.CheckIntervalTicks)
+            {
+                long due = world.NextOfferTick!.Value;
+                int batch = world.NextOfferBatch;
+                var created = OfferService.Generate(world, Context(), t);
+                if (world.NextOfferBatch == batch)
+                {
+                    Assert.Empty(created);
+                    continue;
+                }
+                batches++;
+                Assert.Equal(batch + 1, world.NextOfferBatch);
+                Assert.InRange(t, due, due + CoreTime.CheckIntervalTicks - 1);
+                Assert.Equal(due + OfferService.OfferInterval(world.WorldSeed, batch), world.NextOfferTick);
+                Assert.All(created, x => Assert.StartsWith("RWC-" + batch + "-", x.ContractId));
+            }
+
+            Assert.InRange(batches, 10, 30);
+        }
+
+        [Fact]
+        public void OfferInterval_IsWithinOneToThreeDays_ReproducibleAndVaried()
+        {
+            var gaps = Enumerable.Range(0, 200).Select(i => OfferService.OfferInterval(2024, i)).ToList();
+
+            Assert.All(gaps, g => Assert.InRange(g, D, 3 * D));
+            Assert.Equal(gaps, Enumerable.Range(0, 200).Select(i => OfferService.OfferInterval(2024, i)));
+            Assert.Contains(gaps, g => g < 1.5m * D);
+            Assert.Contains(gaps, g => g > 2.5m * D);
+        }
+
+        [Fact]
         public void BothKindsPossible_OneOfEach()
         {
             var world = OpenWorld();
@@ -134,6 +171,8 @@ namespace RentalWarehouse.Core.Tests
                 Assert.InRange(t.TotalValue, p.MinTotalValue, p.MaxTotalValue);
                 Assert.InRange(t.CargoIds.Count, Limits.MinCrates, Limits.MaxCrates);
                 Assert.Equal(p.RequiredStorage, t.RequiredStorage);
+                Assert.InRange(t.DurationTicks, 3 * D, 12 * D);
+                Assert.Equal(0, t.DurationTicks % D);
                 if (t.Kind == ContractKind.HighRisk) Assert.Equal(2, t.ScheduledRaidCount);
                 else Assert.InRange(t.ScheduledRaidCount, 0, 1);
                 Assert.NotEqual(t.DepositorFactionId, t.PursuerFactionId);
@@ -144,6 +183,7 @@ namespace RentalWarehouse.Core.Tests
                 Assert.True(c.MassKg <= Limits.MaxCrateMassKg);
                 Assert.Null(CargoService.Validate(c));
             }
+            Assert.True(offers.Select(t => t.DurationTicks).Distinct().Count() > 1);
         }
 
         [Fact]
@@ -173,18 +213,28 @@ namespace RentalWarehouse.Core.Tests
             var a = new List<ContractTerms>();
             var b = new List<ContractTerms>();
 
-            for (long t = 0; t <= 6 * D; t += CoreTime.CheckIntervalTicks)
+            long second = D + OfferService.OfferInterval(steady.WorldSeed, 0);
+            // Batch 1 is made on the first check at or after it is due; reopen on the check after that.
+            long reopen = ((second + CoreTime.CheckIntervalTicks - 1) / CoreTime.CheckIntervalTicks + 1) * CoreTime.CheckIntervalTicks;
+
+            for (long t = 0; t <= 12 * D; t += CoreTime.CheckIntervalTicks)
             {
-                if (t == 2 * D) OfferService.SetBusinessOpen(closed, false, t);
-                if (t == 4 * D) OfferService.SetBusinessOpen(closed, true, t);
+                if (t == D + CoreTime.CheckIntervalTicks) OfferService.SetBusinessOpen(closed, false, t);
+                if (t == reopen) OfferService.SetBusinessOpen(closed, true, t);
                 a.AddRange(OfferService.Generate(steady, Context(), t));
                 b.AddRange(OfferService.Generate(closed, Context(), t));
             }
 
-            Assert.DoesNotContain(b, x => x.OfferedTick == 3 * D);
-            var laterA = a.Where(x => x.OfferedTick == 5 * D).Select(x => (x.ContractId, x.Seed, x.TotalValue));
-            var laterB = b.Where(x => x.OfferedTick == 5 * D).Select(x => (x.ContractId, x.Seed, x.TotalValue));
-            Assert.Equal(laterA, laterB);
+            Assert.Contains(a, x => x.ContractId.StartsWith("RWC-1-"));
+            Assert.DoesNotContain(b, x => x.ContractId.StartsWith("RWC-1-"));
+            Assert.Equal(steady.NextOfferTick, closed.NextOfferTick);
+            Assert.Equal(steady.NextOfferBatch, closed.NextOfferBatch);
+            // The open-offer cap can differ while the skipped batch's offers would still be open, so compare the offers
+            // both runs made: the same ID must mean the same draw.
+            var later = b.Where(x => x.OfferedTick > second).ToDictionary(x => x.ContractId);
+            var shared = a.Where(x => later.ContainsKey(x.ContractId)).ToList();
+            Assert.NotEmpty(shared);
+            Assert.All(shared, x => Assert.Equal((x.Seed, x.TotalValue, x.OfferedTick, x.DurationTicks), (later[x.ContractId].Seed, later[x.ContractId].TotalValue, later[x.ContractId].OfferedTick, later[x.ContractId].DurationTicks)));
         }
 
         [Fact]

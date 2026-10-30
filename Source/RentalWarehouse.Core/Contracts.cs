@@ -7,7 +7,7 @@ namespace RentalWarehouse.Core
     public static class ContractTermsFactory
     {
         public static ContractTerms Create(ContractParameters p, string contractId, string depositorFactionId, string? pursuerFactionId,
-            IList<(string CargoId, decimal Value)> cargo, int scheduledRaids, WarehouseSettings settings, int settingsVersion, int seed, long now)
+            IList<(string CargoId, decimal Value)> cargo, int scheduledRaids, long durationTicks, WarehouseSettings settings, int settingsVersion, int seed, long now)
         {
             var terms = new ContractTerms
             {
@@ -16,7 +16,7 @@ namespace RentalWarehouse.Core
                 PursuerFactionId = pursuerFactionId,
                 Kind = p.Kind,
                 RequiredStorage = p.RequiredStorage,
-                DurationTicks = p.DurationTicks,
+                DurationTicks = durationTicks,
                 DailyBase = p.DailyBase,
                 DailyValueRate = p.DailyValueRate,
                 CompletionRate = p.CompletionRate,
@@ -184,7 +184,7 @@ namespace RentalWarehouse.Core
             return Decision<ContractState>.Ok(state, effects);
         }
 
-        /// <summary>Accrues to <paramref name="now"/> (never past maturity), posting the day-2/day-4 payments and maturing on the way.</summary>
+        /// <summary>Accrues to <paramref name="now"/> (never past maturity), posting the day-2/day-4 payments (those past a shorter term are folded into maturity) and maturing on the way.</summary>
         private static void Progress(ContractState state, long now, List<EffectRequest> effects)
         {
             long active = state.ActiveTick!.Value;

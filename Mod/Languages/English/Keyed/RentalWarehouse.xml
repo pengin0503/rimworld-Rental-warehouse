@@ -19,7 +19,7 @@
   <RW_UnknownFaction>(unknown faction)</RW_UnknownFaction>
 
   <!-- Offers -->
-  <RW_NoOffers>No offers at the moment. Offers arrive every two days while the business is open.</RW_NoOffers>
+  <RW_NoOffers>No offers at the moment. Offers arrive every one to three days while the business is open.</RW_NoOffers>
   <RW_Kind_Normal>Ordinary storage</RW_Kind_Normal>
   <RW_Kind_HighRisk>High-risk storage</RW_Kind_HighRisk>
   <RW_From>from {0}</RW_From>
@@ -83,7 +83,7 @@
   <RW_FacilityCapacity>Crates: {0}/{1}</RW_FacilityCapacity>
   <RW_Embezzle>Open (embezzle)</RW_Embezzle>
   <RW_EmbezzleDesc>Break the seal and take the contents. The owner will demand the full value and relations drop sharply.</RW_EmbezzleDesc>
-  <RW_EmbezzleConfirm>Open this crate held for another faction?\n\nThis is embezzlement: you will owe 100% of its declared value ({0} silver) at settlement and the owner's goodwill falls by 30 instead of the usual loss penalty.</RW_EmbezzleConfirm>
+  <RW_EmbezzleConfirm>Open this crate held for another faction?\n\nThis is embezzlement: you will owe 100% of its declared value ({0} silver) at settlement and the owner's goodwill falls by {1} instead of the usual loss penalty.</RW_EmbezzleConfirm>
   <RW_OpenCrate>Open crate</RW_OpenCrate>
   <RW_OpenCrateDesc>Break the seal and unpack the contents here.</RW_OpenCrateDesc>
 
@@ -184,7 +184,7 @@
   <RW_CrateBeingStolen>being carried off by {0}!</RW_CrateBeingStolen>
 
   <!-- Vault sites -->
-  <RW_NoSites>No vault intel yet. Intel arrives every five days while the business is open.</RW_NoSites>
+  <RW_NoSites>No vault intel yet. Intel arrives every three to twelve days while the business is open.</RW_NoSites>
   <RW_ShowOnWorld>Show on world</RW_ShowOnWorld>
   <RW_SiteLabel>{0} vault ({1})</RW_SiteLabel>
   <RW_Tier_Small>small</RW_Tier_Small>

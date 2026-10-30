@@ -43,28 +43,35 @@ namespace RentalWarehouse.Core
         public const long MinGapBetweenDedicated = CoreTime.TicksPerDay;
         public const long QuietAfterRaid = CoreTime.TicksPerDay / 2;
         public const long MaxDeferral = 2 * CoreTime.TicksPerDay;
-        public const long NormalWindowStart = 2 * CoreTime.TicksPerDay;
-        public const long NormalWindowEnd = 4 * CoreTime.TicksPerDay;
-        public static readonly long[] HighRiskDays = { 2 * CoreTime.TicksPerDay, 4 * CoreTime.TicksPerDay };
+        /// <summary>
+        /// Raid timing as thirds of the term (days 2 and 4 of a 6-day term), so a short term still fits every raid before
+        /// maturity instead of skipping it and losing completion bonus.
+        /// </summary>
+        public const int NormalWindowStartThirds = 1;
+        public const int NormalWindowEndThirds = 2;
+        public static readonly int[] HighRiskThirds = { 1, 2 };
 
         public static void EnsurePlan(ContractState c)
         {
             if (c.RaidPlan.Count > 0 || c.ActiveTick == null || c.Terms.ScheduledRaidCount <= 0) return;
             long active = c.ActiveTick.Value;
+            long third = c.Terms.DurationTicks / 3;
             var rng = new DeterministicRandom(DeterministicRandom.Mix(c.Terms.Seed, "raids"));
             if (c.Terms.Kind == ContractKind.HighRisk)
             {
                 for (int i = 0; i < c.Terms.ScheduledRaidCount; i++)
                 {
-                    long offset = i < HighRiskDays.Length ? HighRiskDays[i] : HighRiskDays[HighRiskDays.Length - 1];
+                    long offset = third * (i < HighRiskThirds.Length ? HighRiskThirds[i] : HighRiskThirds[HighRiskThirds.Length - 1]);
                     c.RaidPlan.Add(new RaidSlot { Index = i, PlannedTick = active + offset });
                 }
             }
             else
             {
+                long windowStart = third * NormalWindowStartThirds;
+                long windowEnd = third * NormalWindowEndThirds;
                 for (int i = 0; i < c.Terms.ScheduledRaidCount; i++)
                 {
-                    long offset = NormalWindowStart + (long)(rng.NextDecimal() * (NormalWindowEnd - NormalWindowStart));
+                    long offset = windowStart + (long)(rng.NextDecimal() * (windowEnd - windowStart));
                     c.RaidPlan.Add(new RaidSlot { Index = i, PlannedTick = active + offset });
                 }
                 c.RaidPlan.Sort((a, b) => a.PlannedTick.CompareTo(b.PlannedTick));

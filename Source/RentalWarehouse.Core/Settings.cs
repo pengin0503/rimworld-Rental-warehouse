@@ -31,7 +31,9 @@ namespace RentalWarehouse.Core
     public sealed class ContractParameters
     {
         public ContractKind Kind;
-        public long DurationTicks;
+        /// <summary>Term length is drawn per offer, in whole days within this range (inclusive).</summary>
+        public int MinDurationDays;
+        public int MaxDurationDays;
         public decimal MinTotalValue;
         public decimal MaxTotalValue;
         public decimal DailyBase;
@@ -44,7 +46,8 @@ namespace RentalWarehouse.Core
         public static readonly ContractParameters Normal = new ContractParameters
         {
             Kind = ContractKind.Normal,
-            DurationTicks = 6 * CoreTime.TicksPerDay,
+            MinDurationDays = 3,
+            MaxDurationDays = 12,
             MinTotalValue = 500m,
             MaxTotalValue = 2000m,
             DailyBase = 8m,
@@ -57,7 +60,8 @@ namespace RentalWarehouse.Core
         public static readonly ContractParameters HighRisk = new ContractParameters
         {
             Kind = ContractKind.HighRisk,
-            DurationTicks = 6 * CoreTime.TicksPerDay,
+            MinDurationDays = 3,
+            MaxDurationDays = 12,
             MinTotalValue = 2000m,
             MaxTotalValue = 6000m,
             DailyBase = 12m,
@@ -68,6 +72,8 @@ namespace RentalWarehouse.Core
         };
 
         public static ContractParameters For(ContractKind kind) => kind == ContractKind.HighRisk ? HighRisk : Normal;
+
+        public long DrawDurationTicks(DeterministicRandom rng) => rng.Range(MinDurationDays, MaxDurationDays) * CoreTime.TicksPerDay;
     }
 
     /// <summary>Business-wide limits from spec 4/5.</summary>
@@ -77,7 +83,9 @@ namespace RentalWarehouse.Core
         public const int MaxOpenOffers = 4;
         public const int OffersPerBatch = 2;
         public const long FirstOfferDelay = CoreTime.TicksPerDay;
-        public const long OfferInterval = 2 * CoreTime.TicksPerDay;
+        /// <summary>Gap between offer batches, drawn per batch (inclusive, in ticks).</summary>
+        public const long MinOfferInterval = CoreTime.TicksPerDay;
+        public const long MaxOfferInterval = 3 * CoreTime.TicksPerDay;
         public const long OfferLifetime = 3 * CoreTime.TicksPerDay;
         public const long DeliveryDelay = CoreTime.TicksPerDay;
         public const long StorageDeadline = CoreTime.TicksPerDay;
@@ -92,7 +100,7 @@ namespace RentalWarehouse.Core
         public const int RefuseGoodwill = -20;
         public const long RefuseBlockTicks = 15 * CoreTime.TicksPerDay;
         public const int CompletionGoodwill = 3;
-        public const int EmbezzleGoodwill = -30;
+        public const int EmbezzleGoodwill = -20;
         public const int LossGoodwillScale = 10;
         public const decimal LossCompensationRate = 0.25m;
         public const decimal EmbezzleCompensationRate = 1.0m;
@@ -104,7 +112,9 @@ namespace RentalWarehouse.Core
     public static class VaultSiteParameters
     {
         public const long FirstDiscoveryDelay = 2 * CoreTime.TicksPerDay;
-        public const long DiscoveryInterval = 5 * CoreTime.TicksPerDay;
+        /// <summary>Gap between vault intel reports, drawn per report (inclusive, in ticks).</summary>
+        public const long MinDiscoveryInterval = 3 * CoreTime.TicksPerDay;
+        public const long MaxDiscoveryInterval = 12 * CoreTime.TicksPerDay;
         public const int MaxUnvisited = 3;
         public const long UnvisitedLifetime = 15 * CoreTime.TicksPerDay;
         public const long WithdrawalAfterFirstEntry = 5 * CoreTime.TicksPerDay;

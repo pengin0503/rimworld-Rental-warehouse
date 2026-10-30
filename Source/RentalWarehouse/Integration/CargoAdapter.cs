@@ -129,7 +129,7 @@ namespace RentalWarehouse
                     defaultDesc = "RW_EmbezzleDesc".Translate(),
                     icon = TexCommand.ForbidOff,
                     action = () => Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
-                        "RW_EmbezzleConfirm".Translate(record.DeclaredValue.ToString("0")),
+                        "RW_EmbezzleConfirm".Translate(record.DeclaredValue.ToString("0"), -Limits.EmbezzleGoodwill),
                         () => WarehouseWorldComponent.Instance?.Embezzle(cargoId), destructive: true)),
                 };
             }

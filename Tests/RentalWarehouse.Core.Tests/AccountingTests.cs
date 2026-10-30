@@ -236,7 +236,7 @@ namespace RentalWarehouse.Core.Tests
         {
             var cargo = new[] { ("K1-C0", 1000m) }.ToList();
             var settings = new WarehouseSettings { FeeMultiplier = 2.0m };
-            var terms = ContractTermsFactory.Create(ContractParameters.Normal, "K1", Depositor, Pursuer, cargo, 0, settings, 0, 1, 0);
+            var terms = ContractTermsFactory.Create(ContractParameters.Normal, "K1", Depositor, Pursuer, cargo, 0, Term, settings, 0, 1, 0);
             Assert.Equal(20m, Accounting.DailyFee(terms, 1000m));
             Assert.Equal(144m, terms.NominalTotalReward);
         }

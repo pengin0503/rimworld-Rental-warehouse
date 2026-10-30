@@ -17,9 +17,9 @@ namespace RentalWarehouse.Core.Tests
             MinimumGroupPoints = 100m,
         };
 
-        private static ContractState Active(ContractKind kind, int raids, string id = "K1", WorldState? world = null)
+        private static ContractState Active(ContractKind kind, int raids, string id = "K1", WorldState? world = null, long term = Term)
         {
-            var terms = Terms(kind, id, new[] { kind == ContractKind.HighRisk ? 3000m : 1000m }, raids);
+            var terms = Terms(kind, id, new[] { kind == ContractKind.HighRisk ? 3000m : 1000m }, raids, term: term);
             world ??= World();
             AddOffer(world, terms);
             var c = Activate(world, terms, Storage(4, 4));
@@ -49,6 +49,50 @@ namespace RentalWarehouse.Core.Tests
             var slot = Assert.Single(a.RaidPlan);
             Assert.InRange(slot.PlannedTick, a.ActiveTick!.Value + 2 * D, a.ActiveTick!.Value + 4 * D);
             Assert.Equal(slot.PlannedTick - a.ActiveTick, b.RaidPlan[0].PlannedTick - b.ActiveTick);
+        }
+
+        [Theory]
+        [InlineData(3)]
+        [InlineData(12)]
+        public void HighRisk_RaidsFollowTheTermLength_AtOneAndTwoThirds(int days)
+        {
+            var c = Active(ContractKind.HighRisk, 2, term: days * D);
+
+            ThreatScheduler.EnsurePlan(c);
+
+            Assert.Equal(new[] { c.ActiveTick + days * D / 3, c.ActiveTick + 2 * days * D / 3 }, c.RaidPlan.Select(r => (long?)r.PlannedTick));
+        }
+
+        [Theory]
+        [InlineData(3)]
+        [InlineData(12)]
+        public void Normal_RaidWindowFollowsTheTermLength(int days)
+        {
+            var c = Active(ContractKind.Normal, 1, term: days * D);
+
+            ThreatScheduler.EnsurePlan(c);
+
+            Assert.InRange(Assert.Single(c.RaidPlan).PlannedTick, c.ActiveTick!.Value + days * D / 3, c.ActiveTick!.Value + 2 * days * D / 3);
+        }
+
+        [Fact]
+        public void ShortHighRiskTerm_BothRaidsStartBeforeMaturity()
+        {
+            var world = World();
+            var c = Active(ContractKind.HighRisk, 2, world: world, term: 3 * D);
+            long? lastStart = null;
+            for (long t = c.ActiveTick!.Value; t < c.EndTick!.Value; t += CoreTime.CheckIntervalTicks)
+            {
+                var ctx = Calm(t);
+                ctx.LastDedicatedRaidStartTick = lastStart;
+                var d = ThreatScheduler.Evaluate(c, ctx);
+                if (d.Outcome != RaidOutcome.Start) continue;
+                ThreatScheduler.MarkStarted(c, d.SlotIndex, t);
+                lastStart = t;
+            }
+
+            Assert.Equal(2, c.StartedRaids);
+            Assert.All(c.RaidPlan, r => Assert.Equal(RaidSlotState.Started, r.State));
         }
 
         [Fact]

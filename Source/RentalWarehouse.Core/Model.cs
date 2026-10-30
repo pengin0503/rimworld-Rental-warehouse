@@ -348,7 +348,7 @@ namespace RentalWarehouse.Core
 
     public sealed class WorldState
     {
-        public const int CurrentSchemaVersion = 1;
+        public const int CurrentSchemaVersion = 2;
 
         public int SchemaVersion = CurrentSchemaVersion;
         public int WorldSeed;
@@ -356,8 +356,10 @@ namespace RentalWarehouse.Core
         public long? BusinessStartTick;
         public long? NextOfferTick;
         public long? NextSiteTick;
-        public int OfferCounter;
-        public int SiteCounter;
+        /// <summary>Index of the next offer batch; seeds that batch and names its contracts (RWC-batch-slot).</summary>
+        public int NextOfferBatch;
+        /// <summary>Index of the next vault intel report; seeds that report and names its site (RWS-index).</summary>
+        public int NextSiteIndex;
         public int SequenceCounter;
         public List<ContractState> Offers = new List<ContractState>();
         public List<ContractState> Contracts = new List<ContractState>();

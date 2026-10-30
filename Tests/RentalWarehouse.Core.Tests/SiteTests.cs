@@ -89,19 +89,35 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
-        public void Discovery_FirstAfterTwoDays_ThenEveryFive_MaxThreeUnvisited()
+        public void Discovery_FirstAfterTwoDays_ThenEveryThreeToTwelve_MaxThreeUnvisited()
         {
             var world = Open();
             var created = new List<(long, SiteRecord)>();
-            for (long t = 0; t <= 30 * D; t += CoreTime.CheckIntervalTicks)
+            for (long t = 0; t <= 40 * D; t += CoreTime.CheckIntervalTicks)
             {
                 foreach (var s in SiteService.Discover(world, Ctx(t), t).NewState) created.Add((t, s));
                 Assert.True(world.Sites.Count(s => !s.Visited && !s.Closed) <= VaultSiteParameters.MaxUnvisited);
             }
 
-            Assert.Equal(2 * D, created[0].Item1);
-            Assert.Equal(7 * D, created[1].Item1);
-            Assert.Equal(12 * D, created[2].Item1);
+            Assert.Equal(VaultSiteParameters.MaxUnvisited, created.Count);
+            long due = 2 * D;
+            for (int i = 0; i < created.Count; i++)
+            {
+                Assert.Equal("RWS-" + i, created[i].Item2.SiteId);
+                Assert.InRange(created[i].Item1, due, due + CoreTime.CheckIntervalTicks - 1);
+                due += SiteService.DiscoveryInterval(world.WorldSeed, i);
+            }
+        }
+
+        [Fact]
+        public void DiscoveryInterval_IsWithinThreeToTwelveDays_ReproducibleAndVaried()
+        {
+            var gaps = Enumerable.Range(0, 200).Select(i => SiteService.DiscoveryInterval(99, i)).ToList();
+
+            Assert.All(gaps, g => Assert.InRange(g, 3 * D, 12 * D));
+            Assert.Equal(gaps, Enumerable.Range(0, 200).Select(i => SiteService.DiscoveryInterval(99, i)));
+            Assert.Contains(gaps, g => g < 5 * D);
+            Assert.Contains(gaps, g => g > 10 * D);
         }
 
         [Fact]
