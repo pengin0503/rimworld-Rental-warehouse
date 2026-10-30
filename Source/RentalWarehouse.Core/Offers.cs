@@ -132,6 +132,7 @@ namespace RentalWarehouse.Core
         private static ContractTerms? MakeOffer(WorldState world, OfferContext ctx, List<FactionInfo> depositors, ContractKind kind, string contractId, DeterministicRandom rng, long now)
         {
             var p = ContractParameters.For(kind);
+            var row = TrustService.Row(world);
             var candidates = kind == ContractKind.HighRisk ? depositors.FindAll(d => Pursuers(ctx, d).Count > 0) : depositors;
             if (candidates.Count == 0) return null;
             var depositor = candidates[rng.Next(candidates.Count)];
@@ -139,13 +140,17 @@ namespace RentalWarehouse.Core
             string? pursuer = pursuers.Count > 0 ? pursuers[rng.Next(pursuers.Count)].FactionId : null;
 
             int raids = kind == ContractKind.HighRisk ? 2 : (pursuer != null && rng.Chance(0.2m) ? 1 : 0);
-            decimal total = rng.Range(p.MinTotalValue / ManifestBuilder.MinFillRatio, p.MaxTotalValue);
-            int crates = rng.Range(Limits.MinCrates, Limits.MaxCrates);
+            decimal min = kind == ContractKind.HighRisk ? row.HighRiskMin : row.NormalMin;
+            decimal max = kind == ContractKind.HighRisk ? row.HighRiskMax : row.NormalMax;
+            // Crates are filled to 90-100% of their target, so the target starts at min / 0.9; a row whose min / 0.9 is above
+            // its max aims at the max instead and never exceeds it.
+            decimal total = rng.Range(Math.Min(min / ManifestBuilder.MinFillRatio, max), max);
+            int crates = rng.Range(Limits.MinCrates, row.MaxCrates);
             int seed = rng.Next(int.MaxValue);
             long duration = p.DrawDurationTicks(rng);
             decimal prepayment = rng.Range(0, Limits.MaxPrepaymentPercent) / 100m;
 
-            for (int n = crates; n <= Limits.MaxCrates; n++)
+            for (int n = crates; n <= row.MaxCrates; n++)
             {
                 var targets = new List<decimal>();
                 for (int i = 0; i < n; i++) targets.Add(decimal.Round(total / n, 2));

@@ -8,7 +8,7 @@ namespace RentalWarehouse.Core.Tests
 {
     public class OfferTests
     {
-        private static readonly List<Good> Goods = new List<Good>
+        internal static readonly List<Good> Goods = new List<Good>
         {
             new Good("Steel", null, 1.9m, 0.5m),
             new Good("Cloth", null, 1.5m, 0.026m),
@@ -18,7 +18,7 @@ namespace RentalWarehouse.Core.Tests
             new Good("Gun_AssaultRifle", null, 345m, 3.5m, quality: 2),
         };
 
-        private static OfferContext Context(bool withPursuer = true) => new OfferContext
+        internal static OfferContext Context(bool withPursuer = true) => new OfferContext
         {
             Goods = Goods,
             Factions =
@@ -32,14 +32,14 @@ namespace RentalWarehouse.Core.Tests
             },
         };
 
-        private static WorldState OpenWorld()
+        internal static WorldState OpenWorld()
         {
             var world = new WorldState { WorldSeed = 2024 };
             OfferService.SetBusinessOpen(world, true, 0);
             return world;
         }
 
-        private static List<ContractTerms> RunTo(WorldState world, OfferContext ctx, long until)
+        internal static List<ContractTerms> RunTo(WorldState world, OfferContext ctx, long until)
         {
             var all = new List<ContractTerms>();
             for (long t = 0; t <= until; t += CoreTime.CheckIntervalTicks) all.AddRange(OfferService.Generate(world, ctx, t));
@@ -168,8 +168,10 @@ namespace RentalWarehouse.Core.Tests
             foreach (var t in offers)
             {
                 var p = ContractParameters.For(t.Kind);
-                Assert.InRange(t.TotalValue, p.MinTotalValue, p.MaxTotalValue);
-                Assert.InRange(t.CargoIds.Count, Limits.MinCrates, Limits.MaxCrates);
+                var row = TrustRanks.Default()[0];
+                bool danger = t.Kind == ContractKind.HighRisk;
+                Assert.InRange(t.TotalValue, danger ? row.HighRiskMin : row.NormalMin, danger ? row.HighRiskMax : row.NormalMax);
+                Assert.InRange(t.CargoIds.Count, Limits.MinCrates, row.MaxCrates);
                 Assert.Equal(p.RequiredStorage, t.RequiredStorage);
                 Assert.InRange(t.DurationTicks, 3 * D, 12 * D);
                 Assert.Equal(0, t.DurationTicks % D);
