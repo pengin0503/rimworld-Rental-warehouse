@@ -86,7 +86,7 @@ namespace RentalWarehouse
         private static bool ApplyTrust(WarehouseWorldComponent world, EffectRequest effect)
         {
             effect.Payload.TryGetValue("empire", out var empire);
-            TrustService.Apply(world.State, (int)effect.Amount, empire == "1");
+            TrustService.Apply(world.State, (int)effect.Amount, empire == "1", effect.EntityId, Ids.Now);
             return true;
         }
 

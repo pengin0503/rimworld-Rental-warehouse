@@ -383,6 +383,8 @@ namespace RentalWarehouse.Core
         public int TrustPoints;
         /// <summary>The rank last announced to the player, so a change is reported once.</summary>
         public int TrustAnnouncedRank;
+        /// <summary>The newest changes of the trust points, oldest first (at most <see cref="TrustService.HistoryKept"/>).</summary>
+        public List<TrustEvent> TrustLog = new List<TrustEvent>();
         public List<ContractState> Offers = new List<ContractState>();
         public List<ContractState> Contracts = new List<ContractState>();
         public List<SiteRecord> Sites = new List<SiteRecord>();

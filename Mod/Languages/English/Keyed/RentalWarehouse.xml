@@ -134,6 +134,11 @@
   <RW_TrustSummary>Trust rank: {0} ({1} points, {2} to the next rank)</RW_TrustSummary>
   <RW_TrustSummaryMax>Trust rank: {0} ({1} points, highest rank)</RW_TrustSummaryMax>
   <RW_TrustLine>trust {0}</RW_TrustLine>
+  <RW_TrustHistory>Trust history</RW_TrustHistory>
+  <RW_TrustHistoryNone>No change in trust points yet.</RW_TrustHistoryNone>
+  <RW_TrustHistoryLine>{0}: {1} points ({2} → {3}), rank {4}</RW_TrustHistoryLine>
+  <RW_TrustHistoryRankSame>{0}</RW_TrustHistoryRankSame>
+  <RW_TrustHistoryRankChanged>{0} → {1}</RW_TrustHistoryRankChanged>
   <RW_Set_EditRanks>Edit trust rank table...</RW_Set_EditRanks>
   <RW_Rank_Title>Trust rank table</RW_Rank_Title>
   <RW_Rank_Hint>Totals are the combined declared value of a contract's crates, in silver. Total values and crate limits apply to new offers; required points apply at once. Typing a multiplier fills the four totals from the base ranges (normal 500-2,000, high-risk 2,000-6,000).</RW_Rank_Hint>

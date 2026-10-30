@@ -134,6 +134,11 @@
   <RW_TrustSummary>信頼ランク: {0}（{1}点・次のランクまで{2}点）</RW_TrustSummary>
   <RW_TrustSummaryMax>信頼ランク: {0}（{1}点・最高ランク）</RW_TrustSummaryMax>
   <RW_TrustLine>信頼 {0}</RW_TrustLine>
+  <RW_TrustHistory>信頼ポイントの履歴</RW_TrustHistory>
+  <RW_TrustHistoryNone>信頼ポイントの変動はまだありません。</RW_TrustHistoryNone>
+  <RW_TrustHistoryLine>{0}: {1}点（{2} → {3}）・ランク {4}</RW_TrustHistoryLine>
+  <RW_TrustHistoryRankSame>{0}</RW_TrustHistoryRankSame>
+  <RW_TrustHistoryRankChanged>{0} → {1}</RW_TrustHistoryRankChanged>
   <RW_Set_EditRanks>信頼ランク表を編集…</RW_Set_EditRanks>
   <RW_Rank_Title>信頼ランク表</RW_Rank_Title>
   <RW_Rank_Hint>合計は、契約の箱の申告価値の合計（銀）です。合計価値と箱数は新しい依頼から、必要ポイントはすぐに反映されます。倍率を入力すると、基準（通常500～2,000、高危険度2,000～6,000）に掛けた値が4つの合計に入ります。</RW_Rank_Hint>
