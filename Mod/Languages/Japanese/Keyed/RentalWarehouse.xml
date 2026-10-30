@@ -34,6 +34,11 @@
   <RW_Negotiate>前払いを交渉</RW_Negotiate>
   <RW_Negotiate_Done>交渉済み</RW_Negotiate_Done>
   <RW_Negotiate_NoRoom>前払いは上限です</RW_Negotiate_NoRoom>
+  <RW_CapacityOk>収納: {1}に{0}枠。このマップの空きは{2}枠です。</RW_CapacityOk>
+  <RW_CapacityShort>収納: {1}に{0}枠が必要ですが、このマップの空きは{2}枠だけです（進行中の依頼を含む）。施設を増やすか、空きを待ってください。</RW_CapacityShort>
+  <RW_CapacityUnknown>収納: {0}枠が必要です（拠点マップを開くと空きと比べられます）。</RW_CapacityUnknown>
+  <RW_Set_CapacityAware>棚と金庫に入る箱数までしか依頼を出さない</RW_Set_CapacityAware>
+  <RW_Set_CapacityAwareDesc>新しい依頼の箱数を、いちばん余裕のある拠点マップの無傷の棚と金庫の枠数までに抑えます（高危険度は金庫のみ）。合計価値は変わらないので、箱ひとつあたりの価値が上がります。</RW_Set_CapacityAwareDesc>
   <RW_NegotiateTitle>前払い率の交渉</RW_NegotiateTitle>
   <RW_NegotiateIntro>契約{0}の依頼元に、初回提示率{1}%より高い前払いを求めます（信頼ランクにより最大{2}%）。1つの依頼につき1回だけで、失敗すると初回提示率のままです。成功すると、上げた1ポイントごとに完了報酬率が2%（相対）下がります。</RW_NegotiateIntro>
   <RW_NegotiateCost>成功すると、完了報酬率が{0}%から{1}%に下がります。</RW_NegotiateCost>

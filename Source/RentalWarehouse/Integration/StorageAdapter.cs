@@ -17,6 +17,29 @@ namespace RentalWarehouse
             }
         }
 
+        /// <summary>
+        /// Crates the intact racks and vaults of the home map with the most room can hold: normal cargo may use either kind,
+        /// high-risk cargo only vaults. Used to keep offers within what the colony can store.
+        /// </summary>
+        public static (int Rack, int Vault) BestCapacity()
+        {
+            int bestRack = 0, bestVault = 0;
+            foreach (var map in Find.Maps)
+            {
+                if (!map.IsPlayerHome) continue;
+                int racks = 0, vaults = 0;
+                foreach (var f in Facilities(map))
+                {
+                    if (!f.IsValidFacility) continue;
+                    if (f.Kind == StorageKind.Vault) vaults += Building_WarehouseStorage.CapacityCrates;
+                    else racks += Building_WarehouseStorage.CapacityCrates;
+                }
+                bestRack = System.Math.Max(bestRack, racks + vaults);
+                bestVault = System.Math.Max(bestVault, vaults);
+            }
+            return (bestRack, bestVault);
+        }
+
         public static StorageSnapshot Capture(string mapId)
         {
             var snapshot = new StorageSnapshot { MapId = mapId };

@@ -29,6 +29,12 @@ namespace RentalWarehouse.Core
         public decimal EmpireTitleFactor;
         /// <summary>The Royalty-only items Empire offers are made of (spec 5.3).</summary>
         public IList<Good> EmpireGoods = new List<Good>();
+        /// <summary>
+        /// Crates a normal contract could be stored in (racks and vaults) on the best home map, and crates a high-risk contract
+        /// could (vaults only); a negative value means the game did not report it.
+        /// </summary>
+        public int RackCapacity = -1;
+        public int VaultCapacity = -1;
     }
 
     /// <summary>
@@ -161,12 +167,16 @@ namespace RentalWarehouse.Core
             // Crates are filled to 90-100% of their target, so the target starts at min / 0.9; a row whose min / 0.9 is above
             // its max aims at the max instead and never exceeds it.
             decimal total = rng.Range(Math.Min(min / ManifestBuilder.MinFillRatio, max), max);
-            int crates = rng.Range(Limits.MinCrates, row.MaxCrates);
+            int maxCrates = row.MaxCrates;
+            int capacity = kind == ContractKind.HighRisk ? ctx.VaultCapacity : ctx.RackCapacity;
+            if (world.Settings.CapacityAwareOffers && capacity >= 0) maxCrates = Math.Min(maxCrates, Math.Max(Limits.MinCrates, capacity));
+            // The draw always spans the rank's own limit, so the numbers that follow it do not depend on the colony's capacity.
+            int crates = Math.Min(rng.Range(Limits.MinCrates, row.MaxCrates), maxCrates);
             int seed = rng.Next(int.MaxValue);
             long duration = p.DrawDurationTicks(rng);
             decimal prepayment = rng.Range(0, Limits.MaxPrepaymentPercent) / 100m;
 
-            for (int n = crates; n <= row.MaxCrates; n++)
+            for (int n = crates; n <= maxCrates; n++)
             {
                 var targets = new List<decimal>();
                 for (int i = 0; i < n; i++) targets.Add(decimal.Round(total / n, 2));

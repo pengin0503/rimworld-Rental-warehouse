@@ -14,6 +14,8 @@ namespace RentalWarehouse.Core
         public bool HighRiskContractsEnabled = true;
         public bool VaultSitesEnabled = true;
         public bool NonHostileVaultSitesEnabled = false;
+        /// <summary>Offers ask for no more crates than the colony's racks and vaults can hold (the game reports the capacity).</summary>
+        public bool CapacityAwareOffers = true;
         public decimal FeeMultiplier = 1.0m;
         public decimal RaidScale = 1.0m;
 

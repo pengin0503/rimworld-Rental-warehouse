@@ -34,6 +34,11 @@
   <RW_Negotiate>Negotiate prepayment</RW_Negotiate>
   <RW_Negotiate_Done>Already negotiated</RW_Negotiate_Done>
   <RW_Negotiate_NoRoom>Prepayment is at the maximum</RW_Negotiate_NoRoom>
+  <RW_CapacityOk>Storage: {0} crate slot(s) in {1}; {2} free on this map.</RW_CapacityOk>
+  <RW_CapacityShort>Storage: {0} crate slot(s) in {1}, but only {2} free on this map (open contracts included) — build more or wait for space.</RW_CapacityShort>
+  <RW_CapacityUnknown>Storage: {0} crate slot(s) needed (open a home map to compare).</RW_CapacityUnknown>
+  <RW_Set_CapacityAware>Offer no more crates than my racks and vaults can hold</RW_Set_CapacityAware>
+  <RW_Set_CapacityAwareDesc>New offers are limited to the crate slots of the intact racks and vaults on the home map with the most room (vaults only for high-risk offers). Total values stay the same, so crates hold more.</RW_Set_CapacityAwareDesc>
   <RW_NegotiateTitle>Negotiate the prepayment</RW_NegotiateTitle>
   <RW_NegotiateIntro>Ask the depositor of contract {0} for a higher prepayment than the opening {1}%, up to {2}% at your trust rank. You can try once per offer; if it fails, the opening rate stays. If it works, each point gained costs 2% of the completion rate.</RW_NegotiateIntro>
   <RW_NegotiateCost>If it works, the completion rate falls from {0}% to {1}%.</RW_NegotiateCost>

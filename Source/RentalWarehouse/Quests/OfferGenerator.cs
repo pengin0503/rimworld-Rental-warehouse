@@ -60,6 +60,9 @@ namespace RentalWarehouse
         public static OfferContext BuildContext()
         {
             var ctx = new OfferContext { Goods = Goods, EmpireTitleFactor = EmpireAdapter.TitleFactor(), EmpireGoods = EmpireAdapter.Catalogue() };
+            var (rackCapacity, vaultCapacity) = StorageAdapter.BestCapacity();
+            ctx.RackCapacity = rackCapacity;
+            ctx.VaultCapacity = vaultCapacity;
             var empire = EmpireAdapter.EmpireFaction();
             var all = Find.FactionManager.AllFactionsListForReading;
             foreach (var f in all)
