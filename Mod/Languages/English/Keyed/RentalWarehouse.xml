@@ -58,7 +58,7 @@
   <RW_Letter_NewOffersIntro>{0} new offer(s) have arrived for your rental warehouse:</RW_Letter_NewOffersIntro>
   <RW_Letter_OfferLine>{0} — {1}, {2} crate(s), {3} silver in total, {4} days, {5}% prepayment, open for {6}</RW_Letter_OfferLine>
   <RW_Letter_EmpireMark>Empire</RW_Letter_EmpireMark>
-  <RW_Letter_OpenTab>Open the warehouse</RW_Letter_OpenTab>
+  <RW_Letter_OpenTab>View the offers</RW_Letter_OpenTab>
 
   <!-- Rejections -->
   <RW_Reject_NotOffered>That offer is no longer available.</RW_Reject_NotOffered>
@@ -134,7 +134,6 @@
   <RW_TrustSummary>Trust rank: {0} ({1} points, {2} to the next rank)</RW_TrustSummary>
   <RW_TrustSummaryMax>Trust rank: {0} ({1} points, highest rank)</RW_TrustSummaryMax>
   <RW_TrustLine>trust {0}</RW_TrustLine>
-  <RW_Hint_Empire>Empire contracts need trust rank {0} or higher and a colonist who holds the title {1} or higher.</RW_Hint_Empire>
   <RW_Set_EditRanks>Edit trust rank table...</RW_Set_EditRanks>
   <RW_Rank_Title>Trust rank table</RW_Rank_Title>
   <RW_Rank_Hint>Totals are the combined declared value of a contract's crates, in silver. Total values and crate limits apply to new offers; required points apply at once. Typing a multiplier fills the four totals from the base ranges (normal 500-2,000, high-risk 2,000-6,000).</RW_Rank_Hint>

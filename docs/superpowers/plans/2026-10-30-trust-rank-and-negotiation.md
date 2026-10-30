@@ -248,7 +248,7 @@ python3 -B scripts/check_keys.py
 - Modify: `Source/RentalWarehouse/Quests/OfferGenerator.cs`（`Tick` のメッセージを手紙に置き換え）、`Source/RentalWarehouse/UI/OfferView.cs`（案内の1行）、翻訳XML（`RW_Msg_NewOffers` を削除し、手紙のキーを追加）、`Tests/RentalWarehouse.Game.Tests/EmpireCases.cs`
 
 **Interfaces:**
-- Produces: `static class OfferNotice { static void Send(WarehouseWorldComponent world, IReadOnlyList<ContractTerms> created); }`（`created.Count == 0` なら何もしない）。`ChoiceLetter_Offers : ChoiceLetter`（`Choices` を上書きし、「貸倉庫を開く」（`WarehouseTab.Open()`）と閉じるの2つを返す。`Verse.ChoiceLetter.Choices` は `virtual` で確認済み）。`Letters.xml` に `LetterDef`（`defName` `RW_OffersLetter`、`letterClass` `RentalWarehouse.ChoiceLetter_Offers`）。翻訳キー: `RW_Letter_NewOffersTitle`、`RW_Letter_OfferLine`（`{0}`依頼元、`{1}`種類、`{2}`箱数、`{3}`合計価値、`{4}`期間（日）、`{5}`前払い率%、`{6}`期限）、`RW_Letter_EmpireMark`（「帝国」）、`RW_Letter_OpenTab`、`RW_Hint_Empire`（「帝国の依頼にはランク{0}以上と、{1}以上の爵位を持つコロニストが必要です」）。
+- Produces: `static class OfferNotice { static void Send(WarehouseWorldComponent world, IReadOnlyList<ContractTerms> created); }`（`created.Count == 0` なら何もしない）。`ChoiceLetter_Offers : ChoiceLetter`（`Choices` を上書きし、「依頼一覧を見る」（`WarehouseTab.Open()`）と閉じるの2つを返す。`Verse.ChoiceLetter.Choices` は `virtual` で確認済み）。`Letters.xml` に `LetterDef`（`defName` `RW_OffersLetter`、`letterClass` `RentalWarehouse.ChoiceLetter_Offers`）。翻訳キー: `RW_Letter_NewOffersTitle`、`RW_Letter_OfferLine`（`{0}`依頼元、`{1}`種類、`{2}`箱数、`{3}`合計価値、`{4}`期間（日）、`{5}`前払い率%、`{6}`期限）、`RW_Letter_EmpireMark`（「帝国」）、`RW_Letter_OpenTab`、`RW_Hint_Empire`（「帝国の依頼にはランク{0}以上と、{1}以上の爵位を持つコロニストが必要です」）。
 
 - [ ] **Step 1: ゲーム内テストを書く（`EmpireCases.cs`。実行は利用者の環境）:** `NoLetterForAnEmptyBatch`（`OfferNotice.Send` に空のリストを渡しても `Find.LetterStack.LettersListForReading.Count` が変わらない）、`EmpireDisabledWithoutRoyalty`（Royalty が無効な環境では `EmpireAdapter.EmpireFaction() == null` で `BuildContext` の `EmpireTitleFactor == 0`）。
 - [ ] **Step 2: `OfferNotice` と `ChoiceLetter_Offers` を実装する。** 本文は依頼ごとに `RW_Letter_OfferLine` を並べ、帝国の依頼には `RW_Letter_EmpireMark` を付ける。`Find.LetterStack.ReceiveLetter(letter)` で送る。
@@ -262,7 +262,7 @@ python3 -B scripts/check_keys.py
 - Modify: `README.md`、`docs/testing/acceptance.md`
 
 - [ ] **Step 1: README に、ランク別の依頼規模、帝国の依頼の条件、到着の手紙を追記する。**
-- [ ] **Step 2: `acceptance.md` にケース A19（ランク別の規模と箱数）、A20（Royalty で帝国の依頼が条件どおりに出る・出ない）、A21（依頼到着の手紙と「貸倉庫を開く」）を「未検証」で追加する。**
+- [ ] **Step 2: `acceptance.md` にケース A19（ランク別の規模と箱数）、A20（Royalty で帝国の依頼が条件どおりに出る・出ない）、A21（依頼到着の手紙と「依頼一覧を見る」）を「未検証」で追加する。**
 - [ ] **Step 3: 検証コマンドを実行し、結果を記録してコミットする。**
 
 ---

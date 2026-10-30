@@ -31,8 +31,12 @@ namespace RentalWarehouse
             [Page.Vaults] = VaultInfoView.Draw,
         };
 
-        public static void Open()
+        public static void Open() => Open(current);
+
+        /// <summary>Opens the tab on the given page.</summary>
+        public static void Open(Page page)
         {
+            current = page;
             var def = DefDatabase<MainButtonDef>.GetNamedSilentFail("RW_Warehouse");
             if (def != null) Find.MainTabsRoot.SetCurrentTab(def);
         }

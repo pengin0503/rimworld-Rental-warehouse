@@ -20,13 +20,6 @@ namespace RentalWarehouse
             var top = new Rect(rect.x, rect.y, rect.width, 68f);
             Widgets.Label(top, LoadSummary(world, Find.CurrentMap) + "\n" + TrustView.Summary(world.State));
             float y = top.yMax + 4f;
-            string hint = EmpireAdapter.Hint(world);
-            if (hint != null)
-            {
-                float hintHeight = WarehouseTab.TextHeight(hint, rect.width);
-                Widgets.Label(new Rect(rect.x, y, rect.width, hintHeight), hint);
-                y += hintHeight + 4f;
-            }
             var list = new Rect(rect.x, y, rect.width, rect.yMax - y);
             return WarehouseTab.ScrollList(list, scroll, offers,
                 (o, w) => Mathf.Max(WarehouseTab.TextHeight(Describe(world, o.Terms, o.Negotiation), w - ButtonWidth - 12f), 76f) + 8f,
