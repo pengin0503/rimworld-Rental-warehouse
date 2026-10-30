@@ -349,7 +349,7 @@ namespace RentalWarehouse.Core
 
     public sealed class WorldState
     {
-        public const int CurrentSchemaVersion = 2;
+        public const int CurrentSchemaVersion = 3;
 
         public int SchemaVersion = CurrentSchemaVersion;
         public int WorldSeed;
@@ -362,6 +362,10 @@ namespace RentalWarehouse.Core
         /// <summary>Index of the next vault intel report; seeds that report and names its site (RWS-index).</summary>
         public int NextSiteIndex;
         public int SequenceCounter;
+        /// <summary>Trust points (spec 3.1). The rank is computed from them and the rank table, never stored.</summary>
+        public int TrustPoints;
+        /// <summary>The rank last announced to the player, so a change is reported once.</summary>
+        public int TrustAnnouncedRank;
         public List<ContractState> Offers = new List<ContractState>();
         public List<ContractState> Contracts = new List<ContractState>();
         public List<SiteRecord> Sites = new List<SiteRecord>();

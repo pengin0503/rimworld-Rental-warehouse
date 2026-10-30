@@ -253,7 +253,16 @@ namespace RentalWarehouse.Core
             }
             // One step per version, oldest first.
             if (saved.SchemaVersion == 1) saved = FromV1(saved);
+            if (saved.SchemaVersion == 2) saved = FromV2(saved);
             return saved;
+        }
+
+        /// <summary>Version 3 adds trust points and the rank table; their defaults are what a version 2 ledger needs.</summary>
+        private static SavedState FromV2(SavedState saved)
+        {
+            var world = StateCodec.Import(saved);
+            world.SchemaVersion = 3;
+            return StateCodec.Export(world);
         }
 
         /// <summary>
