@@ -38,7 +38,11 @@
   <RW_Accept>受注</RW_Accept>
   <RW_AcceptConfirm>{1}で保管するこの契約を受注しますか？\n\n{0}\n\n貨物は翌日ポッドで届き、到着から1日以内に全箱を収納する必要があります。早期返還では完了報酬がなくなり、最大2日分の保管料を取消料として差し引きます。</RW_AcceptConfirm>
   <RW_Msg_Accepted>契約{0}を受注しました。貨物は1日後に届きます。</RW_Msg_Accepted>
-  <RW_Msg_NewOffers>貸倉庫の新しい依頼が{0}件あります。</RW_Msg_NewOffers>
+  <RW_Letter_NewOffersTitle>貸倉庫に新しい依頼が届きました</RW_Letter_NewOffersTitle>
+  <RW_Letter_NewOffersIntro>貸倉庫に新しい依頼が{0}件届きました:</RW_Letter_NewOffersIntro>
+  <RW_Letter_OfferLine>{0}（{1}）— 箱{2}個・合計{3}銀・{4}日間・前払い{5}%・受注期限まであと{6}</RW_Letter_OfferLine>
+  <RW_Letter_EmpireMark>帝国</RW_Letter_EmpireMark>
+  <RW_Letter_OpenTab>貸倉庫を開く</RW_Letter_OpenTab>
 
   <!-- 拒否理由 -->
   <RW_Reject_NotOffered>この依頼はもう受けられません。</RW_Reject_NotOffered>

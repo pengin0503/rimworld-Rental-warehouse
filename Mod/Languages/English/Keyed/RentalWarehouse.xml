@@ -38,7 +38,11 @@
   <RW_Accept>Accept</RW_Accept>
   <RW_AcceptConfirm>Accept this contract for storage on {1}?\n\n{0}\n\nCrates arrive by drop pod tomorrow and must all be stored within one day of arrival. Returning early forfeits the completion bonus and costs a fee of up to two days' storage.</RW_AcceptConfirm>
   <RW_Msg_Accepted>Contract {0} accepted. Cargo arrives in one day.</RW_Msg_Accepted>
-  <RW_Msg_NewOffers>{0} new warehouse offer(s).</RW_Msg_NewOffers>
+  <RW_Letter_NewOffersTitle>New warehouse offers</RW_Letter_NewOffersTitle>
+  <RW_Letter_NewOffersIntro>{0} new offer(s) have arrived for your rental warehouse:</RW_Letter_NewOffersIntro>
+  <RW_Letter_OfferLine>{0} — {1}, {2} crate(s), {3} silver in total, {4} days, {5}% prepayment, open for {6}</RW_Letter_OfferLine>
+  <RW_Letter_EmpireMark>Empire</RW_Letter_EmpireMark>
+  <RW_Letter_OpenTab>Open the warehouse</RW_Letter_OpenTab>
 
   <!-- Rejections -->
   <RW_Reject_NotOffered>That offer is no longer available.</RW_Reject_NotOffered>

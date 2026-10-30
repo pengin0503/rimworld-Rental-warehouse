@@ -89,11 +89,7 @@ namespace RentalWarehouse
                 OfferService.ExpireOffers(world.State, now);
                 return;
             }
-            var created = OfferService.Generate(world.State, BuildContext(), now);
-            if (created.Count > 0)
-            {
-                Messages.Message("RW_Msg_NewOffers".Translate(created.Count), MessageTypeDefOf.NeutralEvent, historical: true);
-            }
+            OfferNotice.Send(world, OfferService.Generate(world.State, BuildContext(), now));
         }
     }
 }

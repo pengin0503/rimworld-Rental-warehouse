@@ -19,7 +19,15 @@ namespace RentalWarehouse
             var offers = world.State.Offers;
             var top = new Rect(rect.x, rect.y, rect.width, 68f);
             Widgets.Label(top, LoadSummary(world, Find.CurrentMap) + "\n" + TrustView.Summary(world.State));
-            var list = new Rect(rect.x, top.yMax + 4f, rect.width, rect.height - top.height - 4f);
+            float y = top.yMax + 4f;
+            string hint = EmpireAdapter.Hint(world);
+            if (hint != null)
+            {
+                float hintHeight = WarehouseTab.TextHeight(hint, rect.width);
+                Widgets.Label(new Rect(rect.x, y, rect.width, hintHeight), hint);
+                y += hintHeight + 4f;
+            }
+            var list = new Rect(rect.x, y, rect.width, rect.yMax - y);
             return WarehouseTab.ScrollList(list, scroll, offers,
                 (o, w) => WarehouseTab.TextHeight(Describe(world, o.Terms), w - ButtonWidth - 12f) + 8f,
                 (o, r) => DrawOffer(world, o, r), "RW_NoOffers");
