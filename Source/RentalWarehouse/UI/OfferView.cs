@@ -17,8 +17,8 @@ namespace RentalWarehouse
         {
             var world = WarehouseWorldComponent.Instance;
             var offers = world.State.Offers;
-            var top = new Rect(rect.x, rect.y, rect.width, 48f);
-            Widgets.Label(top, LoadSummary(world, Find.CurrentMap));
+            var top = new Rect(rect.x, rect.y, rect.width, 68f);
+            Widgets.Label(top, LoadSummary(world, Find.CurrentMap) + "\n" + TrustView.Summary(world.State));
             var list = new Rect(rect.x, top.yMax + 4f, rect.width, rect.height - top.height - 4f);
             return WarehouseTab.ScrollList(list, scroll, offers,
                 (o, w) => WarehouseTab.TextHeight(Describe(world, o.Terms), w - ButtonWidth - 12f) + 8f,

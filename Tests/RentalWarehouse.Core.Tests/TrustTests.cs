@@ -439,6 +439,23 @@ namespace RentalWarehouse.Core.Tests
             Assert.Equal(6, TrustService.Row(w).MaxCrates);
         }
 
+        [Theory]
+        [InlineData(0, 30)]
+        [InlineData(42, 58)]
+        [InlineData(99, 1)]
+        [InlineData(3999, 1)]
+        public void PointsToNextRank_CountsDownToTheNextThreshold(int points, int expected)
+        {
+            Assert.Equal(expected, TrustService.PointsToNextRank(new WorldState { TrustPoints = points }));
+        }
+
+        [Fact]
+        public void PointsToNextRank_IsNullAtTheTopRank()
+        {
+            Assert.Null(TrustService.PointsToNextRank(new WorldState { TrustPoints = 4000 }));
+            Assert.Null(TrustService.PointsToNextRank(new WorldState { TrustPoints = 6000 }));
+        }
+
         [Fact]
         public void AnInvalidLedgerTable_FallsBackToTheDefault()
         {

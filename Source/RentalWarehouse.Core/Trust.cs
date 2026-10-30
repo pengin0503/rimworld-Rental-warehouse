@@ -197,6 +197,14 @@ namespace RentalWarehouse.Core
 
         public static RankRow Row(WorldState world) => Table(world)[Rank(world)];
 
+        /// <summary>Points still needed for the next rank, or null at the top rank.</summary>
+        public static int? PointsToNextRank(WorldState world)
+        {
+            var table = Table(world);
+            int rank = Rank(world);
+            return rank + 1 < table.Count ? table[rank + 1].RequiredPoints - Points(world) : (int?)null;
+        }
+
         /// <summary>
         /// Points a settled contract earns or loses (spec 3.2): returned value on a full term earns, lost and embezzled
         /// value costs, an early return or a failed storage costs half the contract's value. System cancellations are neutral.

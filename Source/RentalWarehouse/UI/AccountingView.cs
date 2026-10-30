@@ -93,6 +93,7 @@ namespace RentalWarehouse
             sb.Append(c.Terms.ContractId + " — " + ("RW_Cause_" + c.SettlementCause).Translate() + ": ");
             sb.Append("RW_SettlementLine".Translate(s.AccruedFee.ToString("0.#"), s.CompletionBonus.ToString("0.#"), s.CancellationFee.ToString("0.#"),
                 s.Compensation.ToString("0.#"), s.Credit.ToString("0"), s.Debt.ToString("0"), s.GoodwillDelta.ToString("+0;-0;0")));
+            sb.Append(" " + "RW_TrustLine".Translate(s.TrustDelta.ToString("+0;-0;0")));
             if (c.Phase == ContractPhase.SystemCancelled) sb.Append(" " + CancelReason(c));
             return sb.ToString();
         }
