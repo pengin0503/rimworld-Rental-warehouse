@@ -399,6 +399,17 @@ namespace RentalWarehouse.Core
                     Payload = { ["contract"] = state.Terms.ContractId },
                 });
             }
+            if (result.TrustDelta != 0)
+            {
+                effects.Add(new EffectRequest
+                {
+                    EffectId = Id(state, "settle", "trust"),
+                    Kind = EffectKind.ApplyTrust,
+                    EntityId = state.Terms.ContractId,
+                    Amount = result.TrustDelta,
+                    Payload = { ["empire"] = state.Terms.DepositorIsEmpire ? "1" : "0" },
+                });
+            }
             effects.Add(new EffectRequest
             {
                 EffectId = Id(state, "settle", "notify"),

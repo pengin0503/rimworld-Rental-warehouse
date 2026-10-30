@@ -176,4 +176,75 @@ namespace RentalWarehouse.Core
         private static decimal Scale(decimal value, decimal multiplier) =>
             Math.Round(value * multiplier, 0, MidpointRounding.AwayFromZero);
     }
+
+    /// <summary>Trust points of one ledger: how settlements change them and which rank they make (spec 3).</summary>
+    public static class TrustService
+    {
+        private const decimal PointValue = 100m;
+        private const decimal LossWeight = 2m;
+        private const decimal EmbezzleWeight = 4m;
+        private const decimal AbandonWeight = 0.5m;
+
+        /// <summary>The table in force: the ledger's own, or the default when the ledger holds an unusable one.</summary>
+        private static List<RankRow> Table(WorldState world) =>
+            TrustRanks.Validate(world.Settings.RankTable) == null ? world.Settings.RankTable : TrustRanks.Default();
+
+        /// <summary>The saved points held within 0 and the current cap.</summary>
+        public static int Points(WorldState world) =>
+            Math.Max(0, Math.Min(world.TrustPoints, TrustRanks.PointCap(Table(world))));
+
+        public static int Rank(WorldState world) => TrustRanks.RankOf(Table(world), Points(world));
+
+        public static RankRow Row(WorldState world) => Table(world)[Rank(world)];
+
+        /// <summary>
+        /// Points a settled contract earns or loses (spec 3.2): returned value on a full term earns, lost and embezzled
+        /// value costs, an early return or a failed storage costs half the contract's value. System cancellations are neutral.
+        /// </summary>
+        public static int DeltaFor(ContractState c)
+        {
+            if (c.SettlementCause == SettlementCause.SystemCancelled) return 0;
+            decimal returned = 0m, lost = 0m, embezzled = 0m;
+            foreach (var cs in c.CargoStates)
+            {
+                if (cs.Returned) returned += cs.DeclaredValue;
+                else if (cs.Loss == LossCause.Lost) lost += cs.DeclaredValue;
+                else if (cs.Loss == LossCause.Embezzled) embezzled += cs.DeclaredValue;
+            }
+            decimal gain = c.ReturnReason == ReturnReason.Matured ? returned / PointValue : 0m;
+            decimal loss = lost / PointValue * LossWeight + embezzled / PointValue * EmbezzleWeight;
+            bool abandoned = c.ReturnReason == ReturnReason.EarlyByPlayer || c.ReturnReason == ReturnReason.StorageFailed;
+            decimal abandon = abandoned ? c.Terms.TotalValue / PointValue * AbandonWeight : 0m;
+            return (int)Math.Round(gain - loss - abandon, 0, MidpointRounding.AwayFromZero);
+        }
+
+        /// <summary>
+        /// Adds <paramref name="delta"/> to the points. A loss never takes the points below the requirement of the rank
+        /// one step below (two for the Empire) the rank held before it (spec 3.4).
+        /// </summary>
+        public static (int Before, int After) Apply(WorldState world, int delta, bool empire)
+        {
+            var table = Table(world);
+            int before = Points(world);
+            int after = before + delta;
+            if (delta < 0)
+            {
+                int floorRank = Math.Max(0, TrustRanks.RankOf(table, before) - (empire ? 2 : 1));
+                after = Math.Max(after, table[floorRank].RequiredPoints);
+            }
+            after = Math.Max(0, Math.Min(after, TrustRanks.PointCap(table)));
+            world.TrustPoints = after;
+            return (before, after);
+        }
+
+        /// <summary>The rank change not yet announced, or null. Marks it announced.</summary>
+        public static (int From, int To)? TakeRankChange(WorldState world)
+        {
+            int rank = Rank(world);
+            if (rank == world.TrustAnnouncedRank) return null;
+            var change = (world.TrustAnnouncedRank, rank);
+            world.TrustAnnouncedRank = rank;
+            return change;
+        }
+    }
 }

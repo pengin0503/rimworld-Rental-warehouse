@@ -88,6 +88,7 @@ namespace RentalWarehouse.Core
             result.Credit = Math.Max(0m, net);
             result.Debt = Math.Max(0m, -net);
             result.GoodwillDelta = systemCancelled ? 0 : Goodwill(state, result.ReturnValueRate, lostValue, embezzledValue);
+            result.TrustDelta = TrustService.DeltaFor(state);
             return result;
         }
 

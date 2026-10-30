@@ -137,6 +137,8 @@ namespace RentalWarehouse.Core
         public decimal FeeMultiplier = 1m;
         public decimal RaidScale = 1m;
         public int ScheduledRaidCount;
+        /// <summary>True when the Empire is the depositor: its settlements may demote two ranks instead of one (spec 3.4).</summary>
+        public bool DepositorIsEmpire;
         public decimal NominalTotalReward;
         /// <summary>Share (0–0.30) of the full-term fee paid into the claimable balance when the term starts.</summary>
         public decimal PrepaymentRate;
@@ -292,6 +294,8 @@ namespace RentalWarehouse.Core
         public decimal Credit;
         public decimal Debt;
         public int GoodwillDelta;
+        /// <summary>Trust points this settlement adds or removes (spec 3.2); applied once by an ApplyTrust effect.</summary>
+        public int TrustDelta;
         public decimal ReturnValueRate;
 
         public SettlementResult Clone() => (SettlementResult)MemberwiseClone();
@@ -312,6 +316,8 @@ namespace RentalWarehouse.Core
         RemoveCargo,
         ReleaseVaultCargo,
         Notify,
+        /// <summary>Adds Amount trust points; Payload["empire"] is "1" when the depositor is the Empire (spec 3.5).</summary>
+        ApplyTrust,
     }
 
     public sealed class EffectRequest
