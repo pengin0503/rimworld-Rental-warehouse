@@ -257,10 +257,14 @@ namespace RentalWarehouse.Core
             return saved;
         }
 
-        /// <summary>Version 3 adds trust points and the rank table; their defaults are what a version 2 ledger needs.</summary>
+        /// <summary>
+        /// Version 3 adds trust points, the rank table and prepayment negotiation. Trust and the table need only their
+        /// defaults; an offer still open becomes negotiable, with its current rate as the opening one.
+        /// </summary>
         private static SavedState FromV2(SavedState saved)
         {
             var world = StateCodec.Import(saved);
+            foreach (var offer in world.Offers) offer.Terms.OpeningPrepaymentRate = offer.Terms.PrepaymentRate;
             world.SchemaVersion = 3;
             return StateCodec.Export(world);
         }

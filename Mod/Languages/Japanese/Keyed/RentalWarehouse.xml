@@ -50,6 +50,8 @@
   <RW_Reject_InvalidManifest>箱の内容が不正です。</RW_Reject_InvalidManifest>
   <RW_Reject_TooHeavy>箱は35kg以下でなければなりません。</RW_Reject_TooHeavy>
   <RW_Reject_OfferExpired>依頼の期限が切れています。</RW_Reject_OfferExpired>
+  <RW_Reject_AlreadyNegotiated>この依頼はすでに交渉済みです。</RW_Reject_AlreadyNegotiated>
+  <RW_Reject_InvalidRate>初回提示率より高く、30%以下の前払い率を要求してください。</RW_Reject_InvalidRate>
   <RW_Reject_InDebt>貸倉庫の債務を精算するまで新規受注できません。</RW_Reject_InDebt>
   <RW_Reject_FactionBlocked>この派閥は現在取引に応じません。</RW_Reject_FactionBlocked>
   <RW_Reject_TooManyContracts>同時に受けられる契約数の上限です。</RW_Reject_TooManyContracts>

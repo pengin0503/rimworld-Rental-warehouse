@@ -50,6 +50,8 @@
   <RW_Reject_InvalidManifest>The crate's contents are invalid.</RW_Reject_InvalidManifest>
   <RW_Reject_TooHeavy>A crate may weigh at most 35 kg.</RW_Reject_TooHeavy>
   <RW_Reject_OfferExpired>The offer has expired.</RW_Reject_OfferExpired>
+  <RW_Reject_AlreadyNegotiated>This offer has already been negotiated.</RW_Reject_AlreadyNegotiated>
+  <RW_Reject_InvalidRate>Ask for more than the opening prepayment, and no more than 30%.</RW_Reject_InvalidRate>
   <RW_Reject_InDebt>Settle your warehouse debt before taking new contracts.</RW_Reject_InDebt>
   <RW_Reject_FactionBlocked>This faction refuses to deal with you for now.</RW_Reject_FactionBlocked>
   <RW_Reject_TooManyContracts>You already have the maximum number of contracts.</RW_Reject_TooManyContracts>

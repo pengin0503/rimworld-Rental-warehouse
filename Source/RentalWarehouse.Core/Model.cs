@@ -137,6 +137,8 @@ namespace RentalWarehouse.Core
         public decimal FeeMultiplier = 1m;
         public decimal RaidScale = 1m;
         public int ScheduledRaidCount;
+        /// <summary>Share of the full-term fee prepaid in the depositor's first offer; <see cref="PrepaymentRate"/> is what negotiation made of it (spec 6).</summary>
+        public decimal OpeningPrepaymentRate;
         /// <summary>True when the Empire is the depositor: its settlements may demote two ranks instead of one (spec 3.4).</summary>
         public bool DepositorIsEmpire;
         public decimal NominalTotalReward;
@@ -182,6 +184,13 @@ namespace RentalWarehouse.Core
         public ContractCargoState Clone() => (ContractCargoState)MemberwiseClone();
     }
 
+    public enum NegotiationState
+    {
+        None,
+        Succeeded,
+        Failed,
+    }
+
     public enum RaidSlotState
     {
         Pending,
@@ -203,6 +212,8 @@ namespace RentalWarehouse.Core
     {
         public ContractTerms Terms = new ContractTerms();
         public ContractPhase Phase;
+        /// <summary>Whether the prepayment of this offer was negotiated, and how it went. One attempt per offer.</summary>
+        public NegotiationState Negotiation;
         public string MapId = "";
         public long AcceptedTick;
         public long DeliveryTick;
