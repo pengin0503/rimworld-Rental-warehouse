@@ -27,6 +27,8 @@
   <RW_Storage_Rack>rack or vault</RW_Storage_Rack>
   <RW_Storage_Vault>vault</RW_Storage_Vault>
   <RW_Requires>Needs {1} {0} slot(s) for {2} days, counted from when every crate is stored.</RW_Requires>
+  <RW_PrepaymentLine>Prepayment: {0}% of the full-term fee ({1} silver) is paid when the term starts. The rest and the completion bonus are paid after the crates are returned.</RW_PrepaymentLine>
+  <RW_NoPrepaymentLine>No prepayment: the whole fee and the completion bonus are paid after the crates are returned.</RW_NoPrepaymentLine>
   <RW_FeeLine>Fee {0} silver/day while stored; completion bonus up to {1}; total at most {2} silver.</RW_FeeLine>
   <RW_CompensationLine>Lost crates: you owe {0}% of their value, capped at {1} silver. Opened crates: 100% of their value.</RW_CompensationLine>
   <RW_RaidLine>Up to {0} raid(s) aimed at the cargo, about {1}× normal threat points, by {2}.</RW_RaidLine>
@@ -90,7 +92,7 @@
   <!-- Messages and letters -->
   <RW_Letter_DeliveryTitle>Cargo delivered</RW_Letter_DeliveryTitle>
   <RW_Letter_Delivery>The cargo for contract {0} ({1} crate(s)) has landed. Store every crate in a valid rack or vault within one day; the term starts when all are stored.</RW_Letter_Delivery>
-  <RW_Msg_PaymentPosted>Contract {0}: {1} silver added to your claimable balance.</RW_Msg_PaymentPosted>
+  <RW_Msg_PrepaymentPosted>Contract {0}: prepayment of {1} silver added to your claimable balance.</RW_Msg_PrepaymentPosted>
   <RW_Msg_Settled>Contract {0} settled: {1} silver.</RW_Msg_Settled>
 
   <!-- Diagnostics -->

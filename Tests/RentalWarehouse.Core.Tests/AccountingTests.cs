@@ -27,22 +27,128 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
-        public void NormalSixDays_PaysTwentyTwentyThenThirtyTwo()
+        public void NoPrepayment_PaysEverythingAfterTheCratesAreReturned()
         {
             var terms = Terms(ContractKind.Normal, "K1", new[] { 1000m });
             var world = World(terms);
             var c = Activate(world, terms);
             long active = c.ActiveTick!.Value;
 
+            Assert.Equal(0m, c.Receivable);
             RunUntil(c, active + 2 * D);
-            Assert.Equal(20m, c.Receivable);
             RunUntil(c, active + 4 * D);
-            Assert.Equal(40m, c.Receivable);
             RunUntil(c, c.EndTick!.Value);
-            Assert.Equal(40m, c.Receivable);
+            Assert.Equal(0m, c.Receivable);
 
             ReturnAll(c, c.EndTick!.Value + 10);
             Assert.Equal(72m, c.Receivable);
+        }
+
+        [Fact]
+        public void Prepayment_ArrivesWhenTheTermStarts_TheRestAfterReturn_TotalUnchanged()
+        {
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 1000m }, prepay: 0.25m);
+            var world = World(terms);
+            var c = Activate(world, terms);
+            long active = c.ActiveTick!.Value;
+
+            Assert.Equal(15m, c.Receivable);
+            RunUntil(c, active + 2 * D);
+            RunUntil(c, active + 4 * D);
+            RunUntil(c, c.EndTick!.Value);
+            Assert.Equal(15m, c.Receivable);
+
+            ReturnAll(c, c.EndTick!.Value + 10);
+            Assert.Equal(72m, c.Receivable);
+            Assert.Equal(72m, c.Settlement!.Credit);
+        }
+
+        [Fact]
+        public void Prepayment_IsPostedOnceAtTermStart_WithOneNotice()
+        {
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 1000m }, prepay: 0.25m);
+            var world = World(terms);
+            var c = ActivateWithEffects(world, terms, out var startEffects);
+
+            var notice = Assert.Single(startEffects, e => e.Kind == EffectKind.Notify);
+            Assert.Equal("RW_Msg_PrepaymentPosted", notice.Payload["key"]);
+            Assert.Equal(15m, notice.Amount);
+            Assert.Equal(15m, c.PostedFee);
+
+            var later = RunUntil(c, c.EndTick!.Value);
+            Assert.DoesNotContain(later, e => e.EffectId == notice.EffectId);
+            Assert.Equal(15m, c.PostedFee);
+        }
+
+        [Fact]
+        public void NoPrepayment_PostsNoNotice()
+        {
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 1000m });
+            var world = World(terms);
+
+            ActivateWithEffects(world, terms, out var startEffects);
+
+            Assert.DoesNotContain(startEffects, e => e.Kind == EffectKind.Notify);
+        }
+
+        [Theory]
+        [InlineData(0.00, 0)]
+        [InlineData(0.01, 0)]
+        [InlineData(0.30, 18)]
+        public void Prepayment_IsAWholeNumberOfSilverRoundedDownFromTheFullTermFee(double rate, int expected)
+        {
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 1000m }, prepay: (decimal)rate);
+
+            Assert.Equal(60m, Accounting.FullTermFee(terms));
+            Assert.Equal(expected, Accounting.Prepayment(terms));
+        }
+
+        [Fact]
+        public void Prepayment_IgnoresTheCompletionBonus_AndScalesWithTheTerm()
+        {
+            var shortTerm = Terms(ContractKind.Normal, "K1", new[] { 1000m }, term: 3 * D, prepay: 0.30m);
+            var longTerm = Terms(ContractKind.Normal, "K2", new[] { 1000m }, term: 12 * D, prepay: 0.30m);
+
+            Assert.Equal(30m, Accounting.FullTermFee(shortTerm));
+            Assert.Equal(9m, Accounting.Prepayment(shortTerm));
+            Assert.Equal(120m, Accounting.FullTermFee(longTerm));
+            Assert.Equal(36m, Accounting.Prepayment(longTerm));
+        }
+
+        [Fact]
+        public void EarlyReturnAfterClaimingThePrepayment_OwesTheUnearnedPart()
+        {
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 1000m }, prepay: 0.30m);
+            var world = World(terms);
+            var c = Activate(world, terms);
+            long active = c.ActiveTick!.Value;
+            Assert.True(PaymentService.Claim(world, MapId, "Cell_1_1", active).Success);
+
+            RunUntil(c, active + D);
+            ContractEngine.RequestEarlyReturn(c, ReturnReason.EarlyByPlayer, active + D);
+            ReturnAll(c, active + D + 10);
+
+            // 10 earned, all of it taken as cancellation fee, 18 already paid out.
+            Assert.Equal(18m, c.Settlement!.PreviouslyClaimed);
+            Assert.Equal(10m, c.Settlement.CancellationFee);
+            Assert.Equal(18m, c.Settlement.Debt);
+            Assert.Equal(0m, c.Settlement.Credit);
+        }
+
+        [Fact]
+        public void EarlyReturnBeforeClaimingThePrepayment_OwesNothing()
+        {
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 1000m }, prepay: 0.30m);
+            var world = World(terms);
+            var c = Activate(world, terms);
+            long active = c.ActiveTick!.Value;
+
+            RunUntil(c, active + D);
+            ContractEngine.RequestEarlyReturn(c, ReturnReason.EarlyByPlayer, active + D);
+            ReturnAll(c, active + D + 10);
+
+            Assert.Equal(0m, c.Settlement!.Debt);
+            Assert.Equal(0m, c.Receivable);
         }
 
         [Fact]
@@ -98,23 +204,24 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
-        public void PartialLoss_AfterClaimingEighty_DebtOneHundredFourteen()
+        public void PartialLoss_AfterClaimingThePrepayment_DebtSeventy()
         {
             var c = PartialLossContract(claimFirst: true);
 
-            Assert.Equal(80m, c.Settlement!.PreviouslyClaimed);
-            Assert.Equal(114m, c.Settlement.Debt);
+            Assert.Equal(36m, c.Settlement!.PreviouslyClaimed);
+            Assert.Equal(70m, c.Settlement.Debt);
         }
 
         private static ContractState PartialLossContract(bool claimFirst)
         {
-            var terms = Terms(ContractKind.Normal, "K1", new[] { 1000m, 1000m });
+            // Full-term fee 120, 30% prepaid = 36.
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 1000m, 1000m }, prepay: 0.30m);
             var world = World(terms);
             var c = Activate(world, terms);
             long active = c.ActiveTick!.Value;
 
             RunUntil(c, active + 4 * D);
-            Assert.Equal(80m, c.Receivable);
+            Assert.Equal(36m, c.Receivable);
             if (claimFirst)
             {
                 c.ClaimedFee += c.Receivable;
@@ -202,22 +309,18 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
-        public void FractionalFeesCarryOverAndFinalRemainderIsTruncated()
+        public void FractionalFeesAreTruncatedOnce_AtTheFinalSettlement()
         {
-            var terms = Terms(ContractKind.Normal, "K1", new[] { 777m });
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 777m }, prepay: 0.30m);
             var world = World(terms);
             var c = Activate(world, terms);
-            long active = c.ActiveTick!.Value;
 
-            // 8 + 777 * 0.2% = 9.554 per day
-            RunUntil(c, active + 2 * D);
-            Assert.Equal(19m, c.Receivable);
-            RunUntil(c, active + 4 * D);
-            Assert.Equal(38m, c.Receivable);
+            // 8 + 777 * 0.2% = 9.554 per day, 57.324 for the term; 30% of it = 17.1972 -> 17
+            Assert.Equal(17m, c.Receivable);
             RunUntil(c, c.EndTick!.Value);
             ReturnAll(c, c.EndTick!.Value + 10);
 
-            // 57.324 fee + 11.4648 completion = 68.7888 -> 68
+            // 57.324 fee + 11.4648 completion = 68.7888 -> 68, prepayment included
             Assert.Equal(68m, c.Settlement!.Credit);
             Assert.Equal(68m, c.Receivable);
         }
@@ -236,7 +339,7 @@ namespace RentalWarehouse.Core.Tests
         {
             var cargo = new[] { ("K1-C0", 1000m) }.ToList();
             var settings = new WarehouseSettings { FeeMultiplier = 2.0m };
-            var terms = ContractTermsFactory.Create(ContractParameters.Normal, "K1", Depositor, Pursuer, cargo, 0, Term, settings, 0, 1, 0);
+            var terms = ContractTermsFactory.Create(ContractParameters.Normal, "K1", Depositor, Pursuer, cargo, 0, Term, 0m, settings, 0, 1, 0);
             Assert.Equal(20m, Accounting.DailyFee(terms, 1000m));
             Assert.Equal(144m, terms.NominalTotalReward);
         }

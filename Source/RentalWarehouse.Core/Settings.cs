@@ -105,7 +105,8 @@ namespace RentalWarehouse.Core
         public const decimal LossCompensationRate = 0.25m;
         public const decimal EmbezzleCompensationRate = 1.0m;
         public const int CancellationFeeDays = 2;
-        public static readonly long[] PaymentDays = { 2 * CoreTime.TicksPerDay, 4 * CoreTime.TicksPerDay };
+        /// <summary>Each offer pays 0–30% of its full-term fee in advance, when the term starts (whole percent); the rest is paid after settlement.</summary>
+        public const int MaxPrepaymentPercent = 30;
     }
 
     /// <summary>NPC vault site parameters (spec 7).</summary>

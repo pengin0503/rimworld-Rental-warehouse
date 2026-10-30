@@ -27,6 +27,8 @@
   <RW_Storage_Rack>棚または金庫</RW_Storage_Rack>
   <RW_Storage_Vault>金庫</RW_Storage_Vault>
   <RW_Requires>{0}の枠を{1}個、{2}日間使います。期間は全箱の収納完了から数えます。</RW_Requires>
+  <RW_PrepaymentLine>前払い: 全期間の保管料の{0}%（{1}銀）を期間の開始時に受け取れます。残りと完了報酬は、箱の返還後に後払いです。</RW_PrepaymentLine>
+  <RW_NoPrepaymentLine>前払いなし: 保管料の全額と完了報酬は、箱の返還後に後払いです。</RW_NoPrepaymentLine>
   <RW_FeeLine>保管中の料金は1日{0}銀。完了報酬は最大{1}銀、合計は最大{2}銀。</RW_FeeLine>
   <RW_CompensationLine>紛失した箱は価値の{0}%を補償（上限{1}銀）。開封した箱は価値の100%を補償。</RW_CompensationLine>
   <RW_RaidLine>貨物を狙う襲撃が最大{0}回、通常の脅威ポイントの約{1}倍、襲撃者: {2}。</RW_RaidLine>
@@ -90,7 +92,7 @@
   <!-- メッセージ・手紙 -->
   <RW_Letter_DeliveryTitle>貨物が到着</RW_Letter_DeliveryTitle>
   <RW_Letter_Delivery>契約{0}の貨物（{1}箱）が届きました。1日以内に全箱を有効な棚か金庫へ収納してください。全箱の収納で期間が始まります。</RW_Letter_Delivery>
-  <RW_Msg_PaymentPosted>契約{0}: {1}銀が受領可能残高に加わりました。</RW_Msg_PaymentPosted>
+  <RW_Msg_PrepaymentPosted>契約{0}: 前払い{1}銀が受領可能残高に加わりました。</RW_Msg_PrepaymentPosted>
   <RW_Msg_Settled>契約{0}を精算しました: {1}銀。</RW_Msg_Settled>
 
   <!-- 診断 -->

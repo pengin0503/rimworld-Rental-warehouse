@@ -138,6 +138,8 @@ namespace RentalWarehouse.Core
         public decimal RaidScale = 1m;
         public int ScheduledRaidCount;
         public decimal NominalTotalReward;
+        /// <summary>Share (0–0.30) of the full-term fee paid into the claimable balance when the term starts.</summary>
+        public decimal PrepaymentRate;
         public int Seed;
         public int SettingsVersion;
         public long OfferedTick;
@@ -209,13 +211,12 @@ namespace RentalWarehouse.Core
         public long LastAccrualTick;
         public List<ContractCargoState> CargoStates = new List<ContractCargoState>();
         public decimal AccruedFee;
-        /// <summary>Whole silver moved into the claimable balance so far.</summary>
+        /// <summary>Whole silver moved into the claimable balance before settlement (the prepayment).</summary>
         public decimal PostedFee;
         /// <summary>Whole silver actually claimed as silver so far.</summary>
         public decimal ClaimedFee;
         /// <summary>Claimable balance currently held for this contract.</summary>
         public decimal Receivable;
-        public int PaymentsPosted;
         public int StartedRaids;
         public decimal BaselineThreatPoints;
         public List<RaidSlot> RaidPlan = new List<RaidSlot>();

@@ -188,6 +188,24 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
+        public void Storage_FailedWithinOneDay_NeverPaysThePrepayment()
+        {
+            var terms = Terms(ContractKind.Normal, "K1", new[] { 1000m }, prepay: 0.30m);
+            var world = World(terms);
+            ContractEngine.Accept(terms, Storage(4), world, 0);
+            var c = world.Contract("K1")!;
+            ContractEngine.Advance(c, Storage(4), D);
+            foreach (var id in terms.CargoIds) ContractEngine.MarkDelivered(c, id, D);
+
+            var effects = RunUntil(c, D + Limits.StorageDeadline + CoreTime.CheckIntervalTicks, _ => Storage(4));
+
+            Assert.Equal(ContractPhase.Returning, c.Phase);
+            Assert.Equal(0m, c.Receivable);
+            Assert.Equal(0m, c.PostedFee);
+            Assert.DoesNotContain(effects, e => e.Payload.TryGetValue("key", out var key) && key == "RW_Msg_PrepaymentPosted");
+        }
+
+        [Fact]
         public void PreStorageLoss_OfOneCrate_MovesToEarlyReturnAndStillCompensates()
         {
             var terms = Terms(ContractKind.Normal, "K1", new[] { 300m, 300m });

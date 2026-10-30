@@ -143,6 +143,7 @@ namespace RentalWarehouse.Core
             int crates = rng.Range(Limits.MinCrates, Limits.MaxCrates);
             int seed = rng.Next(int.MaxValue);
             long duration = p.DrawDurationTicks(rng);
+            decimal prepayment = rng.Range(0, Limits.MaxPrepaymentPercent) / 100m;
 
             for (int n = crates; n <= Limits.MaxCrates; n++)
             {
@@ -169,7 +170,7 @@ namespace RentalWarehouse.Core
                     };
                     cargo.Add((cargoId, value));
                 }
-                var terms = ContractTermsFactory.Create(p, contractId, depositor.FactionId, pursuer, cargo, raids, duration, world.Settings, world.SettingsVersion, seed, now);
+                var terms = ContractTermsFactory.Create(p, contractId, depositor.FactionId, pursuer, cargo, raids, duration, prepayment, world.Settings, world.SettingsVersion, seed, now);
                 world.Offers.Add(new ContractState { Terms = terms, Phase = ContractPhase.Offered });
                 return terms;
             }

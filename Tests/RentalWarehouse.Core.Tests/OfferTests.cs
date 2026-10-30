@@ -173,6 +173,8 @@ namespace RentalWarehouse.Core.Tests
                 Assert.Equal(p.RequiredStorage, t.RequiredStorage);
                 Assert.InRange(t.DurationTicks, 3 * D, 12 * D);
                 Assert.Equal(0, t.DurationTicks % D);
+                Assert.InRange(t.PrepaymentRate, 0m, 0.30m);
+                Assert.Equal(0m, t.PrepaymentRate * 100m % 1m);
                 if (t.Kind == ContractKind.HighRisk) Assert.Equal(2, t.ScheduledRaidCount);
                 else Assert.InRange(t.ScheduledRaidCount, 0, 1);
                 Assert.NotEqual(t.DepositorFactionId, t.PursuerFactionId);
@@ -184,6 +186,8 @@ namespace RentalWarehouse.Core.Tests
                 Assert.Null(CargoService.Validate(c));
             }
             Assert.True(offers.Select(t => t.DurationTicks).Distinct().Count() > 1);
+            Assert.True(offers.Select(t => t.PrepaymentRate).Distinct().Count() > 1);
+            Assert.Contains(offers, t => t.PrepaymentRate > 0m);
         }
 
         [Fact]

@@ -51,7 +51,10 @@ namespace RentalWarehouse
                 sb.AppendLine("  " + "RW_CrateLine".Translate(i + 1, t.CargoValues[i].ToString("0"), record?.MassKg.ToString("0.#") ?? "?", Manifest(record)));
             }
             sb.AppendLine("RW_Requires".Translate(("RW_Storage_" + t.RequiredStorage).Translate(), t.CargoIds.Count, (t.DurationTicks / (float)CoreTime.TicksPerDay).ToString("0.#")));
-            sb.AppendLine("RW_FeeLine".Translate(Accounting.FullDailyFee(t).ToString("0.##"), (Accounting.FullDailyFee(t) * t.DurationTicks / CoreTime.TicksPerDay * t.CompletionRate).ToString("0"), t.NominalTotalReward.ToString("0")));
+            sb.AppendLine("RW_FeeLine".Translate(Accounting.FullDailyFee(t).ToString("0.##"), (Accounting.FullTermFee(t) * t.CompletionRate).ToString("0"), t.NominalTotalReward.ToString("0")));
+            sb.AppendLine(t.PrepaymentRate > 0m
+                ? "RW_PrepaymentLine".Translate((t.PrepaymentRate * 100m).ToString("0"), Accounting.Prepayment(t).ToString("0"))
+                : "RW_NoPrepaymentLine".Translate());
             sb.AppendLine("RW_CompensationLine".Translate((Limits.LossCompensationRate * 100m).ToString("0"), t.NominalTotalReward.ToString("0")));
             if (t.ScheduledRaidCount > 0)
             {

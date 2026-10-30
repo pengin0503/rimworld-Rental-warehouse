@@ -13,11 +13,11 @@ namespace RentalWarehouse.Core.Tests
         public const string Depositor = "Faction_1";
         public const string Pursuer = "Faction_2";
 
-        public static ContractTerms Terms(ContractKind kind, string contractId, decimal[] values, int raids = 0, long now = 0, long term = Term)
+        public static ContractTerms Terms(ContractKind kind, string contractId, decimal[] values, int raids = 0, long now = 0, long term = Term, decimal prepay = 0m)
         {
             var cargo = values.Select((v, i) => (contractId + "-C" + i, v)).ToList();
             return ContractTermsFactory.Create(
-                ContractParameters.For(kind), contractId, Depositor, Pursuer, cargo, raids, term,
+                ContractParameters.For(kind), contractId, Depositor, Pursuer, cargo, raids, term, prepay,
                 new WarehouseSettings(), settingsVersion: 0, seed: 12345, now: now);
         }
 
@@ -61,7 +61,11 @@ namespace RentalWarehouse.Core.Tests
             Storage(0, 0, c.Terms.CargoIds.Where(id => !missing.Contains(id)).ToArray());
 
         /// <summary>Accepts at tick 0, delivers, stores and activates at tick 2D.</summary>
-        public static ContractState Activate(WorldState world, ContractTerms terms, StorageSnapshot? capacity = null)
+        public static ContractState Activate(WorldState world, ContractTerms terms, StorageSnapshot? capacity = null) =>
+            ActivateWithEffects(world, terms, out _, capacity);
+
+        /// <summary>Like <see cref="Activate"/>, also returning what the step that starts the term emitted.</summary>
+        public static ContractState ActivateWithEffects(WorldState world, ContractTerms terms, out List<EffectRequest> startEffects, StorageSnapshot? capacity = null)
         {
             var accepted = ContractEngine.Accept(terms, capacity ?? Storage(4, 4), world, 0);
             Xunit.Assert.True(accepted.Success, accepted.ReasonKey);
@@ -71,6 +75,7 @@ namespace RentalWarehouse.Core.Tests
             foreach (var id in terms.CargoIds) ContractEngine.MarkDelivered(c, id, D);
             var active = ContractEngine.Advance(c, StoredAll(c), 2 * D);
             Xunit.Assert.Equal(ContractPhase.Active, active.NewState.Phase);
+            startEffects = active.Effects;
             return c;
         }
 
