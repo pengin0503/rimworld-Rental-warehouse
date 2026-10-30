@@ -17,6 +17,24 @@ namespace RentalWarehouse.Game.Tests
         {
             yield return ("ApplyTrustEffectUpdatesPointsOnce", ApplyTrustEffectUpdatesPointsOnce);
             yield return ("RankChangeIsAnnouncedOnce", RankChangeIsAnnouncedOnce);
+            yield return ("ModSettingsFallBackToTheDefaultTableWhenAColumnIsInvalid", ModSettingsFallBack);
+        }
+
+        private static void ModSettingsFallBack(GameTestScope s)
+        {
+            var settings = new RentalWarehouseSettings();
+            Check(TrustRanks.SameTable(TrustRanks.Default(), settings.RankRows()), "a new settings object holds the default table");
+
+            settings.rankPoints[3] = -1;
+            Check(TrustRanks.SameTable(TrustRanks.Default(), settings.RankRows()), "an invalid column falls back to the default");
+
+            settings.rankCrates.RemoveAt(0);
+            Check(TrustRanks.SameTable(TrustRanks.Default(), settings.RankRows()), "a short column falls back to the default");
+
+            var edited = TrustRanks.Default();
+            edited[2].NormalMax = 4321m;
+            settings.SetRankRows(edited);
+            Check(TrustRanks.SameTable(edited, settings.RankRows()), "a valid edited table is kept");
         }
 
         private static void ApplyTrustEffectUpdatesPointsOnce(GameTestScope s)

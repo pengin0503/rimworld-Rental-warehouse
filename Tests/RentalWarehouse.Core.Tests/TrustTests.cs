@@ -180,6 +180,18 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
+        public void RankColumns_WithABadValue_StillBuildsRows_ButValidationRejectsThem()
+        {
+            var c = RankColumns.From(TrustRanks.Default());
+            c.Points[3] = -1;
+
+            var rows = c.ToRows();
+
+            Assert.NotNull(rows);
+            Assert.Equal("RW_Rank_PointsOrder", TrustRanks.Validate(rows!));
+        }
+
+        [Fact]
         public void SameTable_DetectsASingleChangedCell_AndDifferentLengths()
         {
             var a = TrustRanks.Default();
