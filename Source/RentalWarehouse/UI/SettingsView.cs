@@ -131,12 +131,15 @@ namespace RentalWarehouse
             l.Label("RW_Set_RaidScale".Translate(s.raidScale.ToString("0.00")));
             s.raidScale = Snap(l.Slider(s.raidScale, (float)WarehouseSettings.MultiplierMin, (float)WarehouseSettings.MultiplierMax));
             l.Gap();
+            if (l.ButtonText("RW_Set_EditRanks".Translate())) Find.WindowStack.Add(new RankTableDialog(s));
+            l.Gap();
             l.Label("RW_Set_AppliesToNew".Translate());
             if (l.ButtonText("RW_Set_Reset".Translate()))
             {
                 s.normalContracts = s.highRiskContracts = s.vaultSites = true;
                 s.nonHostileVaultSites = false;
                 s.feeMultiplier = s.raidScale = 1f;
+                s.ResetRanks();
             }
             l.End();
         }

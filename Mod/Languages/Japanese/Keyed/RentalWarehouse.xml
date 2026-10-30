@@ -109,6 +109,20 @@
   <RW_Rank_PointsOrder>必要ポイントは前のランクより大きくしてください。</RW_Rank_PointsOrder>
   <RW_Rank_RangeInvalid>合計価値は、最小を100銀以上かつ最大以下にしてください。</RW_Rank_RangeInvalid>
   <RW_Rank_CratesInvalid>箱数は1～12にしてください。</RW_Rank_CratesInvalid>
+  <RW_Set_EditRanks>信頼ランク表を編集…</RW_Set_EditRanks>
+  <RW_Rank_Title>信頼ランク表</RW_Rank_Title>
+  <RW_Rank_Hint>合計は、契約の箱の申告価値の合計（銀）です。合計価値と箱数は新しい依頼から、必要ポイントはすぐに反映されます。倍率を入力すると、基準（通常500～2,000、高危険度2,000～6,000）に掛けた値が4つの合計に入ります。</RW_Rank_Hint>
+  <RW_Rank_Col_Rank>ランク</RW_Rank_Col_Rank>
+  <RW_Rank_Col_Points>必要ポイント</RW_Rank_Col_Points>
+  <RW_Rank_Col_Mult>価値倍率</RW_Rank_Col_Mult>
+  <RW_Rank_Col_NormalMin>通常 最小</RW_Rank_Col_NormalMin>
+  <RW_Rank_Col_NormalMax>通常 最大</RW_Rank_Col_NormalMax>
+  <RW_Rank_Col_HighMin>高危険度 最小</RW_Rank_Col_HighMin>
+  <RW_Rank_Col_HighMax>高危険度 最大</RW_Rank_Col_HighMax>
+  <RW_Rank_Col_Crates>箱数（最大）</RW_Rank_Col_Crates>
+  <RW_Rank_Custom>個別設定</RW_Rank_Custom>
+  <RW_Rank_Reset>ランク表を初期値に戻す</RW_Rank_Reset>
+  <RW_Rank_Warn>1箱あたり30,000銀を超え、積載33kgに収まらない恐れのあるランク: {0}。</RW_Rank_Warn>
 
   <!-- 診断 -->
   <RW_Diag_EffectAbandoned>Rental Warehouse: 処理が繰り返し失敗したため中止しました（{0}）。代わりの物は付与していません。</RW_Diag_EffectAbandoned>

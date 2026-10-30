@@ -109,6 +109,20 @@
   <RW_Rank_PointsOrder>Each rank must need more points than the rank before it.</RW_Rank_PointsOrder>
   <RW_Rank_RangeInvalid>Each total value range needs a minimum of at least 100 silver that is not above its maximum.</RW_Rank_RangeInvalid>
   <RW_Rank_CratesInvalid>The crate limit must be between 1 and 12.</RW_Rank_CratesInvalid>
+  <RW_Set_EditRanks>Edit trust rank table...</RW_Set_EditRanks>
+  <RW_Rank_Title>Trust rank table</RW_Rank_Title>
+  <RW_Rank_Hint>Totals are the combined declared value of a contract's crates, in silver. Total values and crate limits apply to new offers; required points apply at once. Typing a multiplier fills the four totals from the base ranges (normal 500-2,000, high-risk 2,000-6,000).</RW_Rank_Hint>
+  <RW_Rank_Col_Rank>Rank</RW_Rank_Col_Rank>
+  <RW_Rank_Col_Points>Points</RW_Rank_Col_Points>
+  <RW_Rank_Col_Mult>Multiplier</RW_Rank_Col_Mult>
+  <RW_Rank_Col_NormalMin>Normal min</RW_Rank_Col_NormalMin>
+  <RW_Rank_Col_NormalMax>Normal max</RW_Rank_Col_NormalMax>
+  <RW_Rank_Col_HighMin>High-risk min</RW_Rank_Col_HighMin>
+  <RW_Rank_Col_HighMax>High-risk max</RW_Rank_Col_HighMax>
+  <RW_Rank_Col_Crates>Max crates</RW_Rank_Col_Crates>
+  <RW_Rank_Custom>Custom</RW_Rank_Custom>
+  <RW_Rank_Reset>Reset table to defaults</RW_Rank_Reset>
+  <RW_Rank_Warn>These ranks ask for over 30,000 silver per crate, which may not fit in 33 kg: {0}.</RW_Rank_Warn>
 
   <!-- Diagnostics -->
   <RW_Diag_EffectAbandoned>Rental Warehouse: an action failed repeatedly and was abandoned ({0}). Nothing was granted in its place.</RW_Diag_EffectAbandoned>
