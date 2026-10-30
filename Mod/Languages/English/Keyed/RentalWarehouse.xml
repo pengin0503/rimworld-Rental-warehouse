@@ -94,6 +94,21 @@
   <RW_Letter_Delivery>The cargo for contract {0} ({1} crate(s)) has landed. Store every crate in a valid rack or vault within one day; the term starts when all are stored.</RW_Letter_Delivery>
   <RW_Msg_PrepaymentPosted>Contract {0}: prepayment of {1} silver added to your claimable balance.</RW_Msg_PrepaymentPosted>
   <RW_Msg_Settled>Contract {0} settled: {1} silver.</RW_Msg_Settled>
+  <RW_TrustRank_0>Newcomer</RW_TrustRank_0>
+  <RW_TrustRank_1>Registered Trader</RW_TrustRank_1>
+  <RW_TrustRank_2>Trusted Trader</RW_TrustRank_2>
+  <RW_TrustRank_3>Certified Keeper</RW_TrustRank_3>
+  <RW_TrustRank_4>Notable</RW_TrustRank_4>
+  <RW_TrustRank_5>Grand Keeper</RW_TrustRank_5>
+  <RW_TrustRank_6>Warehouse Noble</RW_TrustRank_6>
+  <RW_TrustRank_7>Warehouse King</RW_TrustRank_7>
+  <RW_Msg_RankUp>Your warehouse's trust rank rose to {0}.</RW_Msg_RankUp>
+  <RW_Msg_RankDown>Your warehouse's trust rank fell to {0}.</RW_Msg_RankDown>
+  <RW_Rank_WrongCount>The rank table must have exactly 8 rows.</RW_Rank_WrongCount>
+  <RW_Rank_FirstNotZero>The first rank must need 0 points.</RW_Rank_FirstNotZero>
+  <RW_Rank_PointsOrder>Each rank must need more points than the rank before it.</RW_Rank_PointsOrder>
+  <RW_Rank_RangeInvalid>Each total value range needs a minimum of at least 100 silver that is not above its maximum.</RW_Rank_RangeInvalid>
+  <RW_Rank_CratesInvalid>The crate limit must be between 1 and 12.</RW_Rank_CratesInvalid>
 
   <!-- Diagnostics -->
   <RW_Diag_EffectAbandoned>Rental Warehouse: an action failed repeatedly and was abandoned ({0}). Nothing was granted in its place.</RW_Diag_EffectAbandoned>

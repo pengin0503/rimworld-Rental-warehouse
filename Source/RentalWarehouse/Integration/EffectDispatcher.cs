@@ -20,6 +20,7 @@ namespace RentalWarehouse
             [EffectKind.ConsumeCargo] = ConsumeCargo,
             [EffectKind.RemoveCargo] = RemoveCargo,
             [EffectKind.ApplyGoodwill] = ApplyGoodwill,
+            [EffectKind.ApplyTrust] = ApplyTrust,
             [EffectKind.Notify] = Notify,
             [EffectKind.DeliverCargo] = DeliveryAdapter.Deliver,
             [EffectKind.SpawnSilver] = PaymentAdapter.SpawnSilver,
@@ -79,6 +80,13 @@ namespace RentalWarehouse
             var faction = Ids.Faction(effect.EntityId);
             if (faction == null || faction.defeated || faction.IsPlayer) return true;
             faction.TryAffectGoodwillWith(Faction.OfPlayer, (int)effect.Amount, canSendMessage: true, canSendHostilityLetter: true);
+            return true;
+        }
+
+        private static bool ApplyTrust(WarehouseWorldComponent world, EffectRequest effect)
+        {
+            effect.Payload.TryGetValue("empire", out var empire);
+            TrustService.Apply(world.State, (int)effect.Amount, empire == "1");
             return true;
         }
 
