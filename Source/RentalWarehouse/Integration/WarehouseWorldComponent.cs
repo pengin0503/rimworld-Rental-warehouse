@@ -106,7 +106,23 @@ namespace RentalWarehouse
             if (applyNow) EffectDispatcher.ProcessQueue(this);
         }
 
-        public static WarehouseWorldComponent Instance => Find.World?.GetComponent<WarehouseWorldComponent>();
+        private static WarehouseWorldComponent cached;
+
+        /// <summary>
+        /// The current world's ledger holder. Looked up from every crate check and UI frame, so it is remembered for as long as the
+        /// world it belongs to is the current one.
+        /// </summary>
+        public static WarehouseWorldComponent Instance
+        {
+            get
+            {
+                var current = Find.World;
+                if (current == null) return null;
+                var known = cached;
+                if (known != null && known.world == current) return known;
+                return cached = current.GetComponent<WarehouseWorldComponent>();
+            }
+        }
 
         /// <summary>
         /// A second live Thing claiming an already registered cargo ID is isolated (spec 8 "重複ID"): it loses the ID,

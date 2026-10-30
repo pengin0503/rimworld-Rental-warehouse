@@ -22,7 +22,11 @@ namespace RentalWarehouse
             float y = top.yMax + 4f;
             var list = new Rect(rect.x, y, rect.width, rect.yMax - y);
             return WarehouseTab.ScrollList(list, scroll, offers,
-                (o, w) => Mathf.Max(WarehouseTab.TextHeight(Describe(world, o.Terms, o.Negotiation), w - ButtonWidth - 12f), 76f) + 8f,
+                (o, w) =>
+                {
+                    DescribeCached(world, o);
+                    return Mathf.Max(UiTextCache.Height(o, w - ButtonWidth - 12f), 76f) + 8f;
+                },
                 (o, r) => DrawOffer(world, o, r), "RW_NoOffers");
         }
 
@@ -63,6 +67,10 @@ namespace RentalWarehouse
         }
 
         public static string FactionName(string id) => Ids.Faction(id)?.Name ?? "RW_UnknownFaction".Translate().Resolve();
+
+        /// <summary>The offer's text as drawn every frame: rebuilt a few times a second, not on every pass.</summary>
+        private static string DescribeCached(WarehouseWorldComponent world, ContractState offer) =>
+            UiTextCache.Text(offer, () => Describe(world, offer.Terms, offer.Negotiation));
 
         public static string Describe(WarehouseWorldComponent world, ContractTerms t, NegotiationState negotiation = NegotiationState.None)
         {
@@ -126,7 +134,7 @@ namespace RentalWarehouse
         private static void DrawOffer(WarehouseWorldComponent world, ContractState offer, Rect rect)
         {
             var text = new Rect(rect.x, rect.y, rect.width - ButtonWidth - 12f, rect.height);
-            Widgets.Label(text, Describe(world, offer.Terms, offer.Negotiation));
+            Widgets.Label(text, DescribeCached(world, offer));
             var button = new Rect(rect.xMax - ButtonWidth, rect.y, ButtonWidth, 32f);
             if (Widgets.ButtonText(button, "RW_Accept".Translate()))
             {

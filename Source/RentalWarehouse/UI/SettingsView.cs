@@ -29,8 +29,18 @@ namespace RentalWarehouse
             ResetRanks();
         }
 
+        /// <summary>
+        /// Raised whenever the settings are saved or loaded, which is when the settings window closes. The ledger is brought up to
+        /// date only then, instead of comparing every value every step.
+        /// </summary>
+        public static int Revision { get; private set; }
+
+        private static WorldState syncedState;
+        private static int syncedRevision = -1;
+
         public override void ExposeData()
         {
+            if (Scribe.mode == LoadSaveMode.Saving || Scribe.mode == LoadSaveMode.PostLoadInit) Revision++;
             Scribe_Values.Look(ref normalContracts, "normalContracts", true);
             Scribe_Values.Look(ref highRiskContracts, "highRiskContracts", true);
             Scribe_Values.Look(ref vaultSites, "vaultSites", true);
@@ -103,8 +113,11 @@ namespace RentalWarehouse
         /// <summary>Copies the settings into the ledger, bumping its version only when something changed.</summary>
         public static void SyncInto(WorldState state)
         {
+            if (ReferenceEquals(syncedState, state) && syncedRevision == Revision) return;
             var next = RentalWarehouseMod.Settings?.ToCore();
             if (next == null) return;
+            syncedState = state;
+            syncedRevision = Revision;
             var cur = state.Settings;
             if (cur.NormalContractsEnabled == next.NormalContractsEnabled && cur.HighRiskContractsEnabled == next.HighRiskContractsEnabled
                 && cur.VaultSitesEnabled == next.VaultSitesEnabled && cur.NonHostileVaultSitesEnabled == next.NonHostileVaultSitesEnabled

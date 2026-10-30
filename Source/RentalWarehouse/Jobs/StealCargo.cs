@@ -64,11 +64,11 @@ namespace RentalWarehouse
             Scribe_Values.Look(ref nothingSince, "nothingSince", -1);
         }
 
-        /// <summary>True once no contract crate has been left to steal for a short while, with nobody on the way out carrying one.</summary>
+        /// <summary>True once there has been neither a crate to steal nor a vault to break open for a short while, with nobody on the way out carrying a crate.</summary>
         public bool ShouldRetreat(int now)
         {
             if (lord == null || now % CheckEveryTicks != 0) return false;
-            var (since, retreat) = RaidRetreat.Observe(nothingSince < 0 ? (long?)null : nothingSince, ThreatAdapter.AnyStealable(lord.Map), SomeoneCarriesACrate(), now);
+            var (since, retreat) = RaidRetreat.Observe(nothingSince < 0 ? (long?)null : nothingSince, ThreatAdapter.AnyWorkLeft(lord.Map), SomeoneCarriesACrate(), now);
             nothingSince = since.HasValue ? (int)since.Value : -1;
             return retreat;
         }
@@ -135,7 +135,7 @@ namespace RentalWarehouse
         {
             Building_Vault target = null;
             float best = float.MaxValue;
-            foreach (var b in pawn.Map.listerBuildings.allBuildingsColonist)
+            foreach (var b in pawn.Map.listerBuildings.AllBuildingsColonistOfDef(RWDefOf.RW_Vault))
             {
                 if (!(b is Building_Vault vault) || vault.IsSiteVault || !ThreatAdapter.HoldsContractCargo(vault)) continue;
                 float d = pawn.Position.DistanceToSquared(vault.Position);

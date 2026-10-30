@@ -2,7 +2,8 @@ namespace RentalWarehouse.Core
 {
     /// <summary>
     /// When cargo thieves give up (issue #11). Like an ordinary raid they leave after a while and after heavy losses; they also
-    /// leave once no contract crate is left to steal, after a short grace so a crate being handed over is not mistaken for none.
+    /// leave once there is neither a contract crate to steal nor a vault holding one to break open, after a short grace so a crate
+    /// being handed over is not mistaken for none.
     /// </summary>
     public static class RaidRetreat
     {
@@ -18,9 +19,9 @@ namespace RentalWarehouse.Core
         /// something is. Returns the updated marker and whether the raiders should retreat now. A raider carrying a crate leaves on
         /// its own, so that never starts the clock.
         /// </summary>
-        public static (long? Since, bool Retreat) Observe(long? since, bool stealableLeft, bool someoneCarrying, long now)
+        public static (long? Since, bool Retreat) Observe(long? since, bool workLeft, bool someoneCarrying, long now)
         {
-            if (stealableLeft || someoneCarrying) return (null, false);
+            if (workLeft || someoneCarrying) return (null, false);
             long start = since ?? now;
             return (start, now - start >= NothingToStealGraceTicks);
         }

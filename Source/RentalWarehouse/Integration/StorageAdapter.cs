@@ -8,12 +8,22 @@ namespace RentalWarehouse
     /// <summary>Reads the player's racks and vaults into a <see cref="StorageSnapshot"/> for the Core.</summary>
     public static class StorageAdapter
     {
+        private static IEnumerable<ThingDef> StorageDefs()
+        {
+            yield return RWDefOf.RW_StorageRack;
+            yield return RWDefOf.RW_Vault;
+        }
+
         public static IEnumerable<Building_WarehouseStorage> Facilities(Map map)
         {
             if (map == null) yield break;
-            foreach (var b in map.listerBuildings.allBuildingsColonist)
+            // Only the two storage defs are listed; walking every colonist building of a big base for this was the costly part.
+            foreach (var def in StorageDefs())
             {
-                if (b is Building_WarehouseStorage s && s.Faction == Faction.OfPlayer) yield return s;
+                foreach (var b in map.listerBuildings.AllBuildingsColonistOfDef(def))
+                {
+                    if (b is Building_WarehouseStorage s && s.Faction == Faction.OfPlayer) yield return s;
+                }
             }
         }
 

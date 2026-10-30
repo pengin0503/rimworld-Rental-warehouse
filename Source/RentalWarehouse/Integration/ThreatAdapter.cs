@@ -16,13 +16,23 @@ namespace RentalWarehouse
     {
         private static readonly HashSet<string> carriedAlerted = new HashSet<string>();
 
+        /// <summary>Whether hostiles are active on each home map, read once per step and shared by everything that asks.</summary>
+        private static readonly Dictionary<string, bool> hostileNow = new Dictionary<string, bool>();
+
+        /// <summary>Reused by <see cref="TrackCarriedCrates"/>: crates may be removed while it walks them.</summary>
+        private static readonly List<KeyValuePair<string, Thing>> crateBuffer = new List<KeyValuePair<string, Thing>>();
+
         public static void Tick(WarehouseWorldComponent world, long now)
         {
             var state = world.State;
+            hostileNow.Clear();
             foreach (var map in Find.Maps)
             {
                 if (!map.IsPlayerHome) continue;
-                if (GenHostility.AnyHostileActiveThreatToPlayer(map)) state.LastHostileTick[Ids.Of(map)] = now;
+                string id = Ids.Of(map);
+                bool hostile = GenHostility.AnyHostileActiveThreatToPlayer(map);
+                hostileNow[id] = hostile;
+                if (hostile) state.LastHostileTick[id] = now;
             }
             ThreatScheduler.Tick(state, c => ContextFor(world, c, now), d => Start(world, d), now);
             TrackCarriedCrates(world, now);
@@ -33,7 +43,7 @@ namespace RentalWarehouse
             var map = Ids.Map(mapId);
             var ctx = new RaidContext { NowTick = now };
             if (map == null) return ctx;
-            ctx.HostilePresent = GenHostility.AnyHostileActiveThreatToPlayer(map);
+            ctx.HostilePresent = hostileNow.TryGetValue(mapId, out bool known) ? known : GenHostility.AnyHostileActiveThreatToPlayer(map);
             if (world.State.LastHostileTick.TryGetValue(mapId, out long last) && !ctx.HostilePresent) ctx.LastOrdinaryRaidEndTick = last;
             return ctx;
         }
@@ -105,6 +115,20 @@ namespace RentalWarehouse
             return false;
         }
 
+        /// <summary>Whether an intact vault on this map still holds contract crates, which raiders keep trying to break open.</summary>
+        public static bool AnyBreachableVault(Map map)
+        {
+            if (map == null) return false;
+            foreach (var b in map.listerBuildings.AllBuildingsColonistOfDef(RWDefOf.RW_Vault))
+            {
+                if (b is Building_Vault vault && !vault.IsSiteVault && HoldsContractCargo(vault)) return true;
+            }
+            return false;
+        }
+
+        /// <summary>Something for the thieves to do: a crate to take or a vault to break open.</summary>
+        public static bool AnyWorkLeft(Map map) => AnyStealable(map) || AnyBreachableVault(map);
+
         public static bool HoldsContractCargo(Building_Vault vault)
         {
             foreach (var crate in vault.StoredCrates())
@@ -120,7 +144,9 @@ namespace RentalWarehouse
         /// </summary>
         public static void TrackCarriedCrates(WarehouseWorldComponent world, long now)
         {
-            foreach (var kv in world.AllCrates.ToList())
+            crateBuffer.Clear();
+            crateBuffer.AddRange(world.AllCrates);
+            foreach (var kv in crateBuffer)
             {
                 var crate = kv.Value;
                 if (crate.Destroyed || !world.State.Cargo.TryGetValue(kv.Key, out var record) || record.ContractId == null || record.Custody != CargoCustody.Depositor) continue;

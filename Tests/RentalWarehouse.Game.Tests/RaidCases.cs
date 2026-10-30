@@ -79,7 +79,7 @@ namespace RentalWarehouse.Game.Tests
             try
             {
                 Check(lord.Graph.transitions.Any(t => t.target is LordToil_ExitMap), "the graph has a way out");
-                Check(!ThreatAdapter.AnyStealable(s.Map), "no crate of this contract is on the map");
+                Check(!ThreatAdapter.AnyWorkLeft(s.Map), "no crate to take and no vault to break open");
 
                 var job = (LordJob_StealCargo)lord.LordJob;
                 int t0 = (Find.TickManager.TicksGame / 30 + 1) * 30;

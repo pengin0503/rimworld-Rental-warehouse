@@ -11,7 +11,7 @@ namespace RentalWarehouse.Core.Tests
         [Fact]
         public void WhileSomethingCanStillBeStolen_NobodyRetreats_AndTheClockStaysOff()
         {
-            var (since, retreat) = RaidRetreat.Observe(null, stealableLeft: true, someoneCarrying: false, now: 5000);
+            var (since, retreat) = RaidRetreat.Observe(null, workLeft: true, someoneCarrying: false, now: 5000);
 
             Assert.Null(since);
             Assert.False(retreat);
@@ -20,7 +20,7 @@ namespace RentalWarehouse.Core.Tests
         [Fact]
         public void TheFirstEmptyLook_StartsTheClock_ButDoesNotRetreatYet()
         {
-            var (since, retreat) = RaidRetreat.Observe(null, stealableLeft: false, someoneCarrying: false, now: 5000);
+            var (since, retreat) = RaidRetreat.Observe(null, workLeft: false, someoneCarrying: false, now: 5000);
 
             Assert.Equal(5000L, since);
             Assert.False(retreat);
@@ -39,7 +39,7 @@ namespace RentalWarehouse.Core.Tests
         [Fact]
         public void ACrateBeingCarried_KeepsTheClockOff_SoTheCarrierCanLeaveByItself()
         {
-            var (since, retreat) = RaidRetreat.Observe(5000, stealableLeft: false, someoneCarrying: true, now: 5000 + 10 * Grace);
+            var (since, retreat) = RaidRetreat.Observe(5000, workLeft: false, someoneCarrying: true, now: 5000 + 10 * Grace);
 
             Assert.Null(since);
             Assert.False(retreat);
@@ -48,7 +48,7 @@ namespace RentalWarehouse.Core.Tests
         [Fact]
         public void ACrateBecomingStealableAgain_ResetsTheClock()
         {
-            var (since, retreat) = RaidRetreat.Observe(5000, stealableLeft: true, someoneCarrying: false, now: 5000 + 10 * Grace);
+            var (since, retreat) = RaidRetreat.Observe(5000, workLeft: true, someoneCarrying: false, now: 5000 + 10 * Grace);
 
             Assert.Null(since);
             Assert.False(retreat);

@@ -167,20 +167,43 @@ namespace RentalWarehouse.Core
             return last;
         }
 
-        /// <summary>Evaluates every contract in contract-ID order, so simultaneous candidates on a map start one day apart.</summary>
+        /// <summary>
+        /// Evaluates every contract that has something to decide, in contract-ID order, so simultaneous candidates on a map start
+        /// one day apart. A contract whose next raid is not due yet is left alone and never costs a <paramref name="context"/>:
+        /// reading the game for it (hostiles, threat points, raid groups) is the expensive part of a look.
+        /// </summary>
         public static void Tick(WorldState world, Func<ContractState, RaidContext> context, Func<RaidDecision, bool> start, long now)
         {
-            var ordered = new List<ContractState>(world.Contracts);
+            List<ContractState>? ordered = null;
+            foreach (var c in world.Contracts)
+            {
+                if (NeedsLook(c, now)) (ordered ??= new List<ContractState>()).Add(c);
+            }
+            if (ordered == null) return;
+
             ordered.Sort((a, b) => string.CompareOrdinal(a.Terms.ContractId, b.Terms.ContractId));
             foreach (var c in ordered)
             {
-                if (c.Terms.ScheduledRaidCount <= 0 || c.IsTerminal && c.RaidPlan.TrueForAll(r => r.State != RaidSlotState.Pending)) continue;
-                var ctx = context(c);
+                // Outside the active term the only decision is to give up the pending raids, which needs nothing from the game.
+                var ctx = c.Phase == ContractPhase.Active ? context(c) : new RaidContext();
                 ctx.NowTick = now;
                 ctx.LastDedicatedRaidStartTick = LastDedicatedStart(world, c.MapId);
                 var decision = Evaluate(c, ctx);
                 if (decision.Outcome == RaidOutcome.Start && start(decision)) MarkStarted(c, decision.SlotIndex, now);
             }
+        }
+
+        /// <summary>Whether <see cref="Evaluate"/> can decide anything for this contract now: a raid is due, or pending raids must be dropped.</summary>
+        private static bool NeedsLook(ContractState c, long now)
+        {
+            if (c.Terms.ScheduledRaidCount <= 0) return false;
+            if (c.Phase != ContractPhase.Active)
+            {
+                return (c.Phase == ContractPhase.Returning || c.IsTerminal) && c.RaidPlan.Exists(r => r.State == RaidSlotState.Pending);
+            }
+            EnsurePlan(c);
+            var slot = c.RaidPlan.Find(r => r.State == RaidSlotState.Pending);
+            return slot != null && now >= slot.PlannedTick;
         }
     }
 }

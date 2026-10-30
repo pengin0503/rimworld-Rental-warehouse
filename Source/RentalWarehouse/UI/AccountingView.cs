@@ -11,6 +11,7 @@ namespace RentalWarehouse
     public static class AccountingView
     {
         private const int HistoryShown = 10;
+        private static readonly System.Collections.Generic.List<Debt> NoDebts = new System.Collections.Generic.List<Debt>();
 
         public static Vector2 Draw(Rect rect, Vector2 scroll)
         {
@@ -48,7 +49,8 @@ namespace RentalWarehouse
             listing.Label("RW_Debts".Translate());
             Text.Font = GameFont.Small;
             if (state.Debts.Count == 0) listing.Label("RW_NoDebts".Translate());
-            foreach (var debt in state.Debts.ToList())
+            // Paying or refusing removes the debt on the spot, so the loop walks a copy, made only when there is something to show.
+            foreach (var debt in state.Debts.Count == 0 ? NoDebts : state.Debts.ToList())
             {
                 listing.Label("RW_DebtLine".Translate(debt.ContractId, OfferView.FactionName(debt.FactionId), debt.Amount.ToString("0")));
                 var row = listing.GetRect(32f);
@@ -77,9 +79,12 @@ namespace RentalWarehouse
             listing.Label("RW_History".Translate());
             Text.Font = GameFont.Small;
             // Cancelled contracts have no settlement but still belong in the history, with why they ended (spec 8).
-            foreach (var c in state.Contracts.Where(c => c.IsTerminal).Reverse().Take(HistoryShown))
+            for (int i = state.Contracts.Count - 1, shown = 0; i >= 0 && shown < HistoryShown; i--)
             {
+                var c = state.Contracts[i];
+                if (!c.IsTerminal) continue;
                 listing.Label(c.Settlement != null ? Settlement(c) : "RW_HistoryCancelled".Translate(c.Terms.ContractId, CancelReason(c)).ToString());
+                shown++;
             }
             listing.GapLine();
 

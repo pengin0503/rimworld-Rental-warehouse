@@ -175,16 +175,21 @@ namespace RentalWarehouse.Core
         /// </summary>
         private static void Prune(WorldState world, long now)
         {
-            var pendingIds = new HashSet<string>();
-            foreach (var e in world.PendingEffects) pendingIds.Add(e.EffectId);
+            // Most passes have nothing old enough to drop, so the pending-effect IDs are only collected when a prefix is asked about.
+            List<string>? pendingIds = null;
             bool Pending(string prefix)
             {
+                if (pendingIds == null)
+                {
+                    pendingIds = new List<string>(world.PendingEffects.Count);
+                    foreach (var e in world.PendingEffects) pendingIds.Add(e.EffectId);
+                }
                 foreach (var id in pendingIds) if (id.StartsWith(prefix, StringComparison.Ordinal)) return true;
                 return false;
             }
 
             var terminal = world.Contracts.FindAll(c => c.IsTerminal);
-            terminal.Sort((a, b) => b.LastAccrualTick.CompareTo(a.LastAccrualTick));
+            if (terminal.Count > SettledHistoryKept) terminal.Sort((a, b) => b.LastAccrualTick.CompareTo(a.LastAccrualTick));
             var removedPrefixes = new List<string>();
             for (int i = SettledHistoryKept; i < terminal.Count; i++)
             {
