@@ -327,4 +327,7 @@
   <RW_Msg_CrateLost>契約{0}の箱が失われました。精算時に補償を請求されます。</RW_Msg_CrateLost>
   <RW_Msg_FeeStopped>契約{0}の箱が有効な保管場所から外れました。戻すまで料金は発生しません。</RW_Msg_FeeStopped>
 
+  <RW_EarlyReturnQuote>契約{0}を早期返還しますか？\n全ての残存箱を今返送した場合の見積り：\n受領済み前払い：{1}銀\n取消料：{2}銀\n追加受取額：{3}銀\n債務：{4}銀（残る間は新規受注停止）\n信頼ポイント変化：{5}\n完了報酬見積り：{6}銀。返送までの追加損失等で精算額は変わります。</RW_EarlyReturnQuote>
+  <RW_PaymentPending>返済処理中です。銀不足・配置失敗時は保留して再試行します。</RW_PaymentPending>
+  <RW_Reject_PaymentPending>その債務は返済処理中です。</RW_Reject_PaymentPending>
 </LanguageData>

@@ -38,8 +38,17 @@ namespace RentalWarehouse
                     PlayerCaravanEnRoute = CaravanEnRoute(record),
                     Loaded = site?.HasMap ?? false,
                 };
-                if (SiteService.ShouldClose(record, ctx)) world.Enqueue(SiteService.Close(state, record, now).Effects, applyNow: false);
+                CloseIfDue(world, record, ctx);
             }
+        }
+
+        /// <summary>Before deleting site cargo, reconcile physical possession in this same call, not a later tick.</summary>
+        public static bool CloseIfDue(WarehouseWorldComponent world, SiteRecord record, SiteContext context)
+        {
+            if (!SiteService.ShouldClose(record, context)) return false;
+            VaultLootAdapter.Tick(world, context.NowTick);
+            world.Enqueue(SiteService.Close(world.State, record, context.NowTick).Effects, applyNow: false);
+            return true;
         }
 
         public static SiteContext BuildContext(WarehouseWorldComponent world, long now, bool needTiles)

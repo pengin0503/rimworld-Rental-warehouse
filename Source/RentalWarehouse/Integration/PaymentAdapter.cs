@@ -59,7 +59,14 @@ namespace RentalWarehouse
             var spot = TryParseDestination(dest, map, out var cell) && DropCellFinder.IsGoodDropSpot(cell, map, allowFogged: false, canRoofPunch: false)
                 ? cell
                 : DeliveryAdapter.DeliverySpot(map);
-            int amount = (int)decimal.Floor(effect.Amount);
+            var batch = world.Batch(effect.EffectId);
+            batch.Prepare(() => MakeSilver((int)decimal.Floor(effect.Amount)));
+            return batch.Transfer(silver => DropPodUtility.DropThingsNear(spot, map, new List<Thing> { silver },
+                canRoofPunch: false, forbid: false, allowFogged: false));
+        }
+
+        private static List<Thing> MakeSilver(int amount)
+        {
             var things = new List<Thing>();
             while (amount > 0)
             {
@@ -68,25 +75,49 @@ namespace RentalWarehouse
                 amount -= silver.stackCount;
                 things.Add(silver);
             }
-            if (things.Count > 0) DropPodUtility.DropThingsNear(spot, map, things, canRoofPunch: false, forbid: false, allowFogged: false);
-            return true;
+            return things;
         }
 
-        /// <summary>Takes silver for a debt payment. The UI checks the amount first; this never takes more than asked.</summary>
+        /// <summary>Reserve real silver in a saved owner before committing the debt. Retries see the reserved remainder.</summary>
         public static bool ConsumeSilver(WarehouseWorldComponent world, EffectRequest effect)
         {
-            var map = Ids.Map(effect.EntityId);
-            if (map == null) return false;
-            int needed = (int)decimal.Ceiling(effect.Amount);
-            foreach (var t in SpendableSilver(map))
+            var batch = world.Batch(effect.EffectId);
+            if (!batch.Committed)
             {
-                if (needed <= 0) break;
-                int take = Mathf.Min(needed, t.stackCount);
-                t.SplitOff(take).Destroy(DestroyMode.Vanish);
-                needed -= take;
+                var map = Ids.Map(effect.EntityId);
+                effect.Payload.TryGetValue("debt", out var debtId);
+                if (map == null || debtId != null && !world.State.Debts.Exists(d => d.DebtId == debtId)) batch.Refunding = true;
+                if (batch.Refunding)
+                {
+                    if (batch.Contents.Count > 0)
+                    {
+                        var home = Find.AnyPlayerHomeMap;
+                        if (home == null) return false;
+                        var spot = DeliveryAdapter.DeliverySpot(home);
+                        if (!batch.Transfer(t => DropPodUtility.DropThingsNear(spot, home, new List<Thing> { t },
+                            canRoofPunch: false, forbid: false, allowFogged: false))) return false;
+                    }
+                    PaymentService.ReopenPayment(world.State, effect);
+                    return true;
+                }
+                int reserved = 0;
+                foreach (var t in batch.Contents) reserved += t.stackCount;
+                int needed = (int)decimal.Ceiling(effect.Amount) - reserved;
+                var available = SpendableSilver(map);
+                int count = 0;
+                foreach (var t in available) count += t.stackCount;
+                if (count < needed) return false; // keep the debt and existing reservation until full payment is possible
+                foreach (var t in available)
+                {
+                    if (needed <= 0) break;
+                    needed -= batch.Contents.TryAddOrTransfer(t, Mathf.Min(needed, t.stackCount), canMergeWithExistingStacks: false);
+                }
+                if (needed > 0) return false;
+                batch.Committed = true; // before destroying the reservation; a failed destroy must never charge again
             }
-            if (needed > 0) Log.Warning("[RentalWarehouse] Debt payment short by " + needed + " silver (" + effect.EffectId + ").");
-            return true;
+            PaymentService.CompletePayment(world.State, effect);
+            foreach (var t in new List<Thing>(batch.Contents)) t.Destroy(DestroyMode.Vanish);
+            return batch.Contents.Count == 0;
         }
     }
 

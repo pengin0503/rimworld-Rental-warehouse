@@ -20,7 +20,7 @@ namespace RentalWarehouse
             var map = Find.CurrentMap;
             string mapId = Ids.Of(map);
 
-            float height = 700f + state.Debts.Count * 40f + System.Math.Min(state.TrustLog.Count, HistoryShown) * 28f;
+            float height = 700f + state.Debts.Count * 110f + System.Math.Min(state.TrustLog.Count, HistoryShown) * 28f;
             var view = new Rect(0f, 0f, rect.width - 16f, height);
             Widgets.BeginScrollView(rect, ref scroll, view);
             var listing = new Listing_Standard();
@@ -53,15 +53,16 @@ namespace RentalWarehouse
             foreach (var debt in state.Debts.Count == 0 ? NoDebts : state.Debts.ToList())
             {
                 listing.Label("RW_DebtLine".Translate(debt.ContractId, OfferView.FactionName(debt.FactionId), debt.Amount.ToString("0")));
+                if (debt.PaymentPending) listing.Label("RW_PaymentPending".Translate());
                 var row = listing.GetRect(32f);
                 int silver = map != null && map.IsPlayerHome ? PaymentAdapter.SpendableSilverCount(map) : 0;
-                bool canPay = silver >= debt.Amount;
+                bool canPay = !debt.PaymentPending && silver >= debt.Amount;
                 if (Widgets.ButtonText(row.LeftHalf().ContractedBy(2f), "RW_PayDebt".Translate(debt.Amount.ToString("0"), silver), active: canPay) && canPay)
                 {
                     var d = PaymentService.ResolveDebt(state, debt.DebtId, refuse: false, Ids.Now, mapId);
                     if (d.Success) world.Enqueue(d.Effects);
                 }
-                if (Widgets.ButtonText(row.RightHalf().ContractedBy(2f), "RW_RefuseDebt".Translate()))
+                if (Widgets.ButtonText(row.RightHalf().ContractedBy(2f), "RW_RefuseDebt".Translate(), active: !debt.PaymentPending) && !debt.PaymentPending)
                 {
                     var id = debt.DebtId;
                     Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(

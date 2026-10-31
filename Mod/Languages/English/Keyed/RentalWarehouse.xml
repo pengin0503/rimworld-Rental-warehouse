@@ -327,4 +327,7 @@
   <RW_Msg_CrateLost>A crate of contract {0} was lost. Compensation will be charged at settlement.</RW_Msg_CrateLost>
   <RW_Msg_FeeStopped>A crate of contract {0} is no longer in valid storage and earns nothing until it is put back.</RW_Msg_FeeStopped>
 
+  <RW_EarlyReturnQuote>Return contract {0} early?\nEstimate if all remaining crates are returned now:\nPreviously claimed prepayment: {1} silver\nCancellation fee: {2} silver\nAdditional credit: {3} silver\nDebt: {4} silver (blocks new contracts until resolved)\nTrust point change: {5}\nEstimated completion bonus: {6} silver. Further losses before dispatch may change the settlement.</RW_EarlyReturnQuote>
+  <RW_PaymentPending>Payment pending. Insufficient silver or failed transfers will be retried.</RW_PaymentPending>
+  <RW_Reject_PaymentPending>This debt payment is already pending.</RW_Reject_PaymentPending>
 </LanguageData>

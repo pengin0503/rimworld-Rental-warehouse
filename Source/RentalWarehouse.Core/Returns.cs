@@ -25,6 +25,16 @@ namespace RentalWarehouse.Core
             return Decision<ContractState>.Ok(state, new List<EffectRequest> { effect });
         }
 
+        /// <summary>Recover a missing physical pod only after its creation request is no longer pending.</summary>
+        public static bool RecoverMissingPod(WorldState world, ContractState state, bool exists)
+        {
+            if (state.Phase != ContractPhase.Returning || state.ActiveReturnPodId == null || exists) return false;
+            string id = state.ActiveReturnPodId;
+            if (world.PendingEffects.Exists(e => e.EffectId == id)) return false;
+            state.ActiveReturnPodId = null;
+            return true;
+        }
+
         public static void NotifyPodLost(ContractState state, string podId)
         {
             if (state.ActiveReturnPodId == podId) state.ActiveReturnPodId = null;

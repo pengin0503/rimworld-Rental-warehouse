@@ -15,15 +15,29 @@ namespace RentalWarehouse
         public static bool Deliver(WarehouseWorldComponent world, EffectRequest effect)
         {
             string cargoId = effect.EntityId;
-            if (!world.State.Cargo.TryGetValue(cargoId, out var record)) return true;
+            if (!world.State.Cargo.TryGetValue(cargoId, out var record))
+            {
+                world.DiscardBatch(effect.EffectId);
+                return true;
+            }
             effect.Payload.TryGetValue("contract", out var contractId);
             var contract = contractId == null ? null : world.State.Contract(contractId);
-            if (contract == null || contract.IsTerminal) return true;
+            if (contract == null || contract.IsTerminal)
+            {
+                world.DiscardBatch(effect.EffectId);
+                return true;
+            }
             var existing = contract.Cargo(cargoId);
-            if (existing == null || existing.Delivered || existing.Loss != LossCause.None) return true;
+            if (existing == null || existing.Loss != LossCause.None)
+            {
+                world.DiscardBatch(effect.EffectId);
+                return true;
+            }
+            if (existing.Delivered) return true;
 
             long now = Ids.Now;
-            if (world.FindCrate(cargoId) != null)
+            var crate = world.FindCrate(cargoId);
+            if (crate != null && crate.MapHeld != null)
             {
                 ContractEngine.MarkDelivered(contract, cargoId, now);
                 return true;
@@ -32,9 +46,16 @@ namespace RentalWarehouse
             if (map == null) return false;
 
             var spot = DeliverySpot(map);
-            var crate = CargoAdapter.MakeCrate(record);
-            world.RegisterCrate(cargoId, crate);
-            DropPodUtility.DropThingsNear(spot, map, new List<Thing> { crate }, openDelay: 110, canInstaDropDuringInit: false, leaveSlag: false, canRoofPunch: false, forbid: false, allowFogged: false);
+            var batch = world.Batch(effect.EffectId);
+            batch.Prepare(() =>
+            {
+                crate ??= CargoAdapter.MakeCrate(record);
+                crate.holdingOwner?.Remove(crate);
+                world.RegisterCrate(cargoId, crate);
+                return new List<Thing> { crate };
+            });
+            if (!batch.Transfer(item => DropPodUtility.DropThingsNear(spot, map, new List<Thing> { item },
+                openDelay: 110, canInstaDropDuringInit: false, leaveSlag: false, canRoofPunch: false, forbid: false, allowFogged: false))) return false;
             bool first = !contract.CargoStates.Exists(c => c.Delivered);
             ContractEngine.MarkDelivered(contract, cargoId, now);
             if (first)

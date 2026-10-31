@@ -123,7 +123,7 @@ namespace RentalWarehouse.Core.Tests
         public void PoisonEffect_IsDroppedAfterMaxAttemptsAndReported()
         {
             var world = new WorldState();
-            EffectQueue.Enqueue(world, Silver("bad", 1m));
+            EffectQueue.Enqueue(world, new EffectRequest { EffectId = "bad", Kind = EffectKind.CreateReturnPod });
             var dropped = new List<string>();
 
             for (int i = 0; i < EffectQueue.MaxAttempts + 2; i++)
