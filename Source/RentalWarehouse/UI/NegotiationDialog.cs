@@ -80,10 +80,6 @@ namespace RentalWarehouse
 
             decimal chance = NegotiationService.SuccessChance(opening, requested, candidates[selected].Social, TrustService.Rank(world.State));
             Widgets.Label(new Rect(inRect.x, y, inRect.width, 24f), "RW_NegotiateChance".Translate((chance * 100m).ToString("0")));
-            y += 26f;
-
-            decimal after = NegotiationService.CompletionRateAfter(offer.Terms.CompletionRate, requested - opening);
-            Widgets.Label(new Rect(inRect.x, y, inRect.width, 24f), "RW_NegotiateCost".Translate((offer.Terms.CompletionRate * 100m).ToString("0.#"), (after * 100m).ToString("0.#")));
             y += 34f;
 
             if (Widgets.ButtonText(new Rect(inRect.x, y, 200f, 32f), "RW_NegotiateGo".Translate())) Go(world);
@@ -99,7 +95,7 @@ namespace RentalWarehouse
             }
             else if (result.NewState.Negotiation == NegotiationState.Succeeded)
             {
-                Messages.Message("RW_Msg_NegotiationSucceeded".Translate(id, requested, (result.NewState.Terms.CompletionRate * 100m).ToString("0.#")), MessageTypeDefOf.PositiveEvent, historical: false);
+                Messages.Message("RW_Msg_NegotiationSucceeded".Translate(id, requested), MessageTypeDefOf.PositiveEvent, historical: false);
             }
             else
             {

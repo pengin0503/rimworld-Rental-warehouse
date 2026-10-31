@@ -40,15 +40,14 @@
   <RW_Set_CapacityAware>棚と金庫に入る箱数までしか依頼を出さない</RW_Set_CapacityAware>
   <RW_Set_CapacityAwareDesc>新しい依頼の箱数を、いちばん余裕のある拠点マップの無傷の棚と金庫の枠数までに抑えます（高危険度は金庫のみ）。合計価値は変わらないので、箱ひとつあたりの価値が上がります。</RW_Set_CapacityAwareDesc>
   <RW_NegotiateTitle>前払い率の交渉</RW_NegotiateTitle>
-  <RW_NegotiateIntro>契約{0}の依頼元に、初回提示率{1}%より高い前払いを求めます（信頼ランクにより最大{2}%）。1つの依頼につき1回だけで、失敗すると初回提示率のままです。成功すると、上げた1ポイントごとに完了報酬率が2%（相対）下がります。</RW_NegotiateIntro>
-  <RW_NegotiateCost>成功すると、完了報酬率が{0}%から{1}%に下がります。</RW_NegotiateCost>
+  <RW_NegotiateIntro>契約{0}の依頼元に、初回提示率{1}%より高い前払いを求めます（信頼ランクにより最大{2}%）。1つの依頼につき1回だけで、失敗すると初回提示率のままです。総報酬や完了報酬は変わらず、受け取りが前倒しになるだけです。</RW_NegotiateIntro>
   <RW_NegotiateNegotiator>交渉役</RW_NegotiateNegotiator>
   <RW_NegotiateSocial>社会 {0}</RW_NegotiateSocial>
   <RW_NegotiateAsk>要求する前払い率: {0}%</RW_NegotiateAsk>
   <RW_NegotiateChance>成功率: {0}%</RW_NegotiateChance>
   <RW_NegotiateGo>交渉する</RW_NegotiateGo>
   <RW_NegotiateNoOne>交渉できるコロニストがいません。</RW_NegotiateNoOne>
-  <RW_Msg_NegotiationSucceeded>契約{0}: 交渉に成功しました。前払い率は{1}%、完了報酬率は{2}%になりました。</RW_Msg_NegotiationSucceeded>
+  <RW_Msg_NegotiationSucceeded>契約{0}: 交渉に成功しました。前払い率は{1}%になりました。</RW_Msg_NegotiationSucceeded>
   <RW_Msg_NegotiationFailed>契約{0}: 交渉は失敗しました。前払い率は{1}%のままです。</RW_Msg_NegotiationFailed>
   <RW_NoPrepaymentLine>前払いなし: 保管料の全額と完了報酬は、箱の返還後に後払いです。</RW_NoPrepaymentLine>
   <RW_FeeLine>保管中の料金は1日{0}銀。完了報酬は最大{1}銀、合計は最大{2}銀。</RW_FeeLine>

@@ -63,10 +63,11 @@ namespace RentalWarehouse.Core.Tests
         }
 
         [Fact]
-        public void Attempt_RollBelowChance_Succeeds_RaisesThePrepayment_AndLowersTheCompletionRate()
+        public void Attempt_RollBelowChance_Succeeds_AndChangesOnlyThePrepayment()
         {
             var (world, terms) = Offer(SeedWhere(r => r < 0.05m));
-            decimal fullFee = Accounting.FullTermFee(terms);
+            decimal reward = terms.NominalTotalReward;
+            decimal completion = terms.CompletionRate;
 
             var d = NegotiationService.Attempt(world, "K1", 15, socialLevel: 0, now: D);
 
@@ -74,31 +75,22 @@ namespace RentalWarehouse.Core.Tests
             Assert.Equal(NegotiationState.Succeeded, d.NewState.Negotiation);
             Assert.Equal(0.15m, terms.PrepaymentRate);
             Assert.Equal(0.10m, terms.OpeningPrepaymentRate);
-            // 5 points more prepayment cost 5 x 2% of the 20% completion rate.
-            Assert.Equal(0.18m, terms.CompletionRate);
-            Assert.Equal(fullFee * 1.18m, terms.NominalTotalReward);
+            Assert.Equal(completion, terms.CompletionRate);
+            Assert.Equal(reward, terms.NominalTotalReward);
             Assert.Equal(9m, Accounting.Prepayment(terms));
         }
 
-        [Theory]
-        [InlineData(0.20, 1, 0.196)]
-        [InlineData(0.20, 10, 0.16)]
-        [InlineData(0.50, 14, 0.36)]
-        [InlineData(0.20, 0, 0.20)]
-        public void CompletionRateAfter_LosesTwoPercentOfItselfPerPointAsked(double rate, int points, double expected)
-        {
-            Assert.Equal((decimal)expected, NegotiationService.CompletionRateAfter((decimal)rate, points));
-        }
-
         [Fact]
-        public void Attempt_Failing_LeavesTheCompletionRateAlone()
+        public void Attempt_Succeeding_NeverCostsCompletionBonus_EvenForTheBiggestRaise()
         {
-            var (world, terms) = Offer(SeedWhere(r => r >= 0.95m), points: 4000);
-            decimal rate = terms.CompletionRate;
+            var (world, terms) = Offer(SeedWhere(r => r < 0.05m), prepay: 0m, points: 4000);
+            var before = (terms.CompletionRate, terms.NominalTotalReward, terms.DailyBase, terms.DailyValueRate, terms.FeeMultiplier);
 
-            NegotiationService.Attempt(world, "K1", 11, socialLevel: 20, now: D);
+            var d = NegotiationService.Attempt(world, "K1", 44, socialLevel: 20, now: D);
 
-            Assert.Equal(rate, terms.CompletionRate);
+            Assert.Equal(NegotiationState.Succeeded, d.NewState.Negotiation);
+            Assert.Equal(0.44m, terms.PrepaymentRate);
+            Assert.Equal(before, (terms.CompletionRate, terms.NominalTotalReward, terms.DailyBase, terms.DailyValueRate, terms.FeeMultiplier));
         }
 
         [Theory]
