@@ -19,6 +19,7 @@ namespace RentalWarehouse.Core
         public long LastTick;
         public int Attempts;
         public int Failures;
+        public long NextAttemptTick;
     }
 
     /// <summary>
@@ -113,7 +114,8 @@ namespace RentalWarehouse.Core
         /// <summary>
         /// Applies pending effects in order. A handler returns true when the effect now exists in the game (including
         /// when it finds it already existed), false to retry later. Exceptions count as failures; after
-        /// <see cref="MaxAttempts"/> failures the effect is abandoned and reported instead of looping forever.
+        /// <see cref="MaxAttempts"/> failures non-economic effects are abandoned. Economic transfers remain pending,
+        /// with an hour of game time between further attempts; their physical remainder must never be discarded.
         /// </summary>
         public static int Process(WorldState world, Func<EffectRequest, bool> apply, Action<string>? onAbandoned = null, long now = 0)
         {
@@ -137,6 +139,12 @@ namespace RentalWarehouse.Core
             while (i < world.PendingEffects.Count)
             {
                 var effect = world.PendingEffects[i];
+                if (world.Effects.Records.TryGetValue(effect.EffectId, out var previous)
+                    && previous.State == EffectRecordState.Pending && now < previous.NextAttemptTick)
+                {
+                    i++;
+                    continue;
+                }
                 if (!world.Effects.TryBegin(effect.EffectId, now))
                 {
                     world.PendingEffects.RemoveAt(i);
@@ -149,7 +157,12 @@ namespace RentalWarehouse.Core
                 }
                 catch (Exception)
                 {
-                    if (world.Effects.Fail(effect.EffectId, now) >= MaxAttempts)
+                    int failures = world.Effects.Fail(effect.EffectId, now);
+                    bool durable = effect.Kind == EffectKind.SpawnSilver || effect.Kind == EffectKind.ConsumeSilver
+                        || effect.Kind == EffectKind.ConsumeCargo || effect.Kind == EffectKind.DeliverCargo;
+                    if (failures >= MaxAttempts && durable)
+                        world.Effects.Records[effect.EffectId].NextAttemptTick = now + CoreTime.TicksPerDay / 24;
+                    if (failures >= MaxAttempts && !durable)
                     {
                         world.Effects.Abandon(effect.EffectId, now);
                         world.PendingEffects.RemoveAt(i);

@@ -13,6 +13,8 @@ namespace RentalWarehouse
             foreach (var contract in world.State.Contracts.ToArray())
             {
                 if (contract.IsTerminal) continue;
+                ReturnService.RecoverMissingPod(world.State, contract,
+                    ReturnAdapter.FindPod(Ids.Map(contract.MapId), contract.ActiveReturnPodId) != null);
                 if (Ids.Map(contract.MapId) == null) continue; // handled by the lifecycle reconciler
                 if (!snapshots.TryGetValue(contract.MapId, out var snapshot))
                 {

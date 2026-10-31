@@ -141,6 +141,7 @@ namespace RentalWarehouse
             {
                 var crate = kv.Value;
                 if (crate.MapHeld != map || !world.State.Cargo.TryGetValue(kv.Key, out var c) || c.SiteId != record.SiteId) continue;
+                CargoService.ApplyHitPoints(c, crate.HitPoints);
                 if (c.Custody == CargoCustody.Player)
                 {
                     // Taken but left behind on the site: it stays the site's (spec 7 "持ち出した箱" only).

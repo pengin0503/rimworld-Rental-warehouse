@@ -220,10 +220,26 @@ namespace RentalWarehouse.Core
                 removedPrefixes.Add(site.SiteId + "-V");
             }
 
+            // Consumed site loot is no longer a physical asset. This also handles sites already pruned in old saves.
+            var consumed = new List<string>();
+            foreach (var kv in world.Cargo)
+            {
+                var cargo = kv.Value;
+                string openId = "open:" + kv.Key;
+                if (cargo.SiteId != null && cargo.Opened && world.Effects.IsCompleted(openId)
+                    && !world.PendingEffects.Exists(e => e.EntityId == kv.Key)) consumed.Add(kv.Key);
+            }
+            foreach (var id in consumed)
+            {
+                world.Cargo.Remove(id);
+                world.Effects.Records.Remove("open:" + id);
+            }
+
             world.Effects.Prune(id =>
             {
                 foreach (var p in removedPrefixes) if (id.StartsWith(p, StringComparison.Ordinal)) return true;
-                if (id.StartsWith("claim-", StringComparison.Ordinal) || id.StartsWith("diag:", StringComparison.Ordinal))
+                if (id.StartsWith("claim-", StringComparison.Ordinal) || id.StartsWith("diag:", StringComparison.Ordinal)
+                    || id.StartsWith("debt-payment-", StringComparison.Ordinal))
                 {
                     return world.Effects.Records.TryGetValue(id, out var r) && now - r.LastTick > FinishedEffectRetention;
                 }

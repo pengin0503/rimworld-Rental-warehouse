@@ -32,6 +32,20 @@ namespace RentalWarehouse.Core
             return Decision<WorldState>.Ok(world, new List<EffectRequest> { effect });
         }
 
+        /// <summary>Called only after the entire physical payment has been reserved from the colony.</summary>
+        public static void CompletePayment(WorldState world, EffectRequest effect)
+        {
+            if (effect.Payload.TryGetValue("debt", out var id)) world.Debts.RemoveAll(d => d.DebtId == id);
+        }
+
+        /// <summary>Release the payment lock only after its physical reservation has been refunded.</summary>
+        public static void ReopenPayment(WorldState world, EffectRequest effect)
+        {
+            if (!effect.Payload.TryGetValue("debt", out var id)) return;
+            var debt = world.Debts.Find(d => d.DebtId == id);
+            if (debt != null) debt.PaymentPending = false;
+        }
+
         /// <summary>Records settlement debts once each (spec 5: unpaid compensation becomes a ledger debt).</summary>
         public static void SyncDebts(WorldState world, long now)
         {
@@ -60,7 +74,9 @@ namespace RentalWarehouse.Core
             if (debt == null) return Decision<WorldState>.Fail("RW_Reject_UnknownDebt", world);
             if (!refuse && string.IsNullOrEmpty(mapId)) return Decision<WorldState>.Fail("RW_Reject_InvalidDestination", world);
 
-            world.Debts.Remove(debt);
+            if (debt.PaymentPending) return Decision<WorldState>.Fail("RW_Reject_PaymentPending", world);
+            if (refuse) world.Debts.Remove(debt);
+            else debt.PaymentPending = true;
             var effects = new List<EffectRequest>();
             if (refuse)
             {
@@ -78,7 +94,7 @@ namespace RentalWarehouse.Core
             {
                 effects.Add(new EffectRequest
                 {
-                    EffectId = debtId + ":pay",
+                    EffectId = world.NextSequenceId("debt-payment"),
                     Kind = EffectKind.ConsumeSilver,
                     EntityId = mapId!,
                     Amount = debt.Amount,

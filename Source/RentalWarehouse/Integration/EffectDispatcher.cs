@@ -9,7 +9,7 @@ namespace RentalWarehouse
     /// <summary>
     /// Applies Core <see cref="EffectRequest"/>s to the game. Every handler reconciles first: if the result already
     /// exists in the game (for example a crate with that cargo ID), it reports success without doing it again.
-    /// Returning false means "not possible yet, retry later"; throwing counts toward abandonment.
+    /// Returning false means "not possible yet, retry later"; failed economic transfers retain their saved remainder.
     /// </summary>
     public static class EffectDispatcher
     {
@@ -37,11 +37,17 @@ namespace RentalWarehouse
 
         public static bool Apply(WarehouseWorldComponent world, EffectRequest effect)
         {
+            if (world.State.Effects.IsDone(effect.EffectId)) return true;
             if (!Handlers.TryGetValue(effect.Kind, out var handler))
             {
                 throw new InvalidOperationException("no handler for effect kind " + effect.Kind);
             }
-            return handler(world, effect);
+            try { return handler(world, effect); }
+            catch (Exception e)
+            {
+                Log.ErrorOnce("[RentalWarehouse] Effect " + effect.EffectId + " failed: " + e, effect.EffectId.GetHashCode());
+                throw;
+            }
         }
 
         public static void ProcessQueue(WarehouseWorldComponent world)
@@ -51,16 +57,27 @@ namespace RentalWarehouse
 
         private static bool ConsumeCargo(WarehouseWorldComponent world, EffectRequest effect)
         {
-            if (!world.State.Cargo.TryGetValue(effect.EntityId, out var record)) return true;
+            var batch = world.Batch(effect.EffectId);
+            world.State.Cargo.TryGetValue(effect.EntityId, out var record);
             var crate = world.FindCrate(effect.EntityId);
-            if (crate == null) return true; // already consumed
-            if (!crate.Spawned) return false; // opened only on a map; wait until it is placed
-            var map = crate.Map;
-            var pos = crate.Position;
-            var contents = CargoAdapter.MakeContents(record, out var missing);
-            foreach (var thing in contents) GenPlace.TryPlaceThing(thing, pos, map, ThingPlaceMode.Near);
-            CargoAdapter.RemoveCrate(crate);
-            if (missing.Count > 0) Diagnostics.Report("RW_Diag_MissingDefs", record.CargoId + ": " + string.Join(", ", missing));
+            if (!batch.Prepared)
+            {
+                if (crate == null || record == null) return true;
+                if (!crate.Spawned) return false;
+                batch.MapId = Ids.Of(crate.Map);
+                batch.Cell = crate.Position;
+                batch.Prepare(() =>
+                {
+                    var contents = CargoAdapter.MakeContents(record, out var missing);
+                    if (missing.Count > 0) Diagnostics.Report("RW_Diag_MissingDefs", record.CargoId + ": " + string.Join(", ", missing));
+                    return contents;
+                });
+            }
+            var map = Ids.Map(batch.MapId) ?? Find.AnyPlayerHomeMap;
+            if (map == null) return false;
+            var cell = batch.Cell.InBounds(map) ? batch.Cell : map.Center;
+            if (!batch.Transfer(thing => GenPlace.TryPlaceThing(thing, cell, map, ThingPlaceMode.Near))) return false;
+            if (crate != null) CargoAdapter.RemoveCrate(crate);
             return true;
         }
 

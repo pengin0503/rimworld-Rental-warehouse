@@ -331,6 +331,19 @@ namespace RentalWarehouse.Core
             return Decision<ContractState>.Ok(state, effects);
         }
 
+        /// <summary>Quote a complete immediate return on a deep copy; no live state or effects are changed.</summary>
+        public static SettlementResult PreviewEarlyReturn(ContractState state, long now)
+        {
+            var copy = state.Clone();
+            var requested = RequestEarlyReturn(copy, ReturnReason.EarlyByPlayer, now);
+            if (!requested.Success) throw new InvalidOperationException(requested.ReasonKey);
+            foreach (var cargo in copy.CargoStates)
+            {
+                if (!cargo.Returned && cargo.Loss == LossCause.None) MarkReturned(copy, cargo.CargoId, now);
+            }
+            return copy.Settlement ?? Accounting.Settle(copy);
+        }
+
         public const string CancelByPlayer = "RW_Cancel_ByPlayer";
 
         /// <summary>Penalty-free cancellation before any crate arrives; <paramref name="reasonKey"/> records who or what ended it.</summary>

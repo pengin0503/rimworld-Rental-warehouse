@@ -110,8 +110,13 @@ namespace RentalWarehouse
             }
             if ((c.Phase == ContractPhase.Active || c.Phase == ContractPhase.AwaitingStorage) && Widgets.ButtonText(Next(), "RW_EarlyReturn".Translate()))
             {
-                decimal fee = System.Math.Min(c.AccruedFee, Accounting.FullDailyFee(c.Terms) * Limits.CancellationFeeDays);
-                Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation("RW_EarlyReturnConfirm".Translate(c.Terms.ContractId, fee.ToString("0")), () =>
+                var quote = ContractEngine.PreviewEarlyReturn(c, Ids.Now);
+                int before = TrustService.Points(world.State);
+                var hypothetical = new WorldState { Settings = world.State.Settings, TrustPoints = before };
+                int after = TrustService.Apply(hypothetical, quote.TrustDelta, c.Terms.DepositorIsEmpire).After;
+                Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation("RW_EarlyReturnQuote".Translate(c.Terms.ContractId,
+                    quote.PreviouslyClaimed.ToString("0"), quote.CancellationFee.ToString("0"), quote.Credit.ToString("0"),
+                    quote.Debt.ToString("0"), (after - before).ToString("+0;-0;0"), quote.CompletionBonus.ToString("0")), () =>
                 {
                     var d = ContractEngine.RequestEarlyReturn(c, ReturnReason.EarlyByPlayer, Ids.Now);
                     if (!d.Success) Messages.Message(d.ReasonKey.Translate(), MessageTypeDefOf.RejectInput, historical: false);
@@ -121,6 +126,7 @@ namespace RentalWarehouse
             if (c.Phase == ContractPhase.Returning)
             {
                 var button = Next();
+                ReturnService.RecoverMissingPod(world.State, c, ReturnAdapter.FindPod(Ids.Map(c.MapId), c.ActiveReturnPodId) != null);
                 if (c.ActiveReturnPodId != null)
                 {
                     var pod = ReturnAdapter.FindPod(Ids.Map(c.MapId), c.ActiveReturnPodId);

@@ -10,9 +10,38 @@ namespace RentalWarehouse
     /// World-wide ledger holder (spec 9). Owns the Core <see cref="WorldState"/>; all business state lives there, not in
     /// game references. Also keeps a runtime index from cargo ID to crate Thing so nothing scans all Things.
     /// </summary>
-    public class WarehouseWorldComponent : WorldComponent
+    public class WarehouseWorldComponent : WorldComponent, IThingHolder
     {
         public WorldState State = new WorldState();
+
+        private Dictionary<string, OutputBatch> outputBatches = new Dictionary<string, OutputBatch>();
+
+        public OutputBatch Batch(string effectId)
+        {
+            if (!outputBatches.TryGetValue(effectId, out var batch)) outputBatches[effectId] = batch = new OutputBatch();
+            return batch;
+        }
+
+        private readonly ThingOwner<Thing> directContents;
+        public IThingHolder ParentHolder => null;
+        public ThingOwner GetDirectlyHeldThings() => directContents;
+        public void GetChildHolders(List<IThingHolder> children) => children.AddRange(outputBatches.Values);
+
+        /// <summary>Cancelled undelivered cargo has no physical entitlement and must not remain in staging.</summary>
+        public void DiscardBatch(string effectId)
+        {
+            if (!outputBatches.TryGetValue(effectId, out var batch)) return;
+            foreach (var thing in new List<Thing>(batch.Contents)) CargoAdapter.RemoveCrate(thing);
+            outputBatches.Remove(effectId);
+        }
+
+        public void CleanupBatches()
+        {
+            var done = new List<string>();
+            foreach (var kv in outputBatches)
+                if (kv.Value.Contents.Count == 0 && State.Effects.IsDone(kv.Key)) done.Add(kv.Key);
+            foreach (var id in done) outputBatches.Remove(id);
+        }
 
         private readonly Dictionary<string, Thing> crates = new Dictionary<string, Thing>();
 
@@ -25,6 +54,7 @@ namespace RentalWarehouse
 
         public WarehouseWorldComponent(World world) : base(world)
         {
+            directContents = new ThingOwner<Thing>(this, false);
         }
 
         public bool LedgerUnreadable => unreadablePayload != null;
@@ -32,6 +62,8 @@ namespace RentalWarehouse
         public override void ExposeData()
         {
             base.ExposeData();
+            Scribe_Collections.Look(ref outputBatches, "outputBatches", LookMode.Value, LookMode.Deep);
+            outputBatches ??= new Dictionary<string, OutputBatch>();
             string payload = null;
             int schema = 0;
             if (Scribe.mode == LoadSaveMode.Saving)
@@ -97,6 +129,7 @@ namespace RentalWarehouse
             VaultLootAdapter.Tick(this, now);
             LifecycleAdapter.Tick(this, now);
             EffectDispatcher.ProcessQueue(this);
+            CleanupBatches();
             TrustAdapter.Tick(this);
         }
 

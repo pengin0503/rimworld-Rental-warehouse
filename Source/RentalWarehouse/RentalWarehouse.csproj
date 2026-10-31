@@ -11,7 +11,7 @@
     <AssemblyName>RentalWarehouse</AssemblyName>
     <RootNamespace>RentalWarehouse</RootNamespace>
     <!-- Must equal About.xml <modVersion>; the release workflow checks both against the tag. -->
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <OutputPath>../../Mod/1.7/Assemblies/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

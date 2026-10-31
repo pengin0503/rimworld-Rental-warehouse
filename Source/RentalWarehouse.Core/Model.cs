@@ -292,6 +292,8 @@ namespace RentalWarehouse.Core
         public decimal Amount;
         public long CreatedTick;
 
+        public bool PaymentPending;
+
         public Debt Clone() => (Debt)MemberwiseClone();
     }
 

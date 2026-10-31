@@ -176,6 +176,8 @@ namespace RentalWarehouse.Core.Tests
             Assert.Equal(EffectKind.ConsumeSilver, pay.Kind);
             Assert.Equal(34m, pay.Amount);
             Assert.Equal(MapId, pay.EntityId);
+            Assert.True(Assert.Single(world.Debts).PaymentPending);
+            PaymentService.CompletePayment(world, pay);
             Assert.Empty(world.Debts);
             Assert.False(world.FactionBlockedUntil.ContainsKey(Depositor));
         }
