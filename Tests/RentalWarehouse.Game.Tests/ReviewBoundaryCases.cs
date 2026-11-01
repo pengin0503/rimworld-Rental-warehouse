@@ -17,12 +17,33 @@ namespace RentalWarehouse.Game.Tests
 
         private static IEnumerable<(string, Action<GameTestScope>)> Cases()
         {
+            yield return ("MapOwnedSilverCanBeReservedWithoutLosingRemainder", MapOwnedSilverReservation);
             yield return ("RejectedOutputKeepsTheSamePhysicalStack", RejectedOutput);
             yield return ("ExceptionAfterPlacementDoesNotDuplicateOutput", ExceptionAfterPlacement);
             yield return ("PartiallyMergedStackRetainsOnlyTheRemainder", PartialRemainder);
             yield return ("UnplacedRegisteredCrateMustActuallyBeDelivered", UnplacedDelivery);
             yield return ("SiteWritebackPreservesDamagedCrateHitPoints", DamagedWriteback);
             yield return ("SiteClosureSynchronizesPlayerHeldCratesFirst", OwnershipBeforeClosure);
+        }
+
+        private static void MapOwnedSilverReservation(GameTestScope s)
+        {
+            var source = ThingMaker.MakeThing(ThingDefOf.Silver);
+            source.stackCount = 100;
+            s.Spawn(source, s.FindClearRect(2).Min);
+            Check(source.holdingOwner?.Owner is Map, "spawned silver belongs to the map owner");
+            var batch = new OutputBatch();
+            try
+            {
+                Equal(34, batch.Reserve(source, 34), "partial reservation succeeds from a spawned stack");
+                Equal(66, source.stackCount, "unpaid remainder stays on map");
+                Check(source.Spawned, "partial source remains spawned");
+                Equal(34, batch.Contents.Sum(t => t.stackCount), "reserved quantity");
+                Equal(66, batch.Reserve(source, 66), "whole remainder can be reserved");
+                Check(!source.Spawned, "whole-stack reservation despawns source");
+                Equal(100, batch.Contents.Sum(t => t.stackCount), "exact physical total retained");
+            }
+            finally { foreach (var t in batch.Contents.ToList()) t.Destroy(); }
         }
 
         private static OutputBatch SilverBatch(int amount)
