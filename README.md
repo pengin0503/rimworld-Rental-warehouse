@@ -40,28 +40,12 @@ MOD設定で、通常/高危険度の依頼、金庫情報、非敵対派閥の�
 - Harmonyが読み込めない場合、契約箱のキャラバン除外、回収ポッドの契約別の受け入れ、受領可能残高の資産計上が無効になります（ログにエラーを出します）。
 - 他MODとの互換性は検証していません。
 
-## 開発者向け
+## English
 
-```sh
-dotnet test Tests/RentalWarehouse.Core.Tests                 # Coreロジック（ゲーム不要）
-dotnet build Source/RentalWarehouse/RentalWarehouse.csproj   # ゲームDLL（NuGetの参照アセンブリを使用）
-pwsh -File scripts/package.ps1                                # dist/RentalWarehouse.zip を作成
-python scripts/validate-package.py dist/RentalWarehouse.zip --source Source
+Rental Warehouse adds a business for storing other factions' goods, defending them from raids, and raiding independent faction vaults in RimWorld 1.7. **In-game behavior has not yet been verified**, including UI, AI, balance and compatibility with other mods.
 
-# XML定義をゲームのクラスと照合（参照アセンブリでも実DLLでも可。--reference で Def 名の実在も確認）
-dotnet run --project tools/DefValidator -- --assembly <Assembly-CSharp.dll> \
-  --assembly Mod/1.7/Assemblies/RentalWarehouse.dll --defs Mod/Defs [--reference <RimWorld>/Data/Core/Defs]
-```
+Build a reception desk and enable business. Offers arrive every 1–3 days; accept them through the Rental Warehouse tab. Store all delivered crates indoors on shelves or in vaults within one day to begin a 3–12 day contract. Collect the advance after storage begins, then return the crates by collection pod after the term to receive the remaining fees and completion reward. Successful returns build reputation; losses, embezzlement and early returns reduce it. Higher ranks unlock larger contracts. Advances may be negotiated once per offer.
 
-リリースは、`Mod/About/About.xml`の`modVersion`と`Source/RentalWarehouse/RentalWarehouse.csproj`の`Version`を揃え、`.github/releases/v<版>.md`に告知文を置いてから、GitHubのActions → Release → Run workflow（main、タグ例 `v0.1.0`）で実行します。同じ名前のタグをpushしても実行されます。検査に通った場合だけタグを作り、プレリリースとしてZIPを公開します。
+Raiders target stored crates. Opening a client's crate counts as embezzlement, requiring compensation equal to its value and reducing goodwill by 20. Unpaid compensation becomes debt and prevents new contracts. Independent vault opportunities appear periodically; travel by caravan, unlock or destroy the vault and retrieve its contents. With Royalty, eligible high-ranking colonies can receive Empire contracts.
 
-ローカルのゲームDLLで確認する場合は`-p:RimWorldManagedPath=<RimWorldの管理DLLフォルダ>`を付けます。ゲームDLLはリポジトリにもZIPにも含めません。実ゲームの結合試験は`Tests/RentalWarehouse.Game.Tests`（開発モードのDebug actions）で、手順は[検証結果](docs/testing/results-1.7.md)にあります。
-
-| 文書 | 内容 |
-|---|---|
-| [確定要件](docs/requirements.md) | ユーザーが選択した方針 |
-| [仕様書](docs/superpowers/specs/2026-10-23-rental-warehouse-design.md) | 契約・料金・施設・防衛・遠征・保存 |
-| [実装計画](docs/superpowers/plans/2026-10-23-rental-warehouse.md) | T0～T10と実行結果 |
-| [API監査](docs/technical/1.7-api-audit.md) | RimWorld 1.7の接続先と設計変更 |
-| [受入テスト計画](docs/testing/acceptance.md) / [検証結果](docs/testing/results-1.7.md) | A00～A16と実施状況 |
-| [クレジット](docs/credits.md) | 素材と依存のライセンス |
+Requires RimWorld 1.7.4985 and [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077), loaded first; DLC is optional. Extract `RentalWarehouse.zip` from [Releases](https://github.com/pengin0503/rimworld-Rental-warehouse/releases) and place its `RentalWarehouse` folder in `RimWorld/Mods`, then enable it after Harmony. It can be added to an existing save, but **mid-save removal is unsupported**. Back up saves before testing. Mod settings control contract types, vault opportunities, fee and raid-size multipliers; changes apply to new offers.
