@@ -110,7 +110,7 @@ namespace RentalWarehouse
                 foreach (var t in available)
                 {
                     if (needed <= 0) break;
-                    needed -= batch.Contents.TryAddOrTransfer(t, Mathf.Min(needed, t.stackCount), canMergeWithExistingStacks: false);
+                    needed -= batch.Reserve(t, Mathf.Min(needed, t.stackCount));
                 }
                 if (needed > 0) return false;
                 batch.Committed = true; // before destroying the reservation; a failed destroy must never charge again

@@ -38,3 +38,7 @@ Run Dev actions → Rental Warehouse tests → Review boundary cases (#24-31) on
 4. Leave an expired site with newly carried boxes at the check boundary; the taken boxes must still open after closure. The normal caravan's time on the same tile may avoid the original timing window.
 5. Leave a damaged box on a site, revisit before closure, and verify identical HP; destroyed boxes must not return.
 6. Read early-return quotes before/after claiming an advance and at maturity, then compare actual settlement. Quote creation must not alter the live ledger.
+
+## Follow-up from PR #32 review
+
+Spawned silver is owned by Map.spawnedThings; the game rejects TryTransferToContainer from a Map. Reservation now uses SplitOff before attaching the physical piece to the saved batch. The seventh game boundary case, MapOwnedSilverCanBeReservedWithoutLosingRemainder, covers partial and whole spawned stacks. Its runtime execution remains manual.

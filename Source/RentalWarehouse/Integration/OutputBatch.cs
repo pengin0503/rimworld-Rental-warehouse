@@ -40,6 +40,24 @@ namespace RentalWarehouse
             Prepared = true;
         }
 
+        /// <summary>Map-owned spawned Things cannot use TryTransferToContainer. SplitOff despawns the reserved part first.</summary>
+        public int Reserve(Thing source, int count)
+        {
+            var part = source.SplitOff(count);
+            try
+            {
+                if (!Contents.TryAdd(part, canMergeWithExistingStacks: false))
+                    throw new InvalidOperationException("Cannot reserve silver " + part);
+            }
+            finally
+            {
+                // If an ownership callback throws, keep the same physical piece for the next attempt.
+                if (!part.Destroyed && !part.Spawned && part.holdingOwner == null)
+                    Contents.TryAdd(part, canMergeWithExistingStacks: false);
+            }
+            return part.stackCount;
+        }
+
         public bool Transfer(Action<Thing> handoff)
         {
             TransferRecovery.Run(Contents.ToArray(), item => Contents.Remove(item), handoff,
